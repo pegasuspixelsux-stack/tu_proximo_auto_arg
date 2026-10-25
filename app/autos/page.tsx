@@ -5,7 +5,7 @@ import { SAMPLE_VEHICLES } from "../data/vehicles";
 import InventoryBrowser from "./InventoryBrowser";
 
 export const metadata: Metadata = {
-  title: "Todos los avisos | AUTO SELECT",
+  title: "Todos los avisos | Tu Próximo Auto - Argentina",
   description:
     "Explorá el inventario completo de vehículos verificados y filtrá por marca, precio, año, kilometraje y más.",
 };

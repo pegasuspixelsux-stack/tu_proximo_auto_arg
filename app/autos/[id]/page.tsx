@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!vehicle) return {};
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
   return {
-    title: `${title} | AUTO SELECT`,
+    title: `${title} | Tu Próximo Auto - Argentina`,
     description: `${title} en ${vehicle.location}. ${usd.format(vehicle.price)}.`,
   };
 }

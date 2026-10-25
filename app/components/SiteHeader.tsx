@@ -11,7 +11,7 @@ export default function SiteHeader() {
         className="relative mx-auto flex max-w-[1440px] items-center justify-between px-3 py-[11px] sm:py-6 lg:px-6"
       >
         <MobileMenu />
-        <div className="hidden items-center gap-6 md:flex">
+        <div className="hidden items-center gap-6 lg:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.label}
@@ -29,7 +29,7 @@ export default function SiteHeader() {
         >
           <Logo countryOnMobile={false} />
         </Link>
-        <div className="hidden items-center gap-6 sm:flex">
+        <div className="hidden items-center gap-6 lg:flex">
           {NAV_RIGHT_LINKS.map((link) => (
             <Link
               key={link.label}

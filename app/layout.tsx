@@ -13,9 +13,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AUTO SELECT | Autos usados certificados de alto rendimiento",
+  title: "Tu Próximo Auto - Argentina | Autos usados certificados",
   description:
-    "Seleccionados, inspeccionados y entregados: autos deportivos y eléctricos premium.",
+    "Tu Próximo Auto - Argentina: autos usados certificados, seleccionados, inspeccionados y entregados en nuestro salón de ventas de Zona Norte (Tigre).",
+  applicationName: "Tu Próximo Auto - Argentina",
+  openGraph: {
+    siteName: "Tu Próximo Auto - Argentina",
+    title: "Tu Próximo Auto - Argentina",
+    description: "Autos usados certificados con atención personalizada.",
+    locale: "es_AR",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -25,7 +33,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="es-UY"
+      lang="es-AR"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >

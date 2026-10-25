@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import LoginForm from "./LoginForm";
 
 export const metadata: Metadata = {
-  title: "Iniciar sesión | AUTO SELECT",
+  title: "Iniciar sesión | Tu Próximo Auto - Argentina",
   robots: { index: false, follow: false },
 };
 

@@ -6,7 +6,7 @@ import SiteHeader from "../components/SiteHeader";
 import { DEALERSHIPS, vehiclesByDealer } from "../data/vehicles";
 
 export const metadata: Metadata = {
-  title: "Concesionarias | AUTO SELECT",
+  title: "Concesionarias | Tu Próximo Auto - Argentina",
   description:
     "Concesionarias verificadas que publican y gestionan su inventario en AUTO SELECT.",
 };

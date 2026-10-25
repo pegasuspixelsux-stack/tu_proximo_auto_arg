@@ -35,7 +35,7 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      className="hero-on-photo relative mx-[10px] mt-[10px] flex min-h-[352px] w-auto sm:mx-auto sm:w-full max-w-[1440px] flex-col rounded-xl sm:h-[calc((100svh_-_290px)_*_0.56)] sm:min-h-[336px] lg:h-[calc((100svh_-_290px)_*_0.924)] lg:min-h-[443px] overflow-hidden bg-bg text-fg selection:bg-fg selection:text-bg"
+      className="hero-on-photo relative mx-[10px] mt-[10px] flex min-h-[352px] w-auto sm:mx-auto sm:w-full max-w-[1440px] flex-col rounded-xl sm:min-h-[max(336px,calc((100svh_-_290px)_*_0.56))] lg:h-[calc((100svh_-_290px)_*_0.924)] lg:min-h-[443px] overflow-hidden bg-bg text-fg selection:bg-fg selection:text-bg"
     >
       <div className="absolute inset-0 z-0">
         <AnimatePresence initial={false}>
@@ -59,8 +59,8 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
         </AnimatePresence>
         <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/30 to-transparent" />
       </div>
-      <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-start px-5 py-10 sm:justify-end sm:px-8 sm:py-10 lg:justify-center lg:px-10 lg:py-6">
-        <div className="w-full text-left sm:w-[45%]">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-start px-5 py-10 sm:justify-end sm:px-8 sm:pb-12 sm:pt-10 lg:justify-center lg:px-10 lg:py-6">
+        <div className="w-full text-left sm:w-[65%] lg:w-[45%]">
           <div
             key={slide.id}
             aria-live={paused ? "polite" : "off"}
@@ -86,7 +86,7 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
             )}
             <motion.h1
               {...rise(0.15, 24)}
-              className="text-balance text-[28px] font-semibold leading-[1.08] tracking-[-0.02em] sm:text-5xl lg:text-6xl"
+              className="text-balance text-[28px] font-semibold leading-[1.08] tracking-[-0.02em] sm:text-4xl lg:text-6xl"
             >
               {slide.highlight && (
                 <span className="text-brand">{slide.highlight} </span>
@@ -96,7 +96,7 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
             {slide.supportText && (
               <motion.p
                 {...rise(0.28)}
-                className="mt-2 w-1/2 text-xs leading-relaxed sm:mt-5 sm:w-0 sm:min-w-full sm:text-xl text-muted"
+                className="mt-2 w-1/2 text-xs leading-relaxed sm:mt-4 sm:w-0 sm:min-w-full sm:text-base lg:mt-5 lg:text-xl text-muted"
               >
                 {slide.supportText}
               </motion.p>

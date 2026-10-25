@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import Sidebar from "./Sidebar";
 
 export const metadata: Metadata = {
-  title: "Panel de Control | AUTO SELECT",
+  title: "Panel de Control | Tu Próximo Auto - Argentina",
   robots: { index: false, follow: false },
 };
 

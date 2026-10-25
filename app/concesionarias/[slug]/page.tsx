@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const dealer = getDealership((await params).slug);
   if (!dealer) return {};
   return {
-    title: `${dealer.name} | AUTO SELECT`,
+    title: `${dealer.name} | Tu Próximo Auto - Argentina`,
     description: `Inventario de ${dealer.name} en ${dealer.location}.`,
   };
 }
