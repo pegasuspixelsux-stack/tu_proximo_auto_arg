@@ -1,5 +1,6 @@
 "use client";
 
+import { LayoutGroup, motion } from "framer-motion";
 import {
   ArrowRight,
   Building2,
@@ -61,6 +62,17 @@ const SORTS = [
   { value: "km-asc", label: "Menor kilometraje" },
 ] as const;
 type Sort = (typeof SORTS)[number]["value"];
+
+type Pill = "all" | "electric" | "hybrid" | "gasoline" | "private" | "dealer";
+
+const PILLS: { id: Pill; label: string; test: (v: Vehicle) => boolean }[] = [
+  { id: "all", label: "Todos", test: () => true },
+  { id: "electric", label: "Eléctricos", test: (v) => v.fuelType === "Electric" },
+  { id: "hybrid", label: "Híbridos", test: (v) => v.fuelType === "Hybrid" },
+  { id: "gasoline", label: "Nafta", test: (v) => v.fuelType === "Gasoline" },
+  { id: "private", label: "Particulares", test: (v) => v.sellerType === "private" },
+  { id: "dealer", label: "Concesionarias", test: (v) => v.sellerType === "dealer" },
+];
 
 const YEARS = Array.from({ length: 2026 - 1960 + 1 }, (_, i) => 2026 - i);
 
@@ -499,7 +511,9 @@ export default function InventoryBrowser({
   const [draft, setDraft] = useState<Filters>(EMPTY);
   const [applied, setApplied] = useState<Filters>(EMPTY);
   const [sort, setSort] = useState<Sort>("recent");
+  const [pill, setPill] = useState<Pill>("all");
   const [page, setPage] = useState(1);
+  const pillsRef = useRef<HTMLDivElement>(null);
   const [drawer, setDrawer] = useState(false);
   const topRef = useRef<HTMLDivElement>(null);
   const sortId = useId();
@@ -514,7 +528,8 @@ export default function InventoryBrowser({
   );
 
   const results = useMemo(() => {
-    const list = vehicles.filter((v) => matches(v, applied));
+    const pillTest = (PILLS.find((p) => p.id === pill) ?? PILLS[0]).test;
+    const list = vehicles.filter((v) => pillTest(v) && matches(v, applied));
     const by: Record<Sort, (a: Vehicle, b: Vehicle) => number> = {
       recent: (a, b) => b.createdAt.localeCompare(a.createdAt),
       "price-asc": (a, b) => a.price - b.price,
@@ -522,7 +537,7 @@ export default function InventoryBrowser({
       "km-asc": (a, b) => a.mileage - b.mileage,
     };
     return list.sort(by[sort]);
-  }, [vehicles, applied, sort]);
+  }, [vehicles, applied, sort, pill]);
 
   const pageCount = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
   const current = Math.min(page, pageCount);
@@ -537,6 +552,11 @@ export default function InventoryBrowser({
     setDraft(EMPTY);
     setApplied(EMPTY);
     setPage(1);
+  }
+  function scrollPills(direction: -1 | 1) {
+    const el = pillsRef.current;
+    if (!el) return;
+    el.scrollBy({ left: direction * el.clientWidth * 0.7, behavior: "smooth" });
   }
   function goTo(n: number) {
     setPage(n);
@@ -559,7 +579,7 @@ export default function InventoryBrowser({
     <>
       <header className="pt-10">
         <h1 className="text-balance text-3xl font-semibold tracking-[-0.02em] lg:text-5xl">
-          Todos los Avisos
+          Salón de Ventas
         </h1>
         <p className="mt-3 max-w-2xl text-muted">
           Explorá nuestro inventario de vehículos verificados y filtrá según tus
@@ -580,6 +600,62 @@ export default function InventoryBrowser({
 
         <section className="lg:col-span-9" aria-label="Resultados">
           <div ref={topRef} className="scroll-mt-20" />
+          <LayoutGroup id="inventory-filters">
+            <div className="mb-6 flex min-w-0 items-center gap-2">
+              <button
+                type="button"
+                aria-label="Desplazar filtros a la izquierda"
+                onClick={() => scrollPills(-1)}
+                className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-muted transition-[color,transform] duration-150 hover:text-fg active:scale-95 md:flex"
+              >
+                <ChevronLeft className="h-4 w-4" strokeWidth={1.75} />
+              </button>
+              <div
+                ref={pillsRef}
+                role="group"
+                aria-label="Filtrar vehículos"
+                className="flex min-w-0 flex-1 snap-x gap-2 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              >
+                {PILLS.map((f) => {
+                  const selected = f.id === pill;
+                  return (
+                    <button
+                      key={f.id}
+                      type="button"
+                      data-testid={`filter-${f.id}`}
+                      aria-pressed={selected}
+                      onClick={() => {
+                        setPill(f.id);
+                        setPage(1);
+                      }}
+                      className={`relative shrink-0 snap-start whitespace-nowrap rounded-full border px-4 py-2 text-xs font-medium transition-[color,border-color,transform] duration-150 active:scale-[0.97] ${
+                        selected
+                          ? "border-transparent text-on-inverse"
+                          : "border-line text-muted hover:border-fg/40 hover:text-fg"
+                      }`}
+                    >
+                      {selected && (
+                        <motion.span
+                          layoutId="filter-pill"
+                          transition={{ type: "spring", duration: 0.4, bounce: 0.15 }}
+                          className="absolute inset-0 rounded-full bg-inverse"
+                        />
+                      )}
+                      <span className="relative">{f.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                aria-label="Desplazar filtros a la derecha"
+                onClick={() => scrollPills(1)}
+                className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-muted transition-[color,transform] duration-150 hover:text-fg active:scale-95 md:flex"
+              >
+                <ChevronRight className="h-4 w-4" strokeWidth={1.75} />
+              </button>
+            </div>
+          </LayoutGroup>
           <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
             <p
               data-testid="results-count"

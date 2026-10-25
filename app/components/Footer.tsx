@@ -1,8 +1,10 @@
-import { Mail, MessageCircle } from "lucide-react";
+import { MessageCircle, Phone } from "lucide-react";
 import type { ReactNode } from "react";
 import Logo from "./Logo";
 import { NAV_LINKS, NAV_RIGHT_LINKS } from "./navLinks";
 import ThemeToggle from "./ThemeToggle";
+import { formatPhone } from "../data/site";
+import { getSiteSettings } from "../data/site-store";
 
 interface FooterColumn {
   title: string;
@@ -25,11 +27,6 @@ const COLUMNS: FooterColumn[] = [
     ],
   },
 ];
-
-/** Placeholder contact details: replace with the real ones. */
-const CONTACT_EMAIL = "contacto@autoselect.com";
-const WHATSAPP_NUMBER = "59899000000";
-const WHATSAPP_LABEL = "+598 99 000 000";
 
 /** Brand icons are drawn inline: this lucide-react version has none. */
 function SocialIcon({ children }: { children: ReactNode }) {
@@ -92,7 +89,9 @@ const LEGAL_LINKS = [
 const LINK = "text-sm text-muted transition-colors duration-150 hover:text-fg";
 const HEADING = "text-xs font-semibold uppercase tracking-widest text-fg";
 
-export default function Footer() {
+export default async function Footer() {
+  const { whatsappNumber } = await getSiteSettings();
+  const phoneLabel = formatPhone(whatsappNumber);
   return (
     <footer data-testid="footer" className="border-t border-line bg-bg">
       <div className="mx-auto max-w-[1440px] px-3 py-16 lg:px-6">
@@ -129,20 +128,7 @@ export default function Footer() {
             <ul className="mt-5 space-y-3">
               <li>
                 <a
-                  href={`mailto:${CONTACT_EMAIL}`}
-                  className={`${LINK} inline-flex items-center gap-2`}
-                >
-                  <Mail
-                    className="h-4 w-4 shrink-0"
-                    strokeWidth={1.75}
-                    aria-hidden
-                  />
-                  {CONTACT_EMAIL}
-                </a>
-              </li>
-              <li>
-                <a
-                  href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                  href={`https://wa.me/${whatsappNumber}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`${LINK} inline-flex items-center gap-2`}
@@ -152,7 +138,21 @@ export default function Footer() {
                     strokeWidth={1.75}
                     aria-hidden
                   />
-                  WhatsApp {WHATSAPP_LABEL}
+                  WhatsApp {phoneLabel}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`tel:+${whatsappNumber}`}
+                  data-testid="footer-phone"
+                  className={`${LINK} inline-flex items-center gap-2`}
+                >
+                  <Phone
+                    className="h-4 w-4 shrink-0"
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                  Llamar {phoneLabel}
                 </a>
               </li>
             </ul>

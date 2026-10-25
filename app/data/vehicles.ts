@@ -36,6 +36,8 @@ export interface Vehicle {
   /** ISO date the listing was published. */
   createdAt: string;
   badge?: string;
+  /** Show on the homepage catalog (capped at HOMEPAGE_LIMIT). Defaults to true for the first listings. */
+  homepage?: boolean;
 }
 
 /** Sample dealerships. Names and phone numbers are placeholders. */
@@ -897,7 +899,16 @@ const EXTRA_VEHICLES: Vehicle[] = EXTRA_ROWS.map(
   },
 );
 
-export const SAMPLE_VEHICLES: Vehicle[] = [...BASE_VEHICLES, ...EXTRA_VEHICLES];
+export const HOMEPAGE_LIMIT = 12;
+
+export const SAMPLE_VEHICLES: Vehicle[] = [
+  ...BASE_VEHICLES,
+  ...EXTRA_VEHICLES,
+].map((v, i) => ({ ...v, homepage: v.homepage ?? i < HOMEPAGE_LIMIT }));
+
+export const HOMEPAGE_VEHICLES: Vehicle[] = SAMPLE_VEHICLES.filter(
+  (v) => v.homepage,
+).slice(0, HOMEPAGE_LIMIT);
 
 export const vehiclesByDealer = (dealershipId: string) =>
   SAMPLE_VEHICLES.filter((v) => v.dealership?.id === dealershipId);

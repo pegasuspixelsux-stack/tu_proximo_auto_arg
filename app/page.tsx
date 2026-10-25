@@ -7,20 +7,23 @@ import FinanceCalculator from "./components/FinanceCalculator";
 import FinancingSection from "./components/FinancingSection";
 import Footer from "./components/Footer";
 import Hero from "./components/Hero";
-import { SAMPLE_VEHICLES } from "./data/vehicles";
+import { getHeroSlides } from "./data/hero-store";
+import { getSiteSettings } from "./data/site-store";
+import { HOMEPAGE_VEHICLES } from "./data/vehicles";
 
-export default function Home() {
+export default async function Home() {
+  const [slides, site] = await Promise.all([getHeroSlides(), getSiteSettings()]);
   return (
     <>
       <AnnouncementBar />
       <SiteHeader />
-      <Hero />
+      <Hero slides={slides} />
       <main className="mx-auto min-h-screen w-full max-w-[1440px] bg-bg text-fg selection:bg-fg selection:text-bg">
-        <Catalog vehicles={SAMPLE_VEHICLES} />
-        <FinancingSection />
+        <Catalog vehicles={HOMEPAGE_VEHICLES} />
+        <FinancingSection whatsappNumber={site.whatsappNumber} />
         <FinanceCalculator />
         <FAQSection />
-        <ConversionCTA />
+        <ConversionCTA whatsappNumber={site.whatsappNumber} />
         <Footer />
       </main>
     </>

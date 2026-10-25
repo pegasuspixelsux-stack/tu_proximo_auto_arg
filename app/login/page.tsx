@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 const BACKGROUND =
-  "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=85&w=2400";
+  "/hero_image/audi_hero.webp";
 
 export default function LoginPage() {
   return (
@@ -31,7 +31,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right column: dark backdrop with the form. */}
-      <section className="relative flex min-h-screen flex-col border-l border-[#1C1C1E] bg-[#0D0D0E]/80 px-6 py-8 backdrop-blur-md sm:px-12">
+      <section className="relative flex min-h-screen flex-col border-l border-[#1C1C1E] bg-[#0D0D0E]/10 px-6 py-8 backdrop-blur-md sm:px-12">
         <Link
           href="/"
           className="inline-flex w-fit items-center gap-2 text-sm text-[#86868B] transition-colors duration-150 hover:text-[#F5F5F7]"

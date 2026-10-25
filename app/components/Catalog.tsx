@@ -77,12 +77,12 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
     >
       <div className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-center md:gap-6">
         <LayoutGroup id="inventory-filters">
-          <div className="flex min-w-0 items-center gap-2 md:max-w-[60%]">
+          <div className="hidden min-w-0 items-center gap-2 md:flex md:max-w-[50%]">
             <button
               type="button"
               aria-label="Desplazar filtros a la izquierda"
               onClick={() => scrollPills(-1)}
-              className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-muted transition-[color,transform] duration-150 hover:text-fg active:scale-95 md:flex"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-muted transition-[color,transform] duration-150 hover:text-fg active:scale-95"
             >
               <ChevronLeft className="h-4 w-4" strokeWidth={1.75} />
             </button>
@@ -90,7 +90,7 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
               ref={pillsRef}
               role="group"
               aria-label="Filtrar vehículos"
-              className="-mx-3 flex min-w-0 flex-1 snap-x scroll-px-3 gap-2 overflow-x-auto px-3 py-2 [scrollbar-width:none] md:mx-0 md:scroll-px-0 md:px-0 [&::-webkit-scrollbar]:hidden"
+              className="flex min-w-0 flex-1 snap-x gap-2 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
               {FILTERS.map((f) => {
                 const selected = f.id === filter;
@@ -125,19 +125,20 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
                   </button>
                 );
               })}
-              <span aria-hidden className="w-1 shrink-0 md:hidden" />
             </div>
             <button
               type="button"
               aria-label="Desplazar filtros a la derecha"
               onClick={() => scrollPills(1)}
-              className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-muted transition-[color,transform] duration-150 hover:text-fg active:scale-95 md:flex"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line text-muted transition-[color,transform] duration-150 hover:text-fg active:scale-95"
             >
               <ChevronRight className="h-4 w-4" strokeWidth={1.75} />
             </button>
           </div>
         </LayoutGroup>
-        <HeroSearch compact />
+        <div className="w-full md:w-[32rem] md:max-w-[50%] lg:w-[42rem]">
+          <HeroSearch compact />
+        </div>
       </div>
 
       <motion.div

@@ -17,6 +17,7 @@ import {
 import Footer from "../../components/Footer";
 import SiteHeader from "../../components/SiteHeader";
 import VehicleCard from "../../components/VehicleCard";
+import { getSiteSettings } from "../../data/site-store";
 import { SAMPLE_VEHICLES, getVehicle, type Vehicle } from "../../data/vehicles";
 
 type Props = { params: Promise<{ id: string }> };
@@ -61,12 +62,10 @@ export default async function VehiclePage({ params }: Props) {
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
   const dealer =
     vehicle.sellerType === "dealer" ? vehicle.dealership : undefined;
-  const phone = dealer ? dealer.phone : vehicle.sellerPhone;
-  const whatsapp = phone
-    ? `https://wa.me/${phone}?text=${encodeURIComponent(
-        `Hola, me interesa el ${title} publicado en AUTO SELECT.`,
-      )}`
-    : undefined;
+  const { whatsappNumber } = await getSiteSettings();
+  const whatsapp = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+    `Hola, me interesa el ${title} publicado en AUTO SELECT.`,
+  )}`;
 
   const specs = [
     { icon: Calendar, label: "Año", value: String(vehicle.year) },

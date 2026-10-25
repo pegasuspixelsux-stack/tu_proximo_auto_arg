@@ -5,7 +5,7 @@ import { NAV_LINKS, NAV_RIGHT_LINKS } from "./navLinks";
 
 export default function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-xl backdrop-saturate-150">
+    <header className="sticky top-0 z-40 border-b border-line shadow-[0_4px_12px_-2px_rgba(0,0,0,0.12)] bg-bg/80 backdrop-blur-xl backdrop-saturate-150">
       <nav
         aria-label="Principal"
         className="relative mx-auto flex max-w-[1440px] items-center justify-between px-3 py-[11px] sm:py-6 lg:px-6"

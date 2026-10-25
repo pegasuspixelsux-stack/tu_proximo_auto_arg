@@ -27,6 +27,9 @@ import {
   type Role,
   type TeamMember,
 } from "./data";
+import HeroSlidesEditor from "./HeroSlidesEditor";
+import WhatsappSetting from "./WhatsappSetting";
+import type { HeroSlide } from "../data/hero";
 
 const usd = new Intl.NumberFormat("es-UY", {
   style: "currency",
@@ -117,7 +120,13 @@ function Pill({
   );
 }
 
-export default function Overview() {
+export default function Overview({
+  heroSlides,
+  whatsappNumber,
+}: {
+  heroSlides: HeroSlide[];
+  whatsappNumber: string;
+}) {
   const [listings, setListings] = useState<DashboardListing[]>(LISTINGS);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<ListingStatus | "all">("all");
@@ -459,9 +468,8 @@ export default function Overview() {
         >
           Configuración
         </h2>
-        <p className="mt-3 rounded-xl border border-dashed border-line px-4 py-8 text-center text-sm text-muted">
-          Los ajustes de la plataforma estarán disponibles próximamente.
-        </p>
+        <WhatsappSetting initial={whatsappNumber} />
+        <HeroSlidesEditor initial={heroSlides} />
       </section>
     </main>
   );

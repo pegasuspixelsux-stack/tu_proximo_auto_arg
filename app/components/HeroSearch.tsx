@@ -37,7 +37,7 @@ export default function HeroSearch({ compact = false }: { compact?: boolean }) {
     <div
       className={
         compact
-          ? "relative w-full shrink-0 md:w-[26rem] lg:w-[32rem]"
+          ? "relative w-full shrink-0"
           : "mx-auto w-full max-w-xl px-3 text-center lg:max-w-3xl lg:px-6"
       }
     >

@@ -3,8 +3,6 @@
 import { CalendarCheck, ChevronDown, MessageCircle, X } from "lucide-react";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 
-// Placeholder shared with the footer; replace with the real number.
-const WHATSAPP_NUMBER = "59899000000";
 const GENERIC_MESSAGE = "Hola AutoSelect! Quiero hacer una consulta.";
 
 const CARS = [
@@ -75,7 +73,13 @@ function Choice({
   );
 }
 
-function AppointmentModal({ onClose }: { onClose: () => void }) {
+function AppointmentModal({
+  onClose,
+  whatsappNumber,
+}: {
+  onClose: () => void;
+  whatsappNumber: string;
+}) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -108,7 +112,7 @@ function AppointmentModal({ onClose }: { onClose: () => void }) {
       `- Código: #AS-${code}`,
     ].join("\n");
     window.open(
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`,
+      `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`,
       "_blank",
       "noopener,noreferrer",
     );
@@ -230,7 +234,11 @@ function AppointmentModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-export default function ConversionCTA() {
+export default function ConversionCTA({
+  whatsappNumber,
+}: {
+  whatsappNumber: string;
+}) {
   const [open, setOpen] = useState(false);
 
   // Expand when a link or the URL points at this section (collapsed on mobile).
@@ -297,7 +305,7 @@ export default function ConversionCTA() {
               Escribinos directamente para sacarte dudas en el acto.
             </p>
             <a
-              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(GENERIC_MESSAGE)}`}
+              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(GENERIC_MESSAGE)}`}
               target="_blank"
               rel="noopener noreferrer"
               data-testid="cta-whatsapp"
@@ -337,7 +345,12 @@ export default function ConversionCTA() {
         </div>
       </div>
 
-      {modalOpen && <AppointmentModal onClose={() => setModalOpen(false)} />}
+      {modalOpen && (
+        <AppointmentModal
+          onClose={() => setModalOpen(false)}
+          whatsappNumber={whatsappNumber}
+        />
+      )}
     </section>
   );
 }

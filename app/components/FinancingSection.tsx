@@ -10,11 +10,8 @@ import {
 import { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 
-// Placeholder shared with the footer; replace with the real number.
-const WHATSAPP_NUMBER = "59899000000";
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-  "Hola, quiero consultar por las opciones de financiación y permutas en AutoSelect.",
-)}`;
+const WHATSAPP_MESSAGE =
+  "Hola, quiero consultar por las opciones de financiación y permutas en AutoSelect.";
 
 const OPTIONS: {
   icon: LucideIcon;
@@ -45,7 +42,12 @@ const OPTIONS: {
   },
 ];
 
-export default function FinancingSection() {
+export default function FinancingSection({
+  whatsappNumber,
+}: {
+  whatsappNumber: string;
+}) {
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
   const [open, setOpen] = useState(false);
 
   // Expand when a link or the URL points at this section (collapsed on mobile).
@@ -127,7 +129,7 @@ export default function FinancingSection() {
 
         <div className="mt-8 flex justify-center md:mt-10">
           <a
-            href={WHATSAPP_URL}
+            href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             data-testid="financing-whatsapp"
