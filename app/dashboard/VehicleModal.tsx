@@ -1,6 +1,5 @@
 "use client";
 
-import { upload } from "@imagekit/next";
 import {
   collection,
   deleteField,
@@ -11,7 +10,8 @@ import {
 import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { auth, db } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
+import { photoError, uploadPhoto } from "@/lib/imagekit-upload";
 import { COMMON_CAR_FEATURES } from "../data/car-features";
 import type {
   BodyType,
@@ -23,7 +23,6 @@ import type {
 import { revalidateVehicles } from "./actions";
 
 const KM_PER_MILE = 1.60934;
-const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 
 const FIELD =
   "w-full rounded-xl border border-line bg-bg/60 px-3 py-2 text-sm text-fg outline-none transition-colors duration-150 placeholder:text-subtle focus:border-fg/40";
@@ -55,29 +54,6 @@ function Labeled({
   );
 }
 
-/** Uploads one photo to ImageKit with a signature from /api/imagekit-auth. */
-async function uploadPhoto(file: File, onProgress: (pct: number) => void) {
-  const user = auth.currentUser;
-  if (!user) throw new Error("Tu sesión expiró. Volvé a iniciar sesión.");
-  const res = await fetch("/api/imagekit-auth", {
-    headers: { authorization: `Bearer ${await user.getIdToken()}` },
-  });
-  if (!res.ok) throw new Error("No se pudo autorizar la subida.");
-  const { token, expire, signature, publicKey } = await res.json();
-  const result = await upload({
-    file,
-    fileName: file.name,
-    folder: "/vehicles",
-    token,
-    expire,
-    signature,
-    publicKey,
-    onProgress: (e) => onProgress(Math.round((e.loaded / e.total) * 100)),
-  });
-  if (!result.url) throw new Error("ImageKit no devolvió la URL de la foto.");
-  return result.url;
-}
-
 export default function VehicleModal({
   vehicle,
   dealerships,
@@ -103,13 +79,11 @@ export default function VehicleModal({
   async function onPhoto(file: File | undefined) {
     if (!file) return;
     setError("");
-    if (!file.type.startsWith("image/"))
-      return setError("El archivo tiene que ser una imagen.");
-    if (file.size > MAX_PHOTO_BYTES)
-      return setError("La foto pesa más de 10 MB.");
+    const invalid = photoError(file);
+    if (invalid) return setError(invalid);
     setProgress(0);
     try {
-      setImage(await uploadPhoto(file, setProgress));
+      setImage(await uploadPhoto(file, "/vehicles", setProgress));
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo subir la foto.");
     } finally {

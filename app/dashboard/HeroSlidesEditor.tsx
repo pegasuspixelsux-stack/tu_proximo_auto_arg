@@ -1,9 +1,18 @@
 "use client";
 
-import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
+import { doc, setDoc } from "firebase/firestore";
+import { ArrowDown, ArrowUp, ImagePlus, Plus, Trash2 } from "lucide-react";
+import Image from "next/image";
 import { useState, useTransition, type ReactNode } from "react";
-import { HERO_IMAGES, MAX_HERO_SLIDES, type HeroSlide } from "../data/hero";
-import { saveHeroSlides } from "./actions";
+import { db } from "@/lib/firebase";
+import { photoError, uploadPhoto } from "@/lib/imagekit-upload";
+import {
+  HERO_IMAGES,
+  MAX_HERO_SLIDES,
+  sanitizeSlides,
+  type HeroSlide,
+} from "../data/hero";
+import { revalidateHero } from "./actions";
 
 const FIELD =
   "w-full rounded-xl border border-line bg-bg/60 px-3 py-2 text-sm text-fg outline-none transition-colors duration-150 placeholder:text-subtle focus:border-fg/40";
@@ -63,14 +72,53 @@ export default function HeroSlidesEditor({ initial }: { initial: HeroSlide[] }) 
       return next;
     });
 
+  const [uploading, setUploading] = useState<Record<string, number>>({});
+
+  async function onImage(i: number, file: File | undefined) {
+    if (!file) return;
+    const id = slides[i].id;
+    const invalid = photoError(file);
+    if (invalid) return setStatus({ ok: false, msg: invalid });
+    setStatus(null);
+    setUploading((u) => ({ ...u, [id]: 0 }));
+    try {
+      const url = await uploadPhoto(file, "/hero", (pct) =>
+        setUploading((u) => ({ ...u, [id]: pct })),
+      );
+      // Match by id: the list may have been reordered during the upload.
+      setSlides((l) => l.map((s) => (s.id === id ? { ...s, image: url } : s)));
+    } catch (e) {
+      setStatus({
+        ok: false,
+        msg: e instanceof Error ? e.message : "No se pudo subir la imagen.",
+      });
+    } finally {
+      setUploading((u) => {
+        const next = { ...u };
+        delete next[id];
+        return next;
+      });
+    }
+  }
+
   function save() {
     start(async () => {
-      const res = await saveHeroSlides(slides);
-      setStatus(
-        res.ok
-          ? { ok: true, msg: "Cambios guardados. Ya se ven en el inicio." }
-          : { ok: false, msg: res.error ?? "Error al guardar." },
-      );
+      const result = sanitizeSlides(slides);
+      if (!result.ok) return setStatus({ ok: false, msg: result.error });
+      try {
+        await setDoc(doc(db, "settings", "hero"), { slides: result.slides });
+        await revalidateHero();
+        setSlides(result.slides);
+        setStatus({
+          ok: true,
+          msg: "Cambios guardados. Ya se ven en el inicio.",
+        });
+      } catch {
+        setStatus({
+          ok: false,
+          msg: "No se pudo guardar. Revisá tu sesión y las reglas de Firestore.",
+        });
+      }
     });
   }
 
@@ -136,7 +184,7 @@ export default function HeroSlidesEditor({ initial }: { initial: HeroSlide[] }) 
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <Labeled label="Imagen (ruta local o URL de Unsplash)" wide>
+              <Labeled label="Imagen" wide>
                 <div className="flex flex-col gap-2 sm:flex-row">
                   <select
                     value={
@@ -159,6 +207,42 @@ export default function HeroSlidesEditor({ initial }: { initial: HeroSlide[] }) 
                     onChange={(e) => update(i, { image: e.target.value })}
                     className={FIELD}
                   />
+                </div>
+                <div className="mt-2 flex items-center gap-3">
+                  <span className="relative block h-16 w-28 shrink-0 overflow-hidden rounded-lg border border-line bg-surface">
+                    {(s.image.startsWith("/") || s.image.startsWith("https://")) && (
+                      <Image
+                        src={s.image}
+                        alt=""
+                        fill
+                        sizes="112px"
+                        unoptimized={!s.image.startsWith("/")}
+                        className="object-cover"
+                      />
+                    )}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id={`hero-file-${s.id}`}
+                    data-testid="hero-image-input"
+                    className="sr-only"
+                    onChange={(e) => {
+                      onImage(i, e.target.files?.[0]);
+                      e.target.value = "";
+                    }}
+                  />
+                  <label
+                    htmlFor={`hero-file-${s.id}`}
+                    className={`inline-flex cursor-pointer items-center gap-2 rounded-full border border-line px-4 py-2 text-xs font-semibold uppercase tracking-wider text-fg transition-colors duration-150 hover:border-fg/40 ${
+                      s.id in uploading ? "pointer-events-none opacity-60" : ""
+                    }`}
+                  >
+                    <ImagePlus className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                    {s.id in uploading
+                      ? `Subiendo ${uploading[s.id]}%`
+                      : "Subir imagen"}
+                  </label>
                 </div>
               </Labeled>
               <Labeled label="Eyebrow" wide>

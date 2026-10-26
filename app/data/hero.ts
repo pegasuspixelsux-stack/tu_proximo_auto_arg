@@ -46,3 +46,51 @@ export const DEFAULT_SLIDES: HeroSlide[] = [
     reviewLabel: "reseñas en Google",
   },
 ];
+
+const FIELDS = [
+  "id",
+  "image",
+  "eyebrow",
+  "highlight",
+  "heading",
+  "supportText",
+  "rating",
+  "reviewCount",
+  "reviewLabel",
+] as const;
+
+const IMAGEKIT_PREFIX = "https://ik.imagekit.io/";
+
+/** Trims and validates slides before they are saved. */
+export function sanitizeSlides(
+  input: HeroSlide[],
+): { ok: true; slides: HeroSlide[] } | { ok: false; error: string } {
+  if (!Array.isArray(input) || input.length === 0)
+    return { ok: false, error: "Agregá al menos una diapositiva." };
+  if (input.length > MAX_HERO_SLIDES)
+    return { ok: false, error: `Máximo ${MAX_HERO_SLIDES} diapositivas.` };
+
+  const slides: HeroSlide[] = [];
+  for (const raw of input) {
+    const s = {} as HeroSlide;
+    for (const key of FIELDS) {
+      const v = (raw as unknown as Record<string, unknown>)?.[key];
+      s[key] = typeof v === "string" ? v.trim().slice(0, 400) : "";
+    }
+    if (!s.id) s.id = crypto.randomUUID();
+    if (
+      !s.image.startsWith("/") &&
+      !s.image.startsWith("https://images.unsplash.com/") &&
+      !s.image.startsWith(IMAGEKIT_PREFIX)
+    )
+      return {
+        ok: false,
+        error:
+          "Subí una imagen o usá una ruta local (/hero_image/…) o una URL de Unsplash.",
+      };
+    if (!s.heading && !s.highlight)
+      return { ok: false, error: "Cada diapositiva necesita un título." };
+    slides.push(s);
+  }
+  return { ok: true, slides };
+}

@@ -1,8 +1,10 @@
 "use client";
 
+import { doc, setDoc } from "firebase/firestore";
 import { useState, useTransition } from "react";
-import { cleanPhone, formatPhone } from "../data/site";
-import { saveWhatsapp } from "./actions";
+import { db } from "@/lib/firebase";
+import { cleanPhone, formatPhone, isValidPhone } from "../data/site";
+import { revalidateSite } from "./actions";
 
 export default function WhatsappSetting({ initial }: { initial: string }) {
   const [value, setValue] = useState(initial);
@@ -14,13 +16,26 @@ export default function WhatsappSetting({ initial }: { initial: string }) {
 
   function save() {
     start(async () => {
-      const res = await saveWhatsapp(value);
-      if (res.ok && res.number) setValue(res.number);
-      setStatus(
-        res.ok
-          ? { ok: true, msg: "Número guardado." }
-          : { ok: false, msg: res.error ?? "Error al guardar." },
-      );
+      if (!isValidPhone(digits))
+        return setStatus({
+          ok: false,
+          msg: "Ingresá entre 8 y 15 dígitos, con código de país (ej. 59899000000).",
+        });
+      try {
+        await setDoc(
+          doc(db, "settings", "site"),
+          { whatsappNumber: digits },
+          { merge: true },
+        );
+        await revalidateSite();
+        setValue(digits);
+        setStatus({ ok: true, msg: "Número guardado." });
+      } catch {
+        setStatus({
+          ok: false,
+          msg: "No se pudo guardar. Revisá tu sesión y las reglas de Firestore.",
+        });
+      }
     });
   }
 

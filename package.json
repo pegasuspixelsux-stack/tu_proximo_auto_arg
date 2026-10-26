@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "node --env-file=.env.local scripts/seed.ts"
+    "seed": "node --env-file=.env.local scripts/seed.ts",
+    "seed:settings": "node --env-file=.env.local scripts/seed-settings.ts"
   },
   "dependencies": {
     "@imagekit/next": "^2.1.6",
