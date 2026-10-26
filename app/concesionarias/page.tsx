@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BadgeCheck, MapPin, Star } from "lucide-react";
 import Footer from "../components/Footer";
 import SiteHeader from "../components/SiteHeader";
-import { DEALERSHIPS, vehiclesByDealer } from "../data/vehicles";
+import { getDealerships, getVehicles } from "../data/vehicle-store";
 
 export const metadata: Metadata = {
   title: "Concesionarias | Tu Próximo Auto - Argentina",
@@ -11,7 +11,11 @@ export const metadata: Metadata = {
     "Concesionarias verificadas que publican y gestionan su inventario en AUTO SELECT.",
 };
 
-export default function ConcesionariasPage() {
+export default async function ConcesionariasPage() {
+  const [dealerships, vehicles] = await Promise.all([
+    getDealerships(),
+    getVehicles(),
+  ]);
   return (
     <>
       <SiteHeader />
@@ -28,8 +32,10 @@ export default function ConcesionariasPage() {
         </p>
 
         <ul className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {DEALERSHIPS.map((dealer) => {
-            const count = vehiclesByDealer(dealer.id).length;
+          {dealerships.map((dealer) => {
+            const count = vehicles.filter(
+              (v) => v.dealership?.id === dealer.id,
+            ).length;
             return (
               <li key={dealer.id}>
                 <Link

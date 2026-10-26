@@ -6,9 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "node --env-file=.env.local scripts/seed.ts"
   },
   "dependencies": {
+    "@imagekit/next": "^2.1.6",
+    "firebase": "^13.1.0",
     "framer-motion": "^14.3.0",
     "lucide-react": "^1.57.0",
     "next": "16.4.2",

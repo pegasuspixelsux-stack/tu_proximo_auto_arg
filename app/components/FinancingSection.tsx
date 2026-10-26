@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
+import WhatsAppLeadButton from "./WhatsAppLeadButton";
 
 const WHATSAPP_MESSAGE =
   "Hola, quiero consultar por las opciones de financiación y permutas en AutoSelect.";
@@ -47,7 +48,6 @@ export default function FinancingSection({
 }: {
   whatsappNumber: string;
 }) {
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
   const [open, setOpen] = useState(false);
 
   // Expand when a link or the URL points at this section (collapsed on mobile).
@@ -128,16 +128,16 @@ export default function FinancingSection({
         </ul>
 
         <div className="mt-8 flex justify-center md:mt-10">
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-testid="financing-whatsapp"
+          <WhatsAppLeadButton
+            targetPhone={whatsappNumber}
+            message={WHATSAPP_MESSAGE}
+            sourceItem="Financiación y citas"
+            testId="financing-whatsapp"
             className="inline-flex items-center gap-2 rounded-full bg-inverse px-6 py-3 text-xs font-semibold uppercase tracking-wider text-on-inverse transition-[opacity,transform] duration-150 hover:opacity-85 active:scale-95"
           >
             <MessageCircle className="h-4 w-4" strokeWidth={1.75} aria-hidden />
             Consultar Financiación y Citas
-          </a>
+          </WhatsAppLeadButton>
         </div>
       </div>
     </section>

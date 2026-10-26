@@ -1,9 +1,14 @@
-import { getHeroSlides } from "../data/hero-store";
-import { getSiteSettings } from "../data/site-store";
+import { getDealerships, getVehicles } from "../data/vehicle-store";
 import Overview from "./Overview";
 
+// Behind AuthGuard (renders nothing until the session is confirmed), so this
+// admin page can't be an instant navigation.
+export const instant = false;
+
 export default async function DashboardPage() {
-  const heroSlides = await getHeroSlides();
-  const site = await getSiteSettings();
-  return <Overview heroSlides={heroSlides} whatsappNumber={site.whatsappNumber} />;
+  const [vehicles, dealerships] = await Promise.all([
+    getVehicles(),
+    getDealerships(),
+  ]);
+  return <Overview vehicles={vehicles} dealerships={dealerships} />;
 }

@@ -3,21 +3,22 @@ import { notFound } from "next/navigation";
 import { BadgeCheck, MapPin, MessageCircle, Phone, Star } from "lucide-react";
 import Footer from "../../components/Footer";
 import SiteHeader from "../../components/SiteHeader";
+import WhatsAppLeadButton from "../../components/WhatsAppLeadButton";
 import VehicleCard from "../../components/VehicleCard";
 import {
-  DEALERSHIPS,
   getDealership,
+  getDealerships,
   vehiclesByDealer,
-} from "../../data/vehicles";
+} from "../../data/vehicle-store";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return DEALERSHIPS.map((d) => ({ slug: d.slug }));
+export async function generateStaticParams() {
+  return (await getDealerships()).map((d) => ({ slug: d.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const dealer = getDealership((await params).slug);
+  const dealer = await getDealership((await params).slug);
   if (!dealer) return {};
   return {
     title: `${dealer.name} | Tu Próximo Auto - Argentina`,
@@ -26,13 +27,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function DealerPage({ params }: Props) {
-  const dealer = getDealership((await params).slug);
+  const dealer = await getDealership((await params).slug);
   if (!dealer) notFound();
 
-  const vehicles = vehiclesByDealer(dealer.id);
-  const whatsapp = `https://wa.me/${dealer.phone}?text=${encodeURIComponent(
-    `Hola ${dealer.name}, vi su concesionaria en AUTO SELECT y quiero hacer una consulta.`,
-  )}`;
+  const vehicles = await vehiclesByDealer(dealer.id);
+  const whatsappMessage = `Hola ${dealer.name}, vi su concesionaria en AUTO SELECT y quiero hacer una consulta.`;
 
   return (
     <>
@@ -84,16 +83,16 @@ export default async function DealerPage({ params }: Props) {
             </div>
           </dl>
 
-          <a
-            href={whatsapp}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-testid="dealer-contact"
+          <WhatsAppLeadButton
+            targetPhone={dealer.phone}
+            message={whatsappMessage}
+            sourceItem={dealer.name}
+            testId="dealer-contact"
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-inverse px-6 py-3 text-xs font-semibold uppercase tracking-wider text-on-inverse transition-[transform,opacity] duration-150 hover:opacity-85 active:scale-95"
           >
             <MessageCircle className="h-4 w-4" strokeWidth={1.75} aria-hidden />
             Consultar por WhatsApp
-          </a>
+          </WhatsAppLeadButton>
         </section>
 
         <section className="py-16" aria-labelledby="dealer-inventory">

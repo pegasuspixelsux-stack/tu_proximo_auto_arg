@@ -16,9 +16,11 @@ import {
 } from "lucide-react";
 import Footer from "../../components/Footer";
 import SiteHeader from "../../components/SiteHeader";
+import WhatsAppLeadButton from "../../components/WhatsAppLeadButton";
 import VehicleCard from "../../components/VehicleCard";
 import { getSiteSettings } from "../../data/site-store";
-import { SAMPLE_VEHICLES, getVehicle, type Vehicle } from "../../data/vehicles";
+import { getVehicle, getVehicles } from "../../data/vehicle-store";
+import type { Vehicle } from "../../data/vehicles";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -41,12 +43,12 @@ const FUEL_LABELS: Record<Vehicle["fuelType"], string> = {
   Diesel: "Diésel",
 };
 
-export function generateStaticParams() {
-  return SAMPLE_VEHICLES.map((v) => ({ id: v.id }));
+export async function generateStaticParams() {
+  return (await getVehicles()).map((v) => ({ id: v.id }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const vehicle = getVehicle((await params).id);
+  const vehicle = await getVehicle((await params).id);
   if (!vehicle) return {};
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
   return {
@@ -56,16 +58,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function VehiclePage({ params }: Props) {
-  const vehicle = getVehicle((await params).id);
+  const vehicle = await getVehicle((await params).id);
   if (!vehicle) notFound();
 
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
   const dealer =
     vehicle.sellerType === "dealer" ? vehicle.dealership : undefined;
   const { whatsappNumber } = await getSiteSettings();
-  const whatsapp = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-    `Hola, me interesa el ${title} publicado en AUTO SELECT.`,
-  )}`;
+  const whatsappMessage = `Hola, me interesa el ${title} publicado en AUTO SELECT.`;
 
   const specs = [
     { icon: Calendar, label: "Año", value: String(vehicle.year) },
@@ -79,10 +79,11 @@ export default async function VehiclePage({ params }: Props) {
     { icon: MapPin, label: "Ubicación", value: vehicle.location },
   ];
 
-  const related = SAMPLE_VEHICLES.filter(
+  const all = await getVehicles();
+  const related = all.filter(
     (v) => v.id !== vehicle.id && v.fuelType === vehicle.fuelType,
   )
-    .concat(SAMPLE_VEHICLES.filter((v) => v.fuelType !== vehicle.fuelType))
+    .concat(all.filter((v) => v.fuelType !== vehicle.fuelType))
     .filter((v) => v.id !== vehicle.id)
     .slice(0, 12);
 
@@ -186,12 +187,12 @@ export default async function VehiclePage({ params }: Props) {
                 {vehicle.location}
               </p>
 
-              {whatsapp && (
-                <a
-                  href={whatsapp}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-testid="vehicle-contact"
+              {whatsappNumber && (
+                <WhatsAppLeadButton
+                  targetPhone={whatsappNumber}
+                  message={whatsappMessage}
+                  sourceItem={title}
+                  testId="vehicle-contact"
                   className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-inverse px-6 py-3 text-xs font-semibold uppercase tracking-wider text-on-inverse transition-[transform,opacity] duration-150 hover:opacity-85 active:scale-[0.98]"
                 >
                   <MessageCircle
@@ -200,7 +201,7 @@ export default async function VehiclePage({ params }: Props) {
                     aria-hidden
                   />
                   Contactar por WhatsApp
-                </a>
+                </WhatsAppLeadButton>
               )}
             </section>
           </div>

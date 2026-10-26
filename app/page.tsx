@@ -9,17 +9,21 @@ import Footer from "./components/Footer";
 import Hero from "./components/Hero";
 import { getHeroSlides } from "./data/hero-store";
 import { getSiteSettings } from "./data/site-store";
-import { HOMEPAGE_VEHICLES } from "./data/vehicles";
+import { getHomepageVehicles } from "./data/vehicle-store";
 
 export default async function Home() {
-  const [slides, site] = await Promise.all([getHeroSlides(), getSiteSettings()]);
+  const [slides, site, vehicles] = await Promise.all([
+    getHeroSlides(),
+    getSiteSettings(),
+    getHomepageVehicles(),
+  ]);
   return (
     <>
       <AnnouncementBar />
       <SiteHeader />
       <Hero slides={slides} />
       <main className="mx-auto min-h-screen w-full max-w-[1440px] bg-bg text-fg selection:bg-fg selection:text-bg">
-        <Catalog vehicles={HOMEPAGE_VEHICLES} />
+        <Catalog vehicles={vehicles} />
         <FinancingSection whatsappNumber={site.whatsappNumber} />
         <FinanceCalculator />
         <FAQSection />

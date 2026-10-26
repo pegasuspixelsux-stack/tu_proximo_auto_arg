@@ -3,6 +3,8 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useId, useState, type FormEvent } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const FIELD =
   "w-full rounded-xl border border-line bg-bg/60 px-4 py-3 text-sm text-fg outline-none transition-colors duration-150 placeholder:text-subtle focus:border-fg/40";
@@ -13,12 +15,24 @@ export default function LoginForm() {
   const passwordId = useId();
   const [show, setShow] = useState(false);
   const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const data = new FormData(e.currentTarget);
     setPending(true);
-    // Placeholder: there is no real authentication yet.
-    router.push("/dashboard");
+    setError("");
+    try {
+      await signInWithEmailAndPassword(
+        auth,
+        String(data.get("email")),
+        String(data.get("password")),
+      );
+      router.push("/dashboard");
+    } catch {
+      setError("Email o contraseña incorrectos.");
+      setPending(false);
+    }
   }
 
   return (
@@ -94,6 +108,12 @@ export default function LoginForm() {
           ¿Olvidaste tu contraseña?
         </a>
       </div>
+
+      {error && (
+        <p role="alert" className="text-sm text-red-500">
+          {error}
+        </p>
+      )}
 
       <button
         type="submit"

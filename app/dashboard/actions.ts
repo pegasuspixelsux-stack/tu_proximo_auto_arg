@@ -1,6 +1,7 @@
 "use server";
 
 import { updateTag } from "next/cache";
+import { VEHICLES_TAG } from "../data/vehicle-store";
 import { MAX_HERO_SLIDES, type HeroSlide } from "../data/hero";
 import { HERO_TAG, writeHeroSlides } from "../data/hero-store";
 import { cleanPhone, isValidPhone } from "../data/site";
@@ -51,6 +52,11 @@ export async function saveHeroSlides(
   }
   updateTag(HERO_TAG);
   return { ok: true };
+}
+
+/** Called after the browser writes to Firestore, so cached pages refresh. */
+export async function revalidateVehicles() {
+  updateTag(VEHICLES_TAG);
 }
 
 export async function saveWhatsapp(

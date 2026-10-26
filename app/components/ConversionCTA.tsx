@@ -2,6 +2,9 @@
 
 import { CalendarCheck, ChevronDown, MessageCircle, X } from "lucide-react";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { createLead } from "@/lib/leads";
+import { cleanPhone } from "../data/site";
+import WhatsAppLeadButton from "./WhatsAppLeadButton";
 
 const GENERIC_MESSAGE = "Hola AutoSelect! Quiero hacer una consulta.";
 
@@ -111,6 +114,13 @@ function AppointmentModal({
       `- Teléfono: ${get("phone")}`,
       `- Código: #AS-${code}`,
     ].join("\n");
+    // The form already collects name and phone, so it saves the lead itself.
+    createLead({
+      fullName: get("name"),
+      phone: cleanPhone(get("phone")),
+      notes: text,
+      sourceItem: get("car"),
+    }).catch((err) => console.error("No se pudo guardar el lead", err));
     window.open(
       `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`,
       "_blank",
@@ -304,11 +314,11 @@ export default function ConversionCTA({
             <p className="mt-2 flex-1 text-sm leading-relaxed text-zinc-400">
               Escribinos directamente para sacarte dudas en el acto.
             </p>
-            <a
-              href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(GENERIC_MESSAGE)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-testid="cta-whatsapp"
+            <WhatsAppLeadButton
+              targetPhone={whatsappNumber}
+              message={GENERIC_MESSAGE}
+              sourceItem="Consulta directa"
+              testId="cta-whatsapp"
               className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-xs font-semibold uppercase tracking-wider text-zinc-950 transition-[background-color,transform] duration-150 hover:bg-emerald-400 active:scale-95"
             >
               <MessageCircle
@@ -317,7 +327,7 @@ export default function ConversionCTA({
                 aria-hidden
               />
               Hablar por WhatsApp Ya
-            </a>
+            </WhatsAppLeadButton>
           </div>
 
           <div className="card-glow card-glow-dark flex flex-col rounded-2xl border border-white/10 bg-zinc-950 p-6 text-white motion-safe:hover:scale-[1.02]">
