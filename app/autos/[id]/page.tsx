@@ -7,6 +7,7 @@ import {
   BadgeCheck,
   Building2,
   Calendar,
+  Check,
   Fuel,
   Gauge,
   MapPin,
@@ -18,6 +19,7 @@ import Footer from "../../components/Footer";
 import SiteHeader from "../../components/SiteHeader";
 import WhatsAppLeadButton from "../../components/WhatsAppLeadButton";
 import VehicleCard from "../../components/VehicleCard";
+import { CAR_FEATURE_LABEL } from "../../data/car-features";
 import { getSiteSettings } from "../../data/site-store";
 import { getVehicle, getVehicles } from "../../data/vehicle-store";
 import type { Vehicle } from "../../data/vehicles";
@@ -233,6 +235,49 @@ export default async function VehiclePage({ params }: Props) {
             ))}
           </dl>
         </section>
+
+        {vehicle.description && (
+          <section aria-labelledby="description-heading" className="mt-12">
+            <h2
+              id="description-heading"
+              className="text-2xl font-light tracking-[-0.02em] lg:text-3xl"
+            >
+              Descripción
+            </h2>
+            <p
+              data-testid="vehicle-description"
+              className="mt-6 max-w-3xl whitespace-pre-line text-pretty leading-relaxed text-muted"
+            >
+              {vehicle.description}
+            </p>
+          </section>
+        )}
+
+        {vehicle.features && vehicle.features.length > 0 && (
+          <section aria-labelledby="features-heading" className="mt-12">
+            <h2
+              id="features-heading"
+              className="text-2xl font-light tracking-[-0.02em] lg:text-3xl"
+            >
+              Equipamiento
+            </h2>
+            <ul
+              data-testid="vehicle-features"
+              className="mt-6 grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {vehicle.features.map((id) => (
+                <li key={id} className="flex items-center gap-2 text-sm">
+                  <Check
+                    className="h-4 w-4 shrink-0 text-muted"
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                  {CAR_FEATURE_LABEL[id] ?? id}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <section aria-labelledby="related-heading" className="mt-16">
           <h2

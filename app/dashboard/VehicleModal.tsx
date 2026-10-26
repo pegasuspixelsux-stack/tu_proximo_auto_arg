@@ -12,6 +12,7 @@ import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { auth, db } from "@/lib/firebase";
+import { COMMON_CAR_FEATURES } from "../data/car-features";
 import type {
   BodyType,
   Dealership,
@@ -139,6 +140,8 @@ export default function VehicleModal({
       fuelType: str("fuelType") as FuelType,
       bodyType: str("bodyType") as BodyType,
       image,
+      features: f.getAll("features").map(String),
+      description: str("description"),
       location: dealership?.location ?? str("location"),
       sellerType,
     };
@@ -387,6 +390,44 @@ export default function VehicleModal({
               </>
             )}
           </div>
+
+          <label className="mt-6 flex flex-col gap-1.5">
+            <span className="text-[10px] font-medium uppercase tracking-widest text-muted">
+              Descripción
+            </span>
+            <textarea
+              name="description"
+              rows={4}
+              maxLength={2000}
+              defaultValue={vehicle?.description}
+              placeholder="Estado general, historial de service, detalles a destacar…"
+              data-testid="vehicle-description"
+              className={`${FIELD} resize-y`}
+            />
+          </label>
+
+          <fieldset className="mt-6">
+            <legend className="text-[10px] font-medium uppercase tracking-widest text-muted">
+              Equipamiento
+            </legend>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {COMMON_CAR_FEATURES.map(({ id, label }) => (
+                <label
+                  key={id}
+                  className="flex cursor-pointer items-center gap-2 text-sm"
+                >
+                  <input
+                    type="checkbox"
+                    name="features"
+                    value={id}
+                    defaultChecked={vehicle?.features?.includes(id)}
+                    className="h-4 w-4 shrink-0 accent-[var(--inverse)]"
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
 
           {error && (
             <p role="alert" className="mt-4 text-sm text-red-500">

@@ -36,6 +36,10 @@ export interface Vehicle {
   /** ISO date the listing was published. */
   createdAt: string;
   badge?: string;
+  /** Free-text description shown on the detail page. */
+  description?: string;
+  /** Equipment ids from COMMON_CAR_FEATURES. */
+  features?: string[];
   /** Show on the homepage catalog (capped at HOMEPAGE_LIMIT). Defaults to true for the first listings. */
   homepage?: boolean;
 }

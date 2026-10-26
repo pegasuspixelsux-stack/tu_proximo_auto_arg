@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ArrowLeft,
   Car,
   LayoutDashboard,
   Inbox,
@@ -85,20 +86,36 @@ function SidebarBody({
               aria-pressed={collapsed}
               title={collapsed ? "Expandir menú" : undefined}
               data-testid="sidebar-toggle"
-              className={`flex h-8 items-center gap-2 rounded-full text-xs text-muted transition-colors duration-150 hover:bg-surface hover:text-fg ${
+              className={`flex h-8 items-center gap-2 rounded-full text-xs text-fg transition-colors duration-150 hover:bg-surface ${
                 collapsed ? "w-8 justify-center" : "w-full px-2"
               }`}
             >
               {collapsed ? (
-                <PanelLeftOpen className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                <PanelLeftOpen className="h-4 w-4 text-brand" strokeWidth={1.75} aria-hidden />
               ) : (
                 <>
-                  <PanelLeftClose className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                  <PanelLeftClose className="h-4 w-4 text-brand" strokeWidth={1.75} aria-hidden />
                   Contraer menú
                 </>
               )}
             </button>
           )}
+      </div>
+
+      <div className="px-3 pb-3">
+        <Link
+          href="/"
+          onClick={onNavigate}
+          aria-label={collapsed ? "Volver al sitio" : undefined}
+          title={collapsed ? "Volver al sitio" : undefined}
+          data-testid="back-to-site"
+          className={`flex items-center rounded-xl border border-line py-2.5 text-sm text-fg transition-colors duration-150 hover:bg-surface ${
+            collapsed ? "justify-center px-0" : "gap-3 px-3"
+          }`}
+        >
+          <ArrowLeft className="h-4 w-4 shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
+          {!collapsed && "Volver al sitio"}
+        </Link>
       </div>
 
       <nav aria-label="Panel" className="flex-1 space-y-1 px-3">
@@ -117,10 +134,10 @@ function SidebarBody({
             } ${
               active
                 ? "bg-surface text-fg ring-1 ring-line"
-                : "text-muted hover:bg-surface hover:text-fg"
+                : "text-fg hover:bg-surface"
             }`}
           >
-            <Icon className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden />
+            <Icon className="h-4 w-4 shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
             {!collapsed && label}
           </Link>
           );
@@ -147,7 +164,7 @@ function SidebarBody({
           {!collapsed && (
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">Alejandro</p>
-              <p className="truncate text-xs text-muted">Admin</p>
+              <p className="truncate text-xs text-fg/70">Admin</p>
             </div>
           )}
           <button
@@ -159,9 +176,9 @@ function SidebarBody({
             aria-label="Cerrar sesión"
             title={collapsed ? "Cerrar sesión" : undefined}
             data-testid="logout"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors duration-150 hover:bg-surface hover:text-fg"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-fg transition-colors duration-150 hover:bg-surface"
           >
-            <LogOut className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+            <LogOut className="h-4 w-4 text-brand" strokeWidth={1.75} aria-hidden />
           </button>
         </div>
       </div>
@@ -183,7 +200,7 @@ export default function Sidebar({
       {/* Desktop / tablet: fixed sidebar. */}
       <aside
         data-testid="sidebar"
-        className={`fixed inset-y-0 left-0 z-30 hidden border-r border-line bg-bg transition-[width] duration-200 ease-out lg:block ${
+        className={`force-dark fixed inset-y-0 left-0 z-30 hidden border-r border-line bg-bg text-fg transition-[width] duration-200 ease-out lg:block ${
           collapsed ? "w-[72px]" : "w-64"
         }`}
       >
@@ -217,14 +234,14 @@ export default function Sidebar({
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-black/60"
           />
-          <div className="absolute inset-y-0 left-0 w-72 max-w-[85vw] border-r border-line bg-bg">
+          <div className="force-dark absolute inset-y-0 left-0 w-72 max-w-[85vw] border-r border-line bg-bg text-fg">
             <button
               type="button"
               aria-label="Cerrar menú"
               onClick={() => setOpen(false)}
-              className="absolute right-3 top-4 flex h-8 w-8 items-center justify-center rounded-full text-muted hover:text-fg"
+              className="absolute right-3 top-4 flex h-8 w-8 items-center justify-center rounded-full text-fg hover:bg-surface"
             >
-              <X className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+              <X className="h-4 w-4 text-brand" strokeWidth={1.75} aria-hidden />
             </button>
             <SidebarBody onNavigate={() => setOpen(false)} />
           </div>
