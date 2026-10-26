@@ -1,0 +1,24 @@
+[
+  {
+    "id": "slide-1",
+    "image": "/hero_image/audi_hero.webp",
+    "eyebrow": "Autos usados certificados",
+    "highlight": "El auto que buscás.",
+    "heading": "La tranquilidad que te falta.",
+    "supportText": "Unidades seleccionadas y verificadas con atención personalizada en nuestro salón de ventas. Coordiná tu prueba de manejo hoy.",
+    "rating": "4.9",
+    "reviewCount": "+200",
+    "reviewLabel": "reseñas en Google"
+  },
+  {
+    "id": "slide-2",
+    "image": "/hero_image/buyers.webp",
+    "eyebrow": "Financiación a tu medida",
+    "highlight": "Estrená hoy.",
+    "heading": "Pagá a tu ritmo.",
+    "supportText": "Calculá tu cuota y financiá con los principales bancos. Te acompañamos en todo el proceso.",
+    "rating": "4.9",
+    "reviewCount": "+200",
+    "reviewLabel": "reseñas en Google"
+  }
+]
