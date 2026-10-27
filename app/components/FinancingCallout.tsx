@@ -22,8 +22,9 @@ export default function FinancingCallout({
       data-testid="financing-callout"
       className="px-3 py-6 lg:px-6"
     >
-      <div className="grid overflow-hidden rounded-3xl bg-black text-white md:grid-cols-2">
-        <div className="flex flex-col justify-center gap-6 p-8 md:p-12 lg:p-16">
+      {/* Mobile: a square box with the image behind the text; md+: two columns. */}
+      <div className="relative grid aspect-square overflow-hidden rounded-3xl bg-black text-white md:aspect-auto md:grid-cols-2">
+        <div className="relative z-10 flex flex-col justify-center gap-4 p-6 pb-16 md:gap-6 md:p-12 lg:p-16">
           <h2
             id="financing-callout-heading"
             className="text-balance text-3xl font-semibold tracking-[-0.02em] lg:text-5xl"
@@ -49,7 +50,7 @@ export default function FinancingCallout({
           </a>
         </div>
 
-        <div className="relative min-h-72 md:min-h-full">
+        <div className="absolute inset-0 md:relative md:min-h-full">
           {imageSrc ? (
             <Image
               src={imageSrc}
@@ -68,9 +69,9 @@ export default function FinancingCallout({
           {/* Fade the image into the black panel (left on desktop, top on mobile). */}
           <div
             aria-hidden
-            className="absolute inset-0 bg-gradient-to-b from-black via-black/30 to-black/60 md:bg-gradient-to-r md:from-black md:via-black/30 md:to-transparent"
+            className="absolute inset-0 bg-black/65 md:bg-transparent md:bg-gradient-to-r md:from-black md:via-black/30 md:to-transparent"
           />
-          <div className="absolute inset-x-0 bottom-0 flex p-6 md:p-8">
+          <div className="absolute inset-x-0 bottom-0 z-10 flex p-6 md:p-8">
             <WhatsAppLeadButton
               targetPhone={whatsappNumber}
               message={WHATSAPP_MESSAGE}
