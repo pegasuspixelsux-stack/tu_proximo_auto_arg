@@ -4,6 +4,7 @@ import Catalog from "./components/Catalog";
 import ConversionCTA from "./components/ConversionCTA";
 import FAQSection from "./components/FAQSection";
 import FinanceCalculator from "./components/FinanceCalculator";
+import FinancingCallout from "./components/FinancingCallout";
 import FinancingSection from "./components/FinancingSection";
 import Footer from "./components/Footer";
 import Hero from "./components/Hero";
@@ -24,6 +25,7 @@ export default async function Home() {
       <Hero slides={slides} />
       <main className="mx-auto min-h-screen w-full max-w-[1440px] bg-bg text-fg selection:bg-fg selection:text-bg">
         <Catalog vehicles={vehicles} />
+        <FinancingCallout whatsappNumber={site.whatsappNumber} />
         <FinancingSection whatsappNumber={site.whatsappNumber} />
         <FinanceCalculator />
         <FAQSection />

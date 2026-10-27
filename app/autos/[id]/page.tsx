@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -5,15 +6,18 @@ import { notFound } from "next/navigation";
 import {
   ArrowLeft,
   BadgeCheck,
+  Bike,
   Building2,
   Calendar,
+  CalendarCheck,
+  Car,
   Check,
   Fuel,
   Gauge,
   MapPin,
   MessageCircle,
   Settings2,
-  UserRound,
+  Zap,
 } from "lucide-react";
 import Footer from "../../components/Footer";
 import SiteHeader from "../../components/SiteHeader";
@@ -31,7 +35,25 @@ const usd = new Intl.NumberFormat("es-UY", {
   currency: "USD",
   maximumFractionDigits: 0,
 });
+const usd2 = new Intl.NumberFormat("es-UY", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 const number = new Intl.NumberFormat("es-UY");
+
+const DOWN_PAYMENT_RATE = 0.6;
+const MONTHLY_RATE = 0.07;
+const TERM_MONTHS = 12;
+
+/** Amortized monthly payment, or null when the price is missing or invalid. */
+function estimateMonthlyPayment(price: number): number | null {
+  if (!Number.isFinite(price) || price <= 0) return null;
+  const principal = price * (1 - DOWN_PAYMENT_RATE);
+  const growth = (1 + MONTHLY_RATE) ** TERM_MONTHS;
+  return (principal * MONTHLY_RATE * growth) / (growth - 1);
+}
 const date = new Intl.DateTimeFormat("es-UY", {
   day: "numeric",
   month: "long",
@@ -59,15 +81,53 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function VehiclePage({ params }: Props) {
+// `params` is request-time data, so the page awaits it behind a Suspense
+// boundary; the fallback is what an instant navigation shows meanwhile.
+export default function VehiclePage({ params }: Props) {
+  return (
+    <Suspense
+      fallback={
+        <main
+          aria-busy="true"
+          className="mx-auto min-h-screen w-full max-w-[1440px] bg-bg"
+        />
+      }
+    >
+      <VehicleDetail params={params} />
+    </Suspense>
+  );
+}
+
+async function VehicleDetail({ params }: Props) {
   const vehicle = await getVehicle((await params).id);
   if (!vehicle) notFound();
 
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
-  const dealer =
-    vehicle.sellerType === "dealer" ? vehicle.dealership : undefined;
   const { whatsappNumber } = await getSiteSettings();
   const whatsappMessage = `Hola, me interesa el ${title} publicado en AUTO SELECT.`;
+  const monthlyPayment = estimateMonthlyPayment(vehicle.price);
+  const testDriveMessage = `Hola, quisiera agendar una prueba de manejo del ${title} publicado en AUTO SELECT.`;
+
+  // Shown when the listing has no description of its own.
+  const fallbackDescription = `${title} ${FUEL_LABELS[vehicle.fuelType].toLowerCase()} con transmisión ${vehicle.transmission.toLowerCase()} y ${number.format(Math.round(vehicle.mileage * KM_PER_MILE))} km, disponible en ${vehicle.location}. Es una unidad lista para conocer en persona: podés verla, hacer una prueba de manejo y revisar toda la documentación antes de decidir. Contamos con opciones de financiamiento para que puedas concretar la compra de forma simple y segura, con un anticipo del 60% y el resto en cuotas. Escribinos por WhatsApp para consultar disponibilidad, pedir más fotos o coordinar una visita; te respondemos a la brevedad y te acompañamos en cada paso del proceso.`;
+
+  const highlights = [
+    {
+      icon: vehicle.fuelType === "Electric" ? Zap : Fuel,
+      label: "Combustible",
+      value: FUEL_LABELS[vehicle.fuelType],
+    },
+    {
+      icon: Gauge,
+      label: "Kilometraje",
+      value: `${number.format(Math.round(vehicle.mileage * KM_PER_MILE))} km`,
+    },
+    {
+      icon: vehicle.bodyType === "Moto" ? Bike : Car,
+      label: "Carrocería",
+      value: vehicle.bodyType,
+    },
+  ];
 
   const specs = [
     { icon: Calendar, label: "Año", value: String(vehicle.year) },
@@ -102,20 +162,22 @@ export default async function VehiclePage({ params }: Props) {
         </Link>
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-neutral-900 lg:aspect-[16/11]">
-            <Image
-              src={vehicle.image}
-              alt={title}
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 60vw"
-              className="object-cover object-center"
-            />
-            {vehicle.badge && (
-              <span className="absolute left-3 top-3 rounded-full border border-white/10 bg-black/50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
-                {vehicle.badge}
-              </span>
-            )}
+          <div className="flex flex-col gap-6">
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-neutral-900 lg:aspect-auto lg:min-h-[24rem] lg:flex-1">
+              <Image
+                src={vehicle.image}
+                alt={title}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                className="object-cover object-center"
+              />
+              {vehicle.badge && (
+                <span className="absolute left-3 top-3 rounded-full border border-white/10 bg-black/50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
+                  {vehicle.badge}
+                </span>
+              )}
+            </div>
           </div>
 
           <div>
@@ -134,7 +196,38 @@ export default async function VehiclePage({ params }: Props) {
             >
               {usd.format(vehicle.price)}
             </p>
-            <p className="mt-2 text-xs text-subtle">
+            {monthlyPayment !== null && (
+              <div data-testid="vehicle-monthly-payment" className="mt-2">
+                <p className="text-sm font-medium tabular-nums">
+                  Estimado: {usd2.format(monthlyPayment)}/mes
+                </p>
+                <p className="mt-0.5 text-xs text-muted">
+                  Valor estimado con 60% de anticipo y 12 cuotas al 7% de
+                  interés mensual.
+                </p>
+              </div>
+            )}
+
+            <hr className="mt-6 border-line" />
+            <ul
+              data-testid="vehicle-highlights"
+              className="grid grid-cols-3 gap-2 py-5 text-center"
+            >
+              {highlights.map(({ icon: Icon, label, value }) => (
+                <li key={label} className="flex flex-col items-center gap-1.5">
+                  <Icon
+                    className="h-5 w-5 text-muted"
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                  <span className="sr-only">{label}: </span>
+                  <span className="text-sm font-medium">{value}</span>
+                </li>
+              ))}
+            </ul>
+            <hr className="border-line" />
+
+            <p className="mt-4 text-xs text-subtle">
               <span data-testid="vehicle-id">
                 ID del aviso: {vehicle.id.padStart(4, "0")}
               </span>
@@ -151,35 +244,19 @@ export default async function VehiclePage({ params }: Props) {
               <p className="text-[10px] font-medium uppercase tracking-widest text-muted">
                 Vendedor
               </p>
-              {dealer ? (
-                <Link
-                  href={`/concesionarias/${dealer.slug}`}
-                  className="mt-2 flex items-center gap-2 text-lg font-medium tracking-tight hover:underline hover:underline-offset-4"
-                >
-                  <Building2
-                    className="h-4 w-4 shrink-0 text-muted"
-                    strokeWidth={1.75}
-                    aria-hidden
-                  />
-                  {dealer.name}
-                  {dealer.verified && (
-                    <BadgeCheck
-                      className="h-4 w-4 shrink-0 text-muted"
-                      strokeWidth={1.75}
-                      aria-label="Verificada"
-                    />
-                  )}
-                </Link>
-              ) : (
-                <p className="mt-2 flex items-center gap-2 text-lg font-medium tracking-tight">
-                  <UserRound
-                    className="h-4 w-4 shrink-0 text-muted"
-                    strokeWidth={1.75}
-                    aria-hidden
-                  />
-                  Vendedor particular
-                </p>
-              )}
+              <p className="mt-2 flex items-center gap-2 text-lg font-medium tracking-tight">
+                <Building2
+                  className="h-4 w-4 shrink-0 text-muted"
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
+                Tu Próximo Auto
+                <BadgeCheck
+                  className="h-4 w-4 shrink-0 text-muted"
+                  strokeWidth={1.75}
+                  aria-label="Verificada"
+                />
+              </p>
               <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted">
                 <MapPin
                   className="h-3.5 w-3.5"
@@ -195,7 +272,7 @@ export default async function VehiclePage({ params }: Props) {
                   message={whatsappMessage}
                   sourceItem={title}
                   testId="vehicle-contact"
-                  className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-inverse px-6 py-3 text-xs font-semibold uppercase tracking-wider text-on-inverse transition-[transform,opacity] duration-150 hover:opacity-85 active:scale-[0.98]"
+                  className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-emerald-700 px-6 py-3 text-xs font-semibold uppercase tracking-wider text-white transition-[background-color,transform] duration-150 hover:bg-emerald-800 active:scale-[0.98]"
                 >
                   <MessageCircle
                     className="h-4 w-4"
@@ -205,39 +282,26 @@ export default async function VehiclePage({ params }: Props) {
                   Contactar por WhatsApp
                 </WhatsAppLeadButton>
               )}
+              {whatsappNumber && (
+                <a
+                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(testDriveMessage)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="vehicle-test-drive"
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-fg bg-transparent px-6 py-3 text-xs font-semibold uppercase tracking-wider text-fg transition-[background-color,transform] duration-150 hover:bg-fg/5 focus-visible:bg-fg/5 active:scale-[0.98]"
+                >
+                  <CalendarCheck
+                    className="h-4 w-4"
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                  Agendar una prueba de manejo
+                </a>
+              )}
             </section>
           </div>
-        </div>
 
-        <section aria-labelledby="specs-heading" className="mt-12">
-          <h2
-            id="specs-heading"
-            className="text-2xl font-light tracking-[-0.02em] lg:text-3xl"
-          >
-            Ficha técnica
-          </h2>
-          <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {specs.map(({ icon: Icon, label, value }) => (
-              <div
-                key={label}
-                className="rounded-xl border border-line bg-surface p-4"
-              >
-                <Icon
-                  className="h-4 w-4 text-muted"
-                  strokeWidth={1.75}
-                  aria-hidden
-                />
-                <dt className="mt-3 text-[10px] font-medium uppercase tracking-widest text-muted">
-                  {label}
-                </dt>
-                <dd className="mt-1 text-sm font-medium">{value}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-
-        {vehicle.description && (
-          <section aria-labelledby="description-heading" className="mt-12">
+          <section aria-labelledby="description-heading">
             <h2
               id="description-heading"
               className="text-2xl font-light tracking-[-0.02em] lg:text-3xl"
@@ -246,12 +310,39 @@ export default async function VehiclePage({ params }: Props) {
             </h2>
             <p
               data-testid="vehicle-description"
-              className="mt-6 max-w-3xl whitespace-pre-line text-pretty leading-relaxed text-muted"
+              className="mt-4 whitespace-pre-line text-pretty leading-relaxed text-muted"
             >
-              {vehicle.description}
+              {vehicle.description || fallbackDescription}
             </p>
           </section>
-        )}
+
+          <section aria-labelledby="specs-heading">
+            <h2
+              id="specs-heading"
+              className="text-2xl font-light tracking-[-0.02em] lg:text-3xl"
+            >
+              Ficha técnica
+            </h2>
+            <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {specs.map(({ icon: Icon, label, value }) => (
+                <div
+                  key={label}
+                  className="rounded-xl border border-line bg-surface p-4"
+                >
+                  <Icon
+                    className="h-4 w-4 text-muted"
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                  <dt className="mt-3 text-[10px] font-medium uppercase tracking-widest text-muted">
+                    {label}
+                  </dt>
+                  <dd className="mt-1 text-sm font-medium">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        </div>
 
         {vehicle.features && vehicle.features.length > 0 && (
           <section aria-labelledby="features-heading" className="mt-12">
