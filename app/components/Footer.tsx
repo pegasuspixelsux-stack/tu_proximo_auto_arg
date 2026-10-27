@@ -103,9 +103,6 @@ export default async function Footer() {
               en Tigre, Zona Norte. Visitanos, probá la unidad y llevátela con
               tranquilidad.
             </p>
-            <p className="mt-5 text-xs text-subtle">
-              © 2026 Tu Próximo Auto. Todos los derechos reservados.
-            </p>
           </div>
 
           {COLUMNS.map((column) => (
@@ -174,30 +171,25 @@ export default async function Footer() {
 
         <div
           data-testid="disclaimer"
-          className="mt-16 space-y-2 border-t border-line pt-8 text-xs leading-relaxed text-subtle"
+          className="mt-16 border-t border-line pt-8 text-xs leading-relaxed text-subtle"
         >
           <p>
             Tu Próximo Auto es una plataforma de publicidad. Nuestra única función
             es publicar los avisos de la concesionaria. No somos parte de la
             compraventa, no intervenimos en la negociación, el pago, la entrega
             ni la transferencia de los vehículos, y no actuamos como
-            vendedores, intermediarios ni garantes.
-          </p>
-          <p>
-            Los vehículos, la información, las fotos y los precios publicados
-            son de exclusiva responsabilidad de la concesionaria. Tu Próximo Auto no
-            garantiza su exactitud ni su actualización, y no asume
-            responsabilidad por el estado, la titularidad, la documentación, el
-            kilometraje, las condiciones de venta ni cualquier otro aspecto de
-            los vehículos publicados, ni por los daños o perjuicios que puedan
-            derivarse de una operación.
-          </p>
-          <p>
-            Es derecho y deber del comprador verificar por su cuenta toda la
-            información, inspeccionar el vehículo, revisar su documentación y
-            sus antecedentes, y completar la transacción de manera legal y
-            honesta, directamente con la concesionaria. Cualquier reclamo debe
-            dirigirse a la concesionaria.
+            vendedores, intermediarios ni garantes. Los vehículos, la
+            información, las fotos y los precios publicados son de exclusiva
+            responsabilidad de la concesionaria. Tu Próximo Auto no garantiza su
+            exactitud ni su actualización, y no asume responsabilidad por el
+            estado, la titularidad, la documentación, el kilometraje, las
+            condiciones de venta ni cualquier otro aspecto de los vehículos
+            publicados, ni por los daños o perjuicios que puedan derivarse de una
+            operación. Es derecho y deber del comprador verificar por su cuenta
+            toda la información, inspeccionar el vehículo, revisar su
+            documentación y sus antecedentes, y completar la transacción de
+            manera legal y honesta, directamente con la concesionaria. Cualquier
+            reclamo debe dirigirse a la concesionaria.
           </p>
         </div>
 
@@ -217,7 +209,12 @@ export default async function Footer() {
               </a>
             ))}
           </nav>
-          <ThemeToggle />
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-3 sm:justify-end">
+            <p className="text-xs text-subtle">
+              © 2026 Tu Próximo Auto. Todos los derechos reservados.
+            </p>
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </footer>

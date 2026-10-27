@@ -144,7 +144,7 @@ export default function FinanceCalculator({
         </div>
 
         <div className="grid gap-0 md:mt-10 md:gap-10 lg:grid-cols-[1.2fr_1fr]">
-          <div className="rounded-none border-x-0 border-b border-t-0 border-line bg-surface px-3 py-6 shadow-none card-glow md:rounded-xl md:border md:p-8 md:shadow-[var(--card-shadow)]">
+          <div className="rounded-none border-x-0 border-b border-t-0 border-line bg-surface px-5 py-8 shadow-none card-glow md:rounded-xl md:border md:p-8 md:shadow-[var(--card-shadow)]">
             <div className="space-y-8">
               <div>
                 <label
@@ -208,7 +208,7 @@ export default function FinanceCalculator({
 
           <div
             aria-live="polite"
-            className="flex flex-col justify-between rounded-none border-x-0 border-b border-t-0 border-line bg-surface px-3 py-6 shadow-none card-glow md:rounded-xl md:border md:p-8 md:shadow-[var(--card-shadow)]"
+            className="flex flex-col justify-between rounded-none border-x-0 border-b border-t-0 border-line bg-surface px-5 py-8 shadow-none card-glow md:rounded-xl md:border md:p-8 md:shadow-[var(--card-shadow)]"
           >
             <div>
               <p className="text-xs font-medium uppercase tracking-widest text-muted">

@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
+import TrustFeatures from "./TrustFeatures";
 import WhatsAppLeadButton from "./WhatsAppLeadButton";
 
 const WHATSAPP_MESSAGE =
@@ -109,7 +110,7 @@ export default function FinancingSection({
           {OPTIONS.map(({ icon: Icon, title, description, badge }) => (
             <li
               key={title}
-              className="card-glow flex flex-col rounded-2xl border border-line bg-surface p-6 shadow-[var(--card-shadow)] backdrop-blur-md motion-safe:hover:scale-[1.02]"
+              className="card-glow flex aspect-[3/2] flex-col md:aspect-square lg:aspect-[11/8] rounded-2xl border border-line bg-surface p-8 md:p-6 shadow-[var(--card-shadow)] backdrop-blur-md motion-safe:hover:scale-[1.02]"
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-line text-blue-500">
                 <Icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
@@ -126,6 +127,8 @@ export default function FinancingSection({
             </li>
           ))}
         </ul>
+
+        <TrustFeatures />
 
         <div className="mt-8 flex justify-center md:mt-10">
           <WhatsAppLeadButton
