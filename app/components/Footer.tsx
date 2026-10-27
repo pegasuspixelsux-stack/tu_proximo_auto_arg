@@ -174,7 +174,7 @@ export default async function Footer() {
 
         <div
           data-testid="disclaimer"
-          className="mt-16 max-w-4xl space-y-2 border-t border-line pt-8 text-xs leading-relaxed text-subtle"
+          className="mt-16 space-y-2 border-t border-line pt-8 text-xs leading-relaxed text-subtle"
         >
           <p>
             Tu Próximo Auto es una plataforma de publicidad. Nuestra única función
