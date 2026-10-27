@@ -3,7 +3,7 @@ import Image from "next/image";
 import WhatsAppLeadButton from "./WhatsAppLeadButton";
 
 const WHATSAPP_MESSAGE =
-  "Hola, quiero consultar por el financiamiento de un vehículo en AutoSelect.";
+  "Hola, quiero consultar por el financiamiento de un vehículo en Tu Próximo Auto.";
 
 /**
  * Black financing callout shown under the catalog. Pass `imageSrc` to fill the

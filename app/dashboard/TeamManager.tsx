@@ -87,7 +87,7 @@ export default function TeamManager() {
               name="email"
               type="email"
               required
-              placeholder="email@autoselect.com"
+              placeholder="email@tuproximoauto.com"
               aria-label="Email del invitado"
               className={`${FIELD} flex-1`}
             />

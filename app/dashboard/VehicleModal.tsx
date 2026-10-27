@@ -35,6 +35,18 @@ const FUELS: [FuelType, string][] = [
 ];
 const BODIES: BodyType[] = ["Auto", "SUV", "Deportivo", "Clásico", "Moto"];
 
+/** Parses "Label: value" lines into the extra technical-sheet rows. */
+function parseSpecs(text: string) {
+  const specs: Record<string, string> = {};
+  for (const line of text.split("\n")) {
+    const i = line.indexOf(":");
+    const label = line.slice(0, i).trim();
+    const value = line.slice(i + 1).trim();
+    if (i > 0 && label && value) specs[label] = value;
+  }
+  return specs;
+}
+
 function Labeled({
   label,
   children,
@@ -68,7 +80,14 @@ export default function VehicleModal({
 }) {
   const titleId = useId();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [image, setImage] = useState(vehicle?.image ?? "");
+  const [images, setImages] = useState<string[]>(
+    vehicle?.images?.length ? vehicle.images : vehicle?.image ? [vehicle.image] : [],
+  );
+  // Index into `images` of the featured photo.
+  const [featured, setFeatured] = useState(() => {
+    const i = vehicle?.images?.indexOf(vehicle.image) ?? -1;
+    return i > 0 ? i : 0;
+  });
   const [progress, setProgress] = useState<number | null>(null);
   const [sellerType, setSellerType] = useState<SellerType>(
     vehicle?.sellerType ?? "dealer",
@@ -76,14 +95,18 @@ export default function VehicleModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  async function onPhoto(file: File | undefined) {
-    if (!file) return;
+  async function onPhotos(files: FileList | null) {
+    if (!files?.length) return;
     setError("");
-    const invalid = photoError(file);
+    const list = Array.from(files);
+    const invalid = list.map(photoError).find(Boolean);
     if (invalid) return setError(invalid);
-    setProgress(0);
     try {
-      setImage(await uploadPhoto(file, "/vehicles", setProgress));
+      for (const file of list) {
+        setProgress(0);
+        const url = await uploadPhoto(file, "/vehicles", setProgress);
+        setImages((prev) => [...prev, url]);
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo subir la foto.");
     } finally {
@@ -92,9 +115,15 @@ export default function VehicleModal({
     }
   }
 
+  function removePhoto(i: number) {
+    setImages((prev) => prev.filter((_, j) => j !== i));
+    // Keep the same photo featured; fall back to the first when it was removed.
+    setFeatured((f) => (i === f ? 0 : i < f ? f - 1 : f));
+  }
+
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!image) return setError("Subí al menos una foto del vehículo.");
+    if (!images.length) return setError("Subí al menos una foto del vehículo.");
     const f = new FormData(e.currentTarget);
     const str = (k: string) => String(f.get(k) ?? "").trim();
     const dealership =
@@ -113,7 +142,10 @@ export default function VehicleModal({
       transmission: str("transmission"),
       fuelType: str("fuelType") as FuelType,
       bodyType: str("bodyType") as BodyType,
-      image,
+      image: images[featured] ?? images[0],
+      images,
+      color: str("color"),
+      specs: parseSpecs(str("specs")),
       features: f.getAll("features").map(String),
       description: str("description"),
       location: dealership?.location ?? str("location"),
@@ -180,51 +212,79 @@ export default function VehicleModal({
         </div>
 
         <form onSubmit={onSubmit} className="overflow-y-auto px-5 py-5">
-          <div className="flex items-center gap-4">
-            <span className="relative flex h-24 w-36 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-dashed border-line bg-surface">
-              {image ? (
-                <Image
-                  src={image}
-                  alt="Foto del vehículo"
-                  fill
-                  sizes="144px"
-                  className="object-cover"
-                />
-              ) : (
-                <ImagePlus
-                  className="h-6 w-6 text-subtle"
-                  strokeWidth={1.5}
-                  aria-hidden
-                />
-              )}
-            </span>
-            <div className="min-w-0">
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/*"
-                data-testid="photo-input"
-                onChange={(e) => onPhoto(e.target.files?.[0])}
-                className="sr-only"
-                id={`${titleId}-photo`}
-              />
-              <label
-                htmlFor={`${titleId}-photo`}
-                className={`inline-flex cursor-pointer items-center gap-2 rounded-full border border-line px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors duration-150 hover:border-fg/40 ${
-                  progress !== null ? "pointer-events-none opacity-60" : ""
-                }`}
+          <div>
+            {images.length > 0 && (
+              <ul
+                data-testid="photo-list"
+                className="mb-4 grid grid-cols-3 gap-3 sm:grid-cols-4"
               >
-                <ImagePlus className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-                {progress !== null
-                  ? `Subiendo ${progress}%`
-                  : image
-                    ? "Cambiar foto"
-                    : "Subir foto"}
-              </label>
-              <p className="mt-2 text-xs text-muted">
-                JPG, PNG o WebP. Máx. 10 MB.
-              </p>
-            </div>
+                {images.map((src, i) => (
+                  <li key={src} className="flex flex-col gap-1.5">
+                    <span
+                      className={`relative block aspect-[4/3] overflow-hidden rounded-xl border bg-surface ${
+                        i === featured ? "border-fg" : "border-line"
+                      }`}
+                    >
+                      <Image
+                        src={src}
+                        alt={`Foto ${i + 1} del vehículo`}
+                        fill
+                        sizes="144px"
+                        className="object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(i)}
+                        aria-label={`Quitar foto ${i + 1}`}
+                        className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white transition-colors duration-150 hover:bg-black/80"
+                      >
+                        <X className="h-3.5 w-3.5" strokeWidth={2} aria-hidden />
+                      </button>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setFeatured(i)}
+                      aria-pressed={i === featured}
+                      data-testid={`photo-featured-${i}`}
+                      className={`rounded-full border px-2 py-1 text-[10px] font-semibold uppercase tracking-wider transition-colors duration-150 ${
+                        i === featured
+                          ? "border-fg bg-inverse text-on-inverse"
+                          : "border-line text-muted hover:border-fg/40"
+                      }`}
+                    >
+                      {i === featured ? "Principal" : "Hacer principal"}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              multiple
+              data-testid="photo-input"
+              onChange={(e) => onPhotos(e.target.files)}
+              className="sr-only"
+              id={`${titleId}-photo`}
+            />
+            <label
+              htmlFor={`${titleId}-photo`}
+              className={`inline-flex cursor-pointer items-center gap-2 rounded-full border border-line px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors duration-150 hover:border-fg/40 ${
+                progress !== null ? "pointer-events-none opacity-60" : ""
+              }`}
+            >
+              <ImagePlus className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+              {progress !== null
+                ? `Subiendo ${progress}%`
+                : images.length
+                  ? "Agregar más fotos"
+                  : "Subir fotos"}
+            </label>
+            <p className="mt-2 text-xs text-muted">
+              JPG, PNG o WebP. Máx. 10 MB cada una. La foto principal se
+              muestra primero.
+            </p>
           </div>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -313,6 +373,14 @@ export default function VehicleModal({
                 ))}
               </select>
             </Labeled>
+            <Labeled label="Color">
+              <input
+                name="color"
+                defaultValue={vehicle?.color}
+                placeholder="Negro"
+                className={FIELD}
+              />
+            </Labeled>
             <Labeled label="Vendedor">
               <select
                 value={sellerType}
@@ -376,6 +444,22 @@ export default function VehicleModal({
               defaultValue={vehicle?.description}
               placeholder="Estado general, historial de service, detalles a destacar…"
               data-testid="vehicle-description"
+              className={`${FIELD} resize-y`}
+            />
+          </label>
+
+          <label className="mt-6 flex flex-col gap-1.5">
+            <span className="text-[10px] font-medium uppercase tracking-widest text-muted">
+              Ficha técnica (una línea por dato, «Etiqueta: valor»)
+            </span>
+            <textarea
+              name="specs"
+              rows={4}
+              defaultValue={Object.entries(vehicle?.specs ?? {})
+                .map(([k, v]) => `${k}: ${v}`)
+                .join("\n")}
+              placeholder={"Motor: 2.0 turbo\nPotencia: 250 hp\nTracción: Delantera"}
+              data-testid="vehicle-specs"
               className={`${FIELD} resize-y`}
             />
           </label>

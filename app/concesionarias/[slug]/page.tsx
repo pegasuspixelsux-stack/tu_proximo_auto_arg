@@ -31,7 +31,7 @@ export default async function DealerPage({ params }: Props) {
   if (!dealer) notFound();
 
   const vehicles = await vehiclesByDealer(dealer.id);
-  const whatsappMessage = `Hola ${dealer.name}, vi su concesionaria en AUTO SELECT y quiero hacer una consulta.`;
+  const whatsappMessage = `Hola ${dealer.name}, vi su concesionaria en Tu Próximo Auto y quiero hacer una consulta.`;
 
   return (
     <>

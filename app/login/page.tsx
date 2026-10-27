@@ -27,7 +27,7 @@ export default function LoginPage() {
 
       {/* Left column: the photo shows through. */}
       <div className="relative hidden items-end p-8 md:flex">
-        <p className="font-mono text-xs text-[#86868B]">AUTO SELECT v1.0</p>
+        <p className="font-mono text-xs text-[#86868B]">Tu Próximo Auto v1.0</p>
       </div>
 
       {/* Right column: dark backdrop with the form. */}
@@ -45,13 +45,13 @@ export default function LoginPage() {
             Iniciar Sesión
           </h1>
           <p className="mt-2 text-sm text-[#86868B]">
-            Accedé al panel de control interno de AUTO SELECT
+            Accedé al panel de control interno de Tu Próximo Auto
           </p>
           <LoginForm />
         </div>
 
         <p className="text-center font-mono text-xs text-[#86868B] md:hidden">
-          AUTO SELECT v1.0
+          Tu Próximo Auto v1.0
         </p>
       </section>
     </main>

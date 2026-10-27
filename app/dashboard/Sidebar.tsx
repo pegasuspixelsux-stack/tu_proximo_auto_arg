@@ -32,7 +32,7 @@ function Brand({ compact }: { compact?: boolean }) {
     return (
       <Link
         href="/dashboard"
-        aria-label="AUTO SELECT"
+        aria-label="Tu Próximo Auto"
         className="flex h-9 w-9 items-center justify-center bg-brand text-sm font-bold text-black"
       >
         A

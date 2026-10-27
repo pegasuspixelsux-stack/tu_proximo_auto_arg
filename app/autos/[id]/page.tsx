@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -16,6 +15,7 @@ import {
   Gauge,
   MapPin,
   MessageCircle,
+  Palette,
   Settings2,
   Zap,
 } from "lucide-react";
@@ -23,6 +23,7 @@ import Footer from "../../components/Footer";
 import SiteHeader from "../../components/SiteHeader";
 import WhatsAppLeadButton from "../../components/WhatsAppLeadButton";
 import VehicleCard from "../../components/VehicleCard";
+import VehicleSlideshow from "../../components/VehicleSlideshow";
 import { CAR_FEATURE_LABEL } from "../../data/car-features";
 import { getSiteSettings } from "../../data/site-store";
 import { getVehicle, getVehicles } from "../../data/vehicle-store";
@@ -104,9 +105,9 @@ async function VehicleDetail({ params }: Props) {
 
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
   const { whatsappNumber } = await getSiteSettings();
-  const whatsappMessage = `Hola, me interesa el ${title} publicado en AUTO SELECT.`;
+  const whatsappMessage = `Hola, me interesa el ${title} publicado en Tu Próximo Auto.`;
   const monthlyPayment = estimateMonthlyPayment(vehicle.price);
-  const testDriveMessage = `Hola, quisiera agendar una prueba de manejo del ${title} publicado en AUTO SELECT.`;
+  const testDriveMessage = `Hola, quisiera agendar una prueba de manejo del ${title} publicado en Tu Próximo Auto.`;
 
   // Shown when the listing has no description of its own.
   const fallbackDescription = `${title} ${FUEL_LABELS[vehicle.fuelType].toLowerCase()} con transmisión ${vehicle.transmission.toLowerCase()} y ${number.format(Math.round(vehicle.mileage * KM_PER_MILE))} km, disponible en ${vehicle.location}. Es una unidad lista para conocer en persona: podés verla, hacer una prueba de manejo y revisar toda la documentación antes de decidir. Contamos con opciones de financiamiento para que puedas concretar la compra de forma simple y segura, con un anticipo del 60% y el resto en cuotas. Escribinos por WhatsApp para consultar disponibilidad, pedir más fotos o coordinar una visita; te respondemos a la brevedad y te acompañamos en cada paso del proceso.`;
@@ -119,8 +120,13 @@ async function VehicleDetail({ params }: Props) {
     },
     {
       icon: Gauge,
-      label: "Kilometraje",
-      value: `${number.format(Math.round(vehicle.mileage * KM_PER_MILE))} km`,
+      label: vehicle.color ? "Kilometraje y color" : "Kilometraje",
+      value: [
+        `${number.format(Math.round(vehicle.mileage * KM_PER_MILE))} km`,
+        vehicle.color,
+      ]
+        .filter(Boolean)
+        .join(" · "),
     },
     {
       icon: vehicle.bodyType === "Moto" ? Bike : Car,
@@ -138,7 +144,21 @@ async function VehicleDetail({ params }: Props) {
     },
     { icon: Fuel, label: "Combustible", value: FUEL_LABELS[vehicle.fuelType] },
     { icon: Settings2, label: "Transmisión", value: vehicle.transmission },
+    ...(vehicle.color
+      ? [{ icon: Palette, label: "Color", value: vehicle.color }]
+      : []),
     { icon: MapPin, label: "Ubicación", value: vehicle.location },
+    ...Object.entries(vehicle.specs ?? {}).map(([label, value]) => ({
+      icon: Settings2,
+      label,
+      value,
+    })),
+  ];
+
+  // Featured photo first, then the rest; older listings only have `image`.
+  const photos = [
+    vehicle.image,
+    ...(vehicle.images ?? []).filter((src) => src !== vehicle.image),
   ];
 
   const all = await getVehicles();
@@ -163,21 +183,11 @@ async function VehicleDetail({ params }: Props) {
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
           <div className="flex flex-col gap-6">
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-neutral-900 lg:aspect-auto lg:min-h-[24rem] lg:flex-1">
-              <Image
-                src={vehicle.image}
-                alt={title}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 60vw"
-                className="object-cover object-center"
-              />
-              {vehicle.badge && (
-                <span className="absolute left-3 top-3 rounded-full border border-white/10 bg-black/50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-md">
-                  {vehicle.badge}
-                </span>
-              )}
-            </div>
+            <VehicleSlideshow
+              images={photos}
+              alt={title}
+              badge={vehicle.badge}
+            />
           </div>
 
           <div>

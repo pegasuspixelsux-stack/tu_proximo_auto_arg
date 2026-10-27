@@ -8,7 +8,7 @@ import { getDealerships, getVehicles } from "../data/vehicle-store";
 export const metadata: Metadata = {
   title: "Concesionarias | Tu Próximo Auto - Argentina",
   description:
-    "Concesionarias verificadas que publican y gestionan su inventario en AUTO SELECT.",
+    "Concesionarias verificadas que publican y gestionan su inventario en Tu Próximo Auto.",
 };
 
 export default async function ConcesionariasPage() {
@@ -28,7 +28,7 @@ export default async function ConcesionariasPage() {
         </h1>
         <p className="mt-4 max-w-xl text-muted">
           Concesionarias verificadas que publican su inventario directamente en
-          AUTO SELECT.
+          Tu Próximo Auto.
         </p>
 
         <ul className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

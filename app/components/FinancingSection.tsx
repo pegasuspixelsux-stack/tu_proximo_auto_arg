@@ -12,7 +12,7 @@ import type { LucideIcon } from "lucide-react";
 import WhatsAppLeadButton from "./WhatsAppLeadButton";
 
 const WHATSAPP_MESSAGE =
-  "Hola, quiero consultar por las opciones de financiación y permutas en AutoSelect.";
+  "Hola, quiero consultar por las opciones de financiación y permutas en Tu Próximo Auto.";
 
 const OPTIONS: {
   icon: LucideIcon;

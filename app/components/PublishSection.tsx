@@ -261,7 +261,7 @@ function DealerPanel() {
     <>
       <div className="rounded-xl border border-line bg-surface p-6 shadow-[var(--card-shadow)] lg:p-10">
         <h3 className="max-w-3xl text-balance text-2xl font-light tracking-[-0.02em] lg:text-4xl">
-          ¿Querés publicar todo tu inventario en AUTO SELECT?
+          ¿Querés publicar todo tu inventario en Tu Próximo Auto?
         </h3>
         <p className="mt-4 max-w-2xl text-muted">
           Sumá tu concesionaria y llegá a compradores de todo el país con un

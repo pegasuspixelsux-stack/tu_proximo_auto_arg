@@ -54,7 +54,7 @@ export default function LoginForm() {
           type="email"
           required
           autoComplete="email"
-          placeholder="admin@autoselect.com"
+          placeholder="admin@tuproximoauto.com"
           className={`${FIELD} mt-2`}
         />
       </div>

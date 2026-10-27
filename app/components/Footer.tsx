@@ -104,7 +104,7 @@ export default async function Footer() {
               tranquilidad.
             </p>
             <p className="mt-5 text-xs text-subtle">
-              © 2026 AUTO SELECT. Todos los derechos reservados.
+              © 2026 Tu Próximo Auto. Todos los derechos reservados.
             </p>
           </div>
 
@@ -177,7 +177,7 @@ export default async function Footer() {
           className="mt-16 max-w-4xl space-y-2 border-t border-line pt-8 text-xs leading-relaxed text-subtle"
         >
           <p>
-            AUTO SELECT es una plataforma de publicidad. Nuestra única función
+            Tu Próximo Auto es una plataforma de publicidad. Nuestra única función
             es publicar los avisos de la concesionaria. No somos parte de la
             compraventa, no intervenimos en la negociación, el pago, la entrega
             ni la transferencia de los vehículos, y no actuamos como
@@ -185,7 +185,7 @@ export default async function Footer() {
           </p>
           <p>
             Los vehículos, la información, las fotos y los precios publicados
-            son de exclusiva responsabilidad de la concesionaria. AUTO SELECT no
+            son de exclusiva responsabilidad de la concesionaria. Tu Próximo Auto no
             garantiza su exactitud ni su actualización, y no asume
             responsabilidad por el estado, la titularidad, la documentación, el
             kilometraje, las condiciones de venta ni cualquier otro aspecto de

@@ -26,7 +26,13 @@ export interface Vehicle {
   transmission: string;
   fuelType: FuelType;
   bodyType: BodyType;
+  /** Featured photo: used on cards and as the first slide on the detail page. */
   image: string;
+  /** Every photo of the listing (includes `image`); older listings only have `image`. */
+  images?: string[];
+  color?: string;
+  /** Extra technical-sheet rows, label → value. */
+  specs?: Record<string, string>;
   location: string;
   sellerType: SellerType;
   /** Set when sellerType === "dealer". */

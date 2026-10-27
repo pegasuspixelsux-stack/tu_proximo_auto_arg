@@ -6,7 +6,7 @@ import { createLead } from "@/lib/leads";
 import { cleanPhone } from "../data/site";
 import WhatsAppLeadButton from "./WhatsAppLeadButton";
 
-const GENERIC_MESSAGE = "Hola AutoSelect! Quiero hacer una consulta.";
+const GENERIC_MESSAGE = "Hola Tu Próximo Auto! Quiero hacer una consulta.";
 
 const CARS = [
   "Toyota Hilux SRV 2022",
@@ -104,7 +104,7 @@ function AppointmentModal({
     const get = (key: string) => String(data.get(key) ?? "").trim();
     const code = String(Math.floor(Math.random() * 1000)).padStart(3, "0");
     const text = [
-      "Hola AutoSelect! Quiero agendar cita:",
+      "Hola Tu Próximo Auto! Quiero agendar cita:",
       `- Vehículo: ${get("car")}`,
       `- Pago: ${get("payment")}`,
       `- Urgencia: ${get("urgency")}`,
