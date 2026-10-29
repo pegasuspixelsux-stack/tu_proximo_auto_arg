@@ -12,6 +12,7 @@ import Image from "next/image";
 import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { db } from "@/lib/firebase";
 import { photoError, uploadPhoto } from "@/lib/imagekit-upload";
+import { isHeic, processVehicleImage } from "@/lib/utils/imageProcessor";
 import { COMMON_CAR_FEATURES } from "../data/car-features";
 import {
   vehicleReference,
@@ -93,6 +94,7 @@ export default function VehicleModal({
     return i > 0 ? i : 0;
   });
   const [progress, setProgress] = useState<number | null>(null);
+  const [converting, setConverting] = useState(false);
   const [sellerType, setSellerType] = useState<SellerType>(
     vehicle?.sellerType ?? "dealer",
   );
@@ -108,9 +110,37 @@ export default function VehicleModal({
   async function onPhotos(files: FileList | null) {
     if (!files?.length) return;
     setError("");
-    const list = Array.from(files);
+    // iPhone .heic photos become .webp first (in parallel), then get checked.
+    setConverting(true);
+    const converted = await Promise.all(
+      Array.from(files).map(async (file) => {
+        try {
+          return { file: await processVehicleImage(file), failed: null };
+        } catch {
+          return { file: null, failed: file };
+        }
+      }),
+    );
+    setConverting(false);
+    const failed = converted.filter((c) => c.failed).map((c) => c.failed!);
+    const list = converted.flatMap((c) => (c.file ? [c.file] : []));
+    if (failed.length) {
+      // Skip the files that couldn't be converted; keep uploading the rest.
+      setError(
+        failed.every(isHeic)
+          ? "No se pudo convertir la imagen .HEIC. Intente subir formato JPG o PNG."
+          : "No se pudo procesar alguna de las imágenes.",
+      );
+    }
     const invalid = list.map(photoError).find(Boolean);
-    if (invalid) return setError(invalid);
+    if (invalid) {
+      if (fileRef.current) fileRef.current.value = "";
+      return setError(invalid);
+    }
+    if (!list.length) {
+      if (fileRef.current) fileRef.current.value = "";
+      return;
+    }
     try {
       for (const file of list) {
         setProgress(0);
@@ -290,7 +320,7 @@ export default function VehicleModal({
             <input
               ref={fileRef}
               type="file"
-              accept="image/*"
+              accept="image/*,.heic,.heif"
               multiple
               data-testid="photo-input"
               onChange={(e) => onPhotos(e.target.files)}
@@ -300,19 +330,23 @@ export default function VehicleModal({
             <label
               htmlFor={`${titleId}-photo`}
               className={`inline-flex cursor-pointer items-center gap-2 rounded-full border border-line px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors duration-150 hover:border-fg/40 ${
-                progress !== null ? "pointer-events-none opacity-60" : ""
+                progress !== null || converting
+                  ? "pointer-events-none opacity-60"
+                  : ""
               }`}
             >
               <ImagePlus className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-              {progress !== null
+              {converting
+                ? "Procesando y convirtiendo imágenes…"
+                : progress !== null
                 ? `Subiendo ${progress}%`
                 : images.length
                   ? "Agregar más fotos"
                   : "Subir fotos"}
             </label>
             <p className="mt-2 text-xs text-muted">
-              JPG, PNG o WebP. Máx. 10 MB cada una. La foto principal se
-              muestra primero.
+              JPG, PNG, WebP o HEIC (iPhone, se convierte a WebP). Máx. 10 MB
+              cada una. La foto principal se muestra primero.
             </p>
           </div>
 
@@ -559,7 +593,7 @@ export default function VehicleModal({
             </button>
             <button
               type="submit"
-              disabled={saving || progress !== null}
+              disabled={saving || progress !== null || converting}
               data-testid="vehicle-save"
               className="rounded-full bg-inverse px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-on-inverse transition-[transform,opacity] duration-150 hover:opacity-85 active:scale-95 disabled:opacity-60"
             >
