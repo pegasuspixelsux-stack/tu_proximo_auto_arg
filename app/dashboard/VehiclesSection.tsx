@@ -1,12 +1,26 @@
 "use client";
 
-import { deleteDoc, doc } from "firebase/firestore";
-import { Eye, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { collection, deleteDoc, doc, writeBatch } from "firebase/firestore";
+import {
+  Download,
+  Eye,
+  ImageOff,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+  Upload,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useId, useMemo, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { db } from "@/lib/firebase";
+import {
+  downloadTemplate,
+  parseInventoryFile,
+} from "@/lib/vehicle-import";
 import { formatPrice } from "../data/site";
 import type { Dealership, Vehicle } from "../data/vehicles";
 import { revalidateVehicles } from "./actions";
@@ -61,6 +75,13 @@ export default function VehiclesSection({
   const [modal, setModal] = useState<{ vehicle?: Vehicle } | null>(null);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<ListingStatus | "all">("all");
+  const [importing, setImporting] = useState(false);
+  const [importMsg, setImportMsg] = useState<{
+    ok: boolean;
+    text: string;
+    errors: string[];
+  } | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const searchId = useId();
   const statusId = useId();
 
@@ -92,6 +113,72 @@ export default function VehiclesSection({
   }, [listings, query, status]);
   const shown = limit ? filtered.slice(0, limit) : filtered;
 
+  async function onTemplate() {
+    try {
+      await downloadTemplate();
+    } catch {
+      setImportMsg({
+        ok: false,
+        text: "No se pudo generar la plantilla.",
+        errors: [],
+      });
+    }
+  }
+
+  async function onImport(file: File | undefined) {
+    if (!file) return;
+    setImporting(true);
+    setImportMsg(null);
+    try {
+      const { vehicles: rows, errors } = await parseInventoryFile(
+        file,
+        vehicles,
+        dealerships,
+      );
+      if (errors.length) {
+        setImportMsg({
+          ok: false,
+          text: `No se importó nada: ${errors.length} ${errors.length === 1 ? "fila tiene errores" : "filas tienen errores"}. Corregí el archivo y volvé a subirlo.`,
+          errors,
+        });
+        return;
+      }
+      const today = new Date().toISOString().slice(0, 10);
+      const now = Date.now();
+      // Firestore batches hold up to 500 writes.
+      for (let i = 0; i < rows.length; i += 400) {
+        const batch = writeBatch(db);
+        rows.slice(i, i + 400).forEach((row, j) => {
+          const ref = doc(collection(db, "vehicles"));
+          batch.set(ref, {
+            ...row,
+            id: ref.id,
+            createdAt: today,
+            // Negative timestamp: new listings sort ahead of the seeded ones.
+            order: -now + i + j,
+          });
+        });
+        await batch.commit();
+      }
+      await revalidateVehicles();
+      router.refresh();
+      setImportMsg({
+        ok: true,
+        text: `Se importaron ${rows.length} ${rows.length === 1 ? "vehículo" : "vehículos"}. Se publican en el sitio cuando les subas fotos desde “Editar”.`,
+        errors: [],
+      });
+    } catch {
+      setImportMsg({
+        ok: false,
+        text: "No se pudo importar. Revisá tu conexión y los permisos de Firestore.",
+        errors: [],
+      });
+    } finally {
+      setImporting(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
+
   async function remove(l: DashboardListing) {
     if (
       !window.confirm(
@@ -122,7 +209,7 @@ export default function VehiclesSection({
           >
             {title}
           </h2>
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <div className="relative">
               <label htmlFor={searchId} className="sr-only">
                 Buscar vehículo
@@ -170,7 +257,67 @@ export default function VehiclesSection({
               <Plus className="h-4 w-4" strokeWidth={1.75} aria-hidden />
               Agregar Vehículo
             </button>
+            <button
+              type="button"
+              data-testid="download-template"
+              onClick={onTemplate}
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-line px-5 py-2 text-xs font-semibold uppercase tracking-wider transition-[transform,border-color] duration-150 hover:border-fg/40 active:scale-95"
+            >
+              <Download className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+              Descargar Plantilla Excel
+            </button>
+            <input
+              ref={fileRef}
+              id={`${searchId}-import`}
+              type="file"
+              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              data-testid="import-input"
+              onChange={(e) => onImport(e.target.files?.[0])}
+              className="sr-only"
+            />
+            <label
+              htmlFor={`${searchId}-import`}
+              className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-line px-5 py-2 text-xs font-semibold uppercase tracking-wider transition-[transform,border-color] duration-150 hover:border-fg/40 active:scale-95 ${
+                importing ? "pointer-events-none opacity-60" : ""
+              }`}
+            >
+              <Upload className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+              {importing ? "Importando…" : "Subir Inventario (.xlsx)"}
+            </label>
           </div>
+        </div>
+
+        <div aria-live="polite">
+          {importMsg && (
+            <div
+              role={importMsg.ok ? "status" : "alert"}
+              data-testid="import-result"
+              className={`mt-4 rounded-xl border px-3 py-2 text-sm ${
+                importMsg.ok
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                  : "border-red-500/30 bg-red-500/10 text-red-400"
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <p>{importMsg.text}</p>
+                <button
+                  type="button"
+                  onClick={() => setImportMsg(null)}
+                  aria-label="Cerrar aviso"
+                  className="shrink-0"
+                >
+                  <X className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                </button>
+              </div>
+              {importMsg.errors.length > 0 && (
+                <ul className="mt-2 max-h-48 list-disc space-y-1 overflow-y-auto pl-5 text-xs">
+                  {importMsg.errors.map((e) => (
+                    <li key={e}>{e}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="mt-4 overflow-x-auto rounded-xl border border-line bg-surface shadow-[var(--card-shadow)]">
@@ -199,14 +346,22 @@ export default function VehiclesSection({
                 <tr key={l.id} className="border-b border-line last:border-0">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <span className="relative h-10 w-14 shrink-0 overflow-hidden rounded-lg bg-neutral-900">
-                        <Image
-                          src={l.image}
-                          alt=""
-                          fill
-                          sizes="56px"
-                          className="object-cover"
-                        />
+                      <span className="relative flex h-10 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-neutral-900 text-neutral-500">
+                        {l.image ? (
+                          <Image
+                            src={l.image}
+                            alt=""
+                            fill
+                            sizes="56px"
+                            className="object-cover"
+                          />
+                        ) : (
+                          <ImageOff
+                            className="h-4 w-4"
+                            strokeWidth={1.75}
+                            aria-label="Sin fotos"
+                          />
+                        )}
                       </span>
                       <span className="font-medium">
                         {l.year} {l.make} {l.model}

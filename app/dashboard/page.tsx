@@ -1,4 +1,4 @@
-import { getDealerships, getVehicles } from "../data/vehicle-store";
+import { getAllVehicles, getDealerships } from "../data/vehicle-store";
 import Overview from "./Overview";
 
 // Behind AuthGuard (renders nothing until the session is confirmed), so this
@@ -7,7 +7,7 @@ export const instant = false;
 
 export default async function DashboardPage() {
   const [vehicles, dealerships] = await Promise.all([
-    getVehicles(),
+    getAllVehicles(),
     getDealerships(),
   ]);
   return <Overview vehicles={vehicles} dealerships={dealerships} />;

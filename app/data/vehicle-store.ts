@@ -7,7 +7,8 @@ export const VEHICLES_TAG = "vehicles";
 
 type VehicleDoc = Vehicle & { order: number };
 
-export async function getVehicles(): Promise<Vehicle[]> {
+/** Every listing, including ones still waiting for photos (dashboard only). */
+export async function getAllVehicles(): Promise<Vehicle[]> {
   "use cache";
   cacheTag(VEHICLES_TAG);
   const snap = await getDocs(collection(db, "vehicles"));
@@ -19,6 +20,11 @@ export async function getVehicles(): Promise<Vehicle[]> {
       delete vehicle.order;
       return vehicle as Vehicle;
     });
+}
+
+/** Listings shown on the public site: those with at least one photo. */
+export async function getVehicles(): Promise<Vehicle[]> {
+  return (await getAllVehicles()).filter((v) => v.image);
 }
 
 export async function getDealerships(): Promise<Dealership[]> {

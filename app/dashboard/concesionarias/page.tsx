@@ -1,4 +1,4 @@
-import { getDealerships, getVehicles } from "../../data/vehicle-store";
+import { getAllVehicles, getDealerships } from "../../data/vehicle-store";
 import DealershipsManager from "../DealershipsManager";
 
 // Behind AuthGuard (renders nothing until the session is confirmed), so this
@@ -8,7 +8,7 @@ export const instant = false;
 export default async function ConcesionariasPage() {
   const [dealerships, vehicles] = await Promise.all([
     getDealerships(),
-    getVehicles(),
+    getAllVehicles(),
   ]);
   return (
     <main className="mx-auto w-full max-w-[1400px] px-4 py-8 lg:px-8 lg:py-10">
