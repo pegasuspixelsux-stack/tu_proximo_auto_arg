@@ -26,6 +26,32 @@ import { revalidateVehicles } from "./actions";
 
 const KM_PER_MILE = 1.60934;
 
+const PHOTO_ERROR =
+  "Error al procesar o subir la imagen. Por favor intente nuevamente o use formato JPG/PNG.";
+
+/** Rejects if a step hangs (stalled network, converter stuck) instead of spinning forever. */
+function withTimeout<T>(promise: Promise<T>, ms: number, what: string) {
+  let timer: ReturnType<typeof setTimeout>;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(
+      () => reject(new Error(`Tiempo de espera agotado: ${what}`)),
+      ms,
+    );
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+/** Logs a photo failure with enough detail to debug it (errors can be non-Error objects). */
+function logPhotoError(error: unknown, file?: File) {
+  const e = error as { message?: unknown; stack?: unknown } | null;
+  console.error("Error detallado en carga/conversión de imagen:", {
+    message: typeof e?.message === "string" ? e.message : String(error),
+    stack: typeof e?.stack === "string" ? e.stack : undefined,
+    file: file?.name,
+    type: file?.type,
+  });
+}
+
 const FIELD =
   "w-full rounded-xl border border-line bg-bg/60 px-3 py-2 text-sm text-fg outline-none transition-colors duration-150 placeholder:text-subtle focus:border-fg/40";
 
@@ -93,8 +119,12 @@ export default function VehicleModal({
     const i = vehicle?.images?.indexOf(vehicle.image) ?? -1;
     return i > 0 ? i : 0;
   });
-  const [progress, setProgress] = useState<number | null>(null);
-  const [converting, setConverting] = useState(false);
+  // Photo batch progress: overall 0-100 plus what is happening right now.
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [currentStepText, setCurrentStepText] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  // Shown right under the photo picker so a failure is never out of sight.
+  const [photoMessage, setPhotoMessage] = useState("");
   const [sellerType, setSellerType] = useState<SellerType>(
     vehicle?.sellerType ?? "dealer",
   );
@@ -109,48 +139,85 @@ export default function VehicleModal({
 
   async function onPhotos(files: FileList | null) {
     if (!files?.length) return;
-    setError("");
-    // iPhone .heic photos become .webp first (in parallel), then get checked.
-    setConverting(true);
-    const converted = await Promise.all(
-      Array.from(files).map(async (file) => {
-        try {
-          return { file: await processVehicleImage(file), failed: null };
-        } catch {
-          return { file: null, failed: file };
-        }
-      }),
-    );
-    setConverting(false);
-    const failed = converted.filter((c) => c.failed).map((c) => c.failed!);
-    const list = converted.flatMap((c) => (c.file ? [c.file] : []));
-    if (failed.length) {
-      // Skip the files that couldn't be converted; keep uploading the rest.
-      setError(
-        failed.every(isHeic)
-          ? "No se pudo convertir la imagen .HEIC. Intente subir formato JPG o PNG."
-          : "No se pudo procesar alguna de las imágenes.",
-      );
-    }
-    const invalid = list.map(photoError).find(Boolean);
-    if (invalid) {
-      if (fileRef.current) fileRef.current.value = "";
-      return setError(invalid);
-    }
-    if (!list.length) {
-      if (fileRef.current) fileRef.current.value = "";
-      return;
-    }
+    // Copy first: clearing the input below empties the live FileList.
+    const list = Array.from(files);
+    const total = list.length;
+    const problems: string[] = [];
+    let current: File | undefined;
+    setPhotoMessage("");
+    setIsUploading(true);
+    setUploadProgress(0);
     try {
-      for (const file of list) {
-        setProgress(0);
-        const url = await uploadPhoto(file, "/vehicles", setProgress);
-        setImages((prev) => [...prev, url]);
+      // One file at a time: convert (HEIC only), check, upload. Each file owns an
+      // equal slice of the bar; a HEIC file spends the first half converting.
+      for (let i = 0; i < total; i++) {
+        const original = list[i];
+        current = original;
+        const heic = isHeic(original);
+        const slice = (fraction: number) =>
+          Math.round(((i + fraction) / total) * 100);
+
+        try {
+          let file = original;
+          if (heic) {
+            setCurrentStepText(
+              `Convirtiendo imagen ${i + 1} de ${total} (${original.name})…`,
+            );
+            setUploadProgress(slice(0.05));
+            try {
+              file = await withTimeout(
+                processVehicleImage(original),
+                120_000,
+                "conversión de la imagen",
+              );
+            } catch (e) {
+              logPhotoError(e, original);
+              problems.push(
+                `${original.name}: no se pudo convertir la imagen .HEIC. Intente subir formato JPG o PNG.`,
+              );
+              setUploadProgress(slice(1));
+              continue;
+            }
+          }
+
+          const invalid = photoError(file);
+          if (invalid) {
+            logPhotoError(new Error(invalid), file);
+            problems.push(`${original.name}: ${invalid}`);
+            setUploadProgress(slice(1));
+            continue;
+          }
+
+          setCurrentStepText(
+            `Subiendo imagen ${i + 1} de ${total} (${file.name})…`,
+          );
+          const base = heic ? 0.5 : 0;
+          setUploadProgress(slice(base));
+          const url = await withTimeout(
+            uploadPhoto(file, "/vehicles", (pct) =>
+              setUploadProgress(slice(base + (pct / 100) * (1 - base))),
+            ),
+            180_000,
+            "subida de la imagen",
+          );
+          setImages((prev) => [...prev, url]);
+          setUploadProgress(slice(1));
+        } catch (e) {
+          // Upload, network or authorization failure: stop, keep what already uploaded.
+          logPhotoError(e, current);
+          problems.push(`${original.name}: ${PHOTO_ERROR}`);
+          break;
+        }
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "No se pudo subir la foto.");
+      // Anything unexpected outside the per-file steps.
+      logPhotoError(e, current);
+      problems.push(PHOTO_ERROR);
     } finally {
-      setProgress(null);
+      setIsUploading(false);
+      setUploadProgress(0);
+      setCurrentStepText("");
+      if (problems.length) setPhotoMessage(problems.join("\n"));
       if (fileRef.current) fileRef.current.value = "";
     }
   }
@@ -330,20 +397,57 @@ export default function VehicleModal({
             <label
               htmlFor={`${titleId}-photo`}
               className={`inline-flex cursor-pointer items-center gap-2 rounded-full border border-line px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors duration-150 hover:border-fg/40 ${
-                progress !== null || converting
-                  ? "pointer-events-none opacity-60"
-                  : ""
+                isUploading ? "pointer-events-none opacity-60" : ""
               }`}
             >
               <ImagePlus className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-              {converting
-                ? "Procesando y convirtiendo imágenes…"
-                : progress !== null
-                ? `Subiendo ${progress}%`
+              {isUploading
+                ? "Procesando fotos…"
                 : images.length
                   ? "Agregar más fotos"
                   : "Subir fotos"}
             </label>
+            {isUploading && (
+              <div data-testid="upload-progress" className="mt-3">
+                <div className="flex items-baseline justify-between gap-3 text-xs">
+                  <span
+                    aria-live="polite"
+                    data-testid="upload-step"
+                    className="min-w-0 truncate text-muted"
+                  >
+                    {currentStepText}
+                  </span>
+                  <span
+                    data-testid="upload-percent"
+                    className="shrink-0 font-medium tabular-nums"
+                  >
+                    {uploadProgress}%
+                  </span>
+                </div>
+                <div
+                  role="progressbar"
+                  aria-label="Progreso de la subida de fotos"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={uploadProgress}
+                  className="mt-1.5 h-2.5 w-full overflow-hidden rounded-full bg-line"
+                >
+                  <div
+                    className="h-2.5 rounded-full bg-inverse transition-[width] duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+              </div>
+            )}
+            {photoMessage && (
+              <p
+                role="alert"
+                data-testid="photo-error"
+                className="mt-3 whitespace-pre-line rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400"
+              >
+                {photoMessage}
+              </p>
+            )}
             <p className="mt-2 text-xs text-muted">
               JPG, PNG, WebP o HEIC (iPhone, se convierte a WebP). Máx. 10 MB
               cada una. La foto principal se muestra primero.
@@ -593,7 +697,7 @@ export default function VehicleModal({
             </button>
             <button
               type="submit"
-              disabled={saving || progress !== null || converting}
+              disabled={saving || isUploading}
               data-testid="vehicle-save"
               className="rounded-full bg-inverse px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-on-inverse transition-[transform,opacity] duration-150 hover:opacity-85 active:scale-95 disabled:opacity-60"
             >
