@@ -53,23 +53,23 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
               fill
               priority={index === 0}
               sizes="100vw"
-              className="object-cover object-[50%_75%]"
+              className="object-cover object-center"
             />
           </motion.div>
         </AnimatePresence>
-        <div className="absolute inset-0 bg-black/45" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/30 to-transparent" />
       </div>
       <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-start px-5 py-10 sm:justify-end sm:px-8 sm:pb-12 sm:pt-10 lg:justify-center lg:px-10 lg:py-6">
-        <div className="mx-auto w-full text-center sm:w-[65%] lg:w-[45%]">
+        <div className="w-full text-left sm:w-[65%] lg:w-[45%]">
           <div
             key={slide.id}
             aria-live={paused ? "polite" : "off"}
-            className="mx-auto w-full sm:w-fit sm:max-w-full"
+            className="w-full sm:w-fit sm:max-w-full"
           >
             {slide.eyebrow && (
               <motion.p
                 {...rise(0.05, 12)}
-                className="mb-2 flex items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-fg sm:mb-3 sm:text-xs"
+                className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-fg sm:mb-3 sm:text-xs"
               >
                 <Star
                   aria-hidden
@@ -96,7 +96,7 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
             {slide.supportText && (
               <motion.p
                 {...rise(0.28)}
-                className="mt-2 mx-auto w-3/4 text-xs leading-relaxed sm:mt-4 sm:w-0 sm:min-w-full sm:text-base lg:mt-5 lg:text-xl text-muted"
+                className="mt-2 w-1/2 text-xs leading-relaxed sm:mt-4 sm:w-0 sm:min-w-full sm:text-base lg:mt-5 lg:text-xl text-muted"
               >
                 {slide.supportText}
               </motion.p>
@@ -105,7 +105,7 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
               <motion.div
                 {...rise(0.4)}
                 data-testid="hero-rating"
-                className="mt-3 flex flex-col items-center justify-center gap-1 text-[11px] sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-x-2 text-muted sm:mt-5 sm:text-sm"
+                className="mt-3 flex flex-col items-start gap-1 text-[11px] sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2 text-muted sm:mt-5 sm:text-sm"
               >
                 <span className="flex items-center gap-2">
                   <span className="font-semibold text-fg">{slide.rating}</span>
