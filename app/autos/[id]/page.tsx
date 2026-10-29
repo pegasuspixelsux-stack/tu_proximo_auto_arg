@@ -27,6 +27,7 @@ import VehicleSlideshow from "../../components/VehicleSlideshow";
 import { CAR_FEATURE_LABEL } from "../../data/car-features";
 import { getSiteSettings } from "../../data/site-store";
 import { getVehicle, getVehicles } from "../../data/vehicle-store";
+import { calculateFinancing } from "@/lib/finance";
 import { formatPrice } from "../../data/site";
 import { vehicleReference, type Vehicle } from "../../data/vehicles";
 
@@ -34,17 +35,6 @@ type Props = { params: Promise<{ id: string }> };
 
 const number = new Intl.NumberFormat("es-UY");
 
-const DOWN_PAYMENT_RATE = 0.6;
-const MONTHLY_RATE = 0.07;
-const TERM_MONTHS = 12;
-
-/** Amortized monthly payment, or null when the price is missing or invalid. */
-function estimateMonthlyPayment(price: number): number | null {
-  if (!Number.isFinite(price) || price <= 0) return null;
-  const principal = price * (1 - DOWN_PAYMENT_RATE);
-  const growth = (1 + MONTHLY_RATE) ** TERM_MONTHS;
-  return (principal * MONTHLY_RATE * growth) / (growth - 1);
-}
 const date = new Intl.DateTimeFormat("es-UY", {
   day: "numeric",
   month: "long",
@@ -96,7 +86,8 @@ async function VehicleDetail({ params }: Props) {
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
   const { whatsappNumber } = await getSiteSettings();
   const whatsappMessage = `Hola, me interesa el ${title} publicado en Tu Próximo Auto.`;
-  const monthlyPayment = estimateMonthlyPayment(vehicle.price);
+  const plan12 = calculateFinancing(vehicle.price, 12);
+  const plan24 = calculateFinancing(vehicle.price, 24);
   const testDriveMessage = `Hola, quisiera agendar una prueba de manejo del ${title} publicado en Tu Próximo Auto.`;
 
   // Shown when the listing has no description of its own.
@@ -196,14 +187,18 @@ async function VehicleDetail({ params }: Props) {
             >
               {formatPrice(vehicle.price, vehicle.priceCurrency)}
             </p>
-            {monthlyPayment !== null && (
+            {plan12.price > 0 && (
               <div data-testid="vehicle-monthly-payment" className="mt-2">
                 <p className="text-sm font-medium tabular-nums">
-                  Estimado: {formatPrice(monthlyPayment, vehicle.priceCurrency, 2)}/mes
+                  12 cuotas de{" "}
+                  {formatPrice(plan12.monthly, vehicle.priceCurrency, 2)} · 24
+                  cuotas de{" "}
+                  {formatPrice(plan24.monthly, vehicle.priceCurrency, 2)}
                 </p>
                 <p className="mt-0.5 text-xs text-muted">
-                  Valor estimado con 60% de anticipo y 12 cuotas al 7% de
-                  interés mensual.
+                  Entrega inicial del 60% (
+                  {formatPrice(plan12.downPayment, vehicle.priceCurrency)}) y el
+                  40% restante en cuotas iguales, sin interés.
                 </p>
               </div>
             )}

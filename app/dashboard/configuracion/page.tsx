@@ -20,11 +20,14 @@ export default async function ConfiguracionPage() {
           Configuración
         </h1>
         <p className="mt-2 text-sm text-muted">
-          Ajustes del sitio público: contacto, cotización y portada del inicio
+          Ajustes del sitio público: contacto, moneda, cotización y portada del inicio
         </p>
       </header>
       <WhatsappSetting initial={site.whatsappNumber} />
-      <CurrencySetting initialRate={site.arsRate} />
+      <CurrencySetting
+        initialRate={site.arsRate}
+        initialCalculatorCurrency={site.calculatorCurrency}
+      />
       <HeroSlidesEditor initial={heroSlides} />
     </main>
   );

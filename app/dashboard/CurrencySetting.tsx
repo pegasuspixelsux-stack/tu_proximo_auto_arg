@@ -3,10 +3,20 @@
 import { doc, setDoc } from "firebase/firestore";
 import { useState, useTransition } from "react";
 import { db } from "@/lib/firebase";
+import type { Currency } from "../data/site";
 import { revalidateSite } from "./actions";
 
-export default function CurrencySetting({ initialRate }: { initialRate: number }) {
+export default function CurrencySetting({
+  initialRate,
+  initialCalculatorCurrency,
+}: {
+  initialRate: number;
+  initialCalculatorCurrency: Currency;
+}) {
   const [rate, setRate] = useState(String(initialRate));
+  const [calcCurrency, setCalcCurrency] = useState<Currency>(
+    initialCalculatorCurrency,
+  );
   const [status, setStatus] = useState<{ ok: boolean; msg: string } | null>(
     null,
   );
@@ -23,11 +33,11 @@ export default function CurrencySetting({ initialRate }: { initialRate: number }
       try {
         await setDoc(
           doc(db, "settings", "site"),
-          { arsRate: parsed },
+          { arsRate: parsed, calculatorCurrency: calcCurrency },
           { merge: true },
         );
         await revalidateSite();
-        setStatus({ ok: true, msg: "Cotización guardada." });
+        setStatus({ ok: true, msg: "Configuración guardada." });
       } catch {
         setStatus({
           ok: false,
@@ -40,14 +50,32 @@ export default function CurrencySetting({ initialRate }: { initialRate: number }
   return (
     <div data-testid="currency-setting" className="mt-10">
       <h3 className="text-base font-medium tracking-tight">
-        Cotización del dólar
+        Moneda y cotización
       </h3>
       <p className="mt-1 text-xs text-muted">
         Cada vehículo se publica en la moneda en que se cargó (dólares o pesos).
-        Esta cotización solo se usa para comparar precios en pesos y en dólares
-        al filtrar y ordenar el listado.
+        La cotización solo se usa para comparar precios en pesos y en dólares
+        al filtrar y ordenar el listado. La moneda de la calculadora define en
+        qué moneda calcula la financiación del inicio.
       </p>
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+        <label className="flex flex-col gap-1.5 sm:w-56">
+          <span className="text-[10px] font-medium uppercase tracking-widest text-muted">
+            Moneda de la calculadora
+          </span>
+          <select
+            value={calcCurrency}
+            onChange={(e) => {
+              setCalcCurrency(e.target.value as Currency);
+              setStatus(null);
+            }}
+            data-testid="calc-currency-setting"
+            className="w-full rounded-xl border border-line bg-bg/60 px-3 py-2 text-sm text-fg outline-none transition-colors duration-150 focus:border-fg/40"
+          >
+            <option value="USD">Dólares (USD)</option>
+            <option value="ARS">Pesos argentinos (ARS)</option>
+          </select>
+        </label>
         <label className="flex flex-col gap-1.5 sm:w-56">
           <span className="text-[10px] font-medium uppercase tracking-widest text-muted">
             Pesos por US$ 1
@@ -72,7 +100,7 @@ export default function CurrencySetting({ initialRate }: { initialRate: number }
           data-testid="currency-save"
           className="rounded-full bg-inverse px-6 py-3 text-xs font-semibold uppercase tracking-wider text-on-inverse transition-[transform,opacity] duration-150 hover:opacity-85 active:scale-[0.98] disabled:opacity-50"
         >
-          {pending ? "Guardando…" : "Guardar cotización"}
+          {pending ? "Guardando…" : "Guardar"}
         </button>
       </div>
       {status && (

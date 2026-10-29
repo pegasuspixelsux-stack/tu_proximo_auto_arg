@@ -3,6 +3,8 @@ export interface SiteSettings {
   whatsappNumber: string;
   /** Pesos per US dollar. Only used to compare ARS and USD listings (filters, sorting). */
   arsRate: number;
+  /** Currency the home-page financing calculator works in. */
+  calculatorCurrency: Currency;
 }
 
 export type Currency = "USD" | "ARS";
@@ -10,6 +12,7 @@ export type Currency = "USD" | "ARS";
 export const DEFAULT_SITE: SiteSettings = {
   whatsappNumber: "59899000000",
   arsRate: 1000,
+  calculatorCurrency: "USD",
 };
 
 const FORMATTERS: Record<Currency, Record<0 | 2, Intl.NumberFormat>> = {

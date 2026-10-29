@@ -27,7 +27,7 @@ export default async function Home() {
         <Catalog vehicles={vehicles} />
         <FinancingCallout whatsappNumber={site.whatsappNumber} />
         <FinancingSection whatsappNumber={site.whatsappNumber} />
-        <FinanceCalculator />
+        <FinanceCalculator defaultCurrency={site.calculatorCurrency} />
         <FAQSection />
         <ConversionCTA whatsappNumber={site.whatsappNumber} />
         <Footer />
