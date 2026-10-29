@@ -42,11 +42,9 @@ function Brand({ compact }: { compact?: boolean }) {
     );
   return (
     <Link href="/dashboard" className="flex items-center gap-3">
-      <span className="text-lg font-bold uppercase tracking-[-0.02em]">
-        <span className="mr-[0.15em] bg-brand px-1.5 py-0.5 text-black">
-          AUTO
-        </span>
-        SELECT
+      <span className="text-base font-bold uppercase tracking-[-0.02em]">
+        Tu Próximo{" "}
+        <span className="bg-brand px-1.5 py-0.5 text-black">Auto</span>
       </span>
       <span className="rounded-full border border-line px-2 py-0.5 font-mono text-[10px] text-muted">
         v1.0
