@@ -241,11 +241,25 @@ function toNumber(raw: string) {
   return s === "" ? NaN : Number(s);
 }
 
+/** Spreadsheet-managed fields. Photos, id, dates and order are never in the file. */
+export type VehicleFields = Omit<
+  Vehicle,
+  "id" | "createdAt" | "image" | "images" | "order"
+>;
+
+export type ImportRow = {
+  data: VehicleFields;
+  /** The vehicle this row updates, matched by Referencia; absent for new vehicles. */
+  existing?: Vehicle;
+};
+
 export type ImportResult = {
-  /** Vehicles ready to save (without `id`/`createdAt`/`order`). */
-  vehicles: Omit<Vehicle, "id" | "createdAt">[];
+  rows: ImportRow[];
   errors: string[];
 };
+
+/** Technical-sheet rows the spreadsheet owns; other rows are kept on update. */
+const MANAGED_SPECS = ["Versión", "Garantía", "Condición especial"];
 
 /** Reads an uploaded .xlsx and validates every row against the vehicle model. */
 export async function parseInventoryFile(
@@ -258,10 +272,10 @@ export async function parseInventoryFile(
   try {
     await wb.xlsx.load(await file.arrayBuffer());
   } catch {
-    return { vehicles: [], errors: ["No se pudo leer el archivo. Usá un .xlsx."] };
+    return { rows: [], errors: ["No se pudo leer el archivo. Usá un .xlsx."] };
   }
   const ws = wb.worksheets[0];
-  if (!ws) return { vehicles: [], errors: ["El archivo no tiene hojas."] };
+  if (!ws) return { rows: [], errors: ["El archivo no tiene hojas."] };
 
   // Header text -> column number, ignoring case, accents and underscores.
   const colOf = new Map<string, number>();
@@ -271,15 +285,17 @@ export async function parseInventoryFile(
   );
   if (missing.length)
     return {
-      vehicles: [],
+      rows: [],
       errors: [
         `Faltan columnas: ${missing.join(", ")}. Descargá la plantilla y no cambies los encabezados.`,
       ],
     };
 
   const errors: string[] = [];
-  const vehicles: ImportResult["vehicles"] = [];
-  const taken = new Set(existing.map(vehicleReference));
+  const rows: ImportRow[] = [];
+  // Referencia is the unique key: a known one updates that vehicle, a new one creates it.
+  const byReference = new Map(existing.map((v) => [vehicleReference(v), v]));
+  const seen = new Set<string>();
   const featureByLabel = new Map(
     COMMON_CAR_FEATURES.flatMap((f) => [
       [norm(f.label), f.id] as const,
@@ -304,9 +320,9 @@ export async function parseInventoryFile(
     if (reference) {
       if (!/^[A-Za-z0-9-]{1,20}$/.test(reference))
         problems.push("Referencia solo admite letras, números y guiones (máx. 20)");
-      else if (taken.has(reference))
-        problems.push(`la Referencia ${reference} ya existe`);
-      else taken.add(reference);
+      else if (seen.has(reference))
+        problems.push(`la Referencia ${reference} está repetida en el archivo`);
+      else seen.add(reference);
     }
 
     const bodyType = pick(need("bodyType", "Tipo_Vehiculo"), BODY_TYPES);
@@ -371,12 +387,19 @@ export async function parseInventoryFile(
       return;
     }
 
-    const specs: Record<string, string> = {};
+    const known = byReference.get(reference);
+    const specs: Record<string, string> = Object.fromEntries(
+      Object.entries(known?.specs ?? {}).filter(
+        ([k]) => !MANAGED_SPECS.includes(k),
+      ),
+    );
     if (get("version")) specs["Versión"] = get("version");
     if (get("warranty")) specs["Garantía"] = get("warranty");
     if (get("special")) specs["Condición especial"] = get("special");
 
-    vehicles.push({
+    rows.push({
+      existing: known,
+      data: {
       reference,
       make,
       model,
@@ -387,8 +410,6 @@ export async function parseInventoryFile(
       transmission: transmission!,
       fuelType: FUELS[fuelName!],
       bodyType: bodyType!,
-      image: "",
-      images: [],
       color: get("color"),
       specs,
       features,
@@ -398,10 +419,11 @@ export async function parseInventoryFile(
       ...(dealership && { dealership }),
       ...(sellerType === "private" && { sellerPhone }),
       ...(get("badge") && { badge: get("badge") }),
+      },
     });
   });
 
-  if (!vehicles.length && !errors.length)
+  if (!rows.length && !errors.length)
     errors.push("El archivo no tiene filas con datos.");
-  return { vehicles, errors };
+  return { rows, errors };
 }

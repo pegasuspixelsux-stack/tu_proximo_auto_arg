@@ -1,6 +1,12 @@
 "use client";
 
-import { collection, deleteDoc, doc, writeBatch } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  deleteField,
+  doc,
+  writeBatch,
+} from "firebase/firestore";
 import {
   Download,
   Eye,
@@ -130,7 +136,7 @@ export default function VehiclesSection({
     setImporting(true);
     setImportMsg(null);
     try {
-      const { vehicles: rows, errors } = await parseInventoryFile(
+      const { rows, errors } = await parseInventoryFile(
         file,
         vehicles,
         dealerships,
@@ -145,14 +151,29 @@ export default function VehiclesSection({
       }
       const today = new Date().toISOString().slice(0, 10);
       const now = Date.now();
+      const updated = rows.filter((r) => r.existing).length;
+      const created = rows.length - updated;
       // Firestore batches hold up to 500 writes.
       for (let i = 0; i < rows.length; i += 400) {
         const batch = writeBatch(db);
-        rows.slice(i, i + 400).forEach((row, j) => {
+        rows.slice(i, i + 400).forEach(({ data, existing }, j) => {
+          if (existing) {
+            // Update in place: photos, id, date and order stay as they are, and
+            // optional columns left blank in the file are cleared.
+            batch.update(doc(db, "vehicles", existing.id), {
+              ...data,
+              dealership: data.dealership ?? deleteField(),
+              sellerPhone: data.sellerPhone ?? deleteField(),
+              badge: data.badge ?? deleteField(),
+            });
+            return;
+          }
           const ref = doc(collection(db, "vehicles"));
           batch.set(ref, {
-            ...row,
+            ...data,
             id: ref.id,
+            image: "",
+            images: [],
             createdAt: today,
             // Negative timestamp: new listings sort ahead of the seeded ones.
             order: -now + i + j,
@@ -164,7 +185,7 @@ export default function VehiclesSection({
       router.refresh();
       setImportMsg({
         ok: true,
-        text: `Se importaron ${rows.length} ${rows.length === 1 ? "vehículo" : "vehículos"}. Se publican en el sitio cuando les subas fotos desde “Editar”.`,
+        text: `Importación lista: ${created} ${created === 1 ? "vehículo agregado" : "vehículos agregados"} y ${updated} ${updated === 1 ? "actualizado" : "actualizados"} (se identifican por la Referencia, así que no se duplican). Los vehículos sin fotos se muestran con un aviso hasta que las subas desde “Editar”.`,
         errors: [],
       });
     } catch {
