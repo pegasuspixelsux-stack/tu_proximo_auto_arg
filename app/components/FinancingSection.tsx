@@ -25,21 +25,21 @@ const OPTIONS: {
     icon: CreditCard,
     title: "Financiación Hasta el 40%",
     description:
-      "Financiá un saldo del vehículo en cuotas fijas utilizando tarjetas de crédito (Visa, Mastercard, Cabal). Combiná múltiples tarjetas en el acto.",
+      "Financiá un saldo del vehículo en cuotas fijas utilizando tarjetas de crédito (Visa, Mastercard, Cabal). Combiná múltiples tarjetas en el acto. El resto del valor lo abonás de contado o con tu usado, y nuestro equipo te asesora para armar el plan de cuotas que mejor se ajuste a tu presupuesto, sin trámites complicados ni demoras.",
     badge: "Hasta 40% del valor",
   },
   {
     icon: RefreshCw,
     title: "Tomamos tu Usado",
     description:
-      "Aceptamos tu vehículo actual como parte de pago. Realizamos la tasación técnica y comercial directa durante tu cita en el salón de ventas.",
+      "Aceptamos tu vehículo actual como parte de pago. Realizamos la tasación técnica y comercial directa durante tu cita en el salón de ventas. Te explicamos cómo llegamos al valor, revisamos el estado y la documentación, y podés usar ese monto para acercarte a tu próximo auto, ya sea de menor o de mayor valor.",
     badge: "Tasación en el acto",
   },
   {
     icon: Banknote,
     title: "Mejor Precio de Contado",
     description:
-      "Accedé a precios promocionales bonificados y transferencia rápida al abonar de contado o transferencia directa.",
+      "Accedé a precios promocionales bonificados y transferencia rápida al abonar de contado o transferencia directa. Consultanos por las promociones vigentes en cada unidad: coordinamos la operación, la documentación y la entrega para que cierres tu compra de forma simple y segura.",
     badge: "Precio Bonificado",
   },
 ];
