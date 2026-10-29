@@ -25,21 +25,21 @@ const OPTIONS: {
     icon: CreditCard,
     title: "Financiación Hasta el 40%",
     description:
-      "Financiá un saldo del vehículo en cuotas fijas utilizando tarjetas de crédito (Visa, Mastercard, Cabal). Combiná múltiples tarjetas en el acto. El resto del valor lo abonás de contado o con tu usado, y nuestro equipo te asesora para armar el plan de cuotas que mejor se ajuste a tu presupuesto, sin trámites complicados ni demoras.",
+      "Financiá un saldo del vehículo en cuotas fijas utilizando tarjetas de crédito (Visa, Mastercard, Cabal). Combiná múltiples tarjetas en el acto. Armamos el plan según tu presupuesto.",
     badge: "Hasta 40% del valor",
   },
   {
     icon: RefreshCw,
     title: "Tomamos tu Usado",
     description:
-      "Aceptamos tu vehículo actual como parte de pago. Realizamos la tasación técnica y comercial directa durante tu cita en el salón de ventas. Te explicamos cómo llegamos al valor, revisamos el estado y la documentación, y podés usar ese monto para acercarte a tu próximo auto, ya sea de menor o de mayor valor.",
+      "Aceptamos tu vehículo actual como parte de pago. Realizamos la tasación técnica y comercial directa durante tu cita en el salón de ventas. Usá ese valor para acercarte a tu próximo auto.",
     badge: "Tasación en el acto",
   },
   {
     icon: Banknote,
     title: "Mejor Precio de Contado",
     description:
-      "Accedé a precios promocionales bonificados y transferencia rápida al abonar de contado o transferencia directa. Consultanos por las promociones vigentes en cada unidad: coordinamos la operación, la documentación y la entrega para que cierres tu compra de forma simple y segura.",
+      "Accedé a precios promocionales bonificados y transferencia rápida al abonar de contado o transferencia directa. Coordinamos la operación y la entrega de forma simple y segura.",
     badge: "Precio Bonificado",
   },
 ];
@@ -110,7 +110,7 @@ export default function FinancingSection({
           {OPTIONS.map(({ icon: Icon, title, description, badge }) => (
             <li
               key={title}
-              className="card-glow flex aspect-[3/2] flex-col md:aspect-square lg:aspect-[11/8] rounded-2xl border border-line bg-surface p-8 md:p-6 shadow-[var(--card-shadow)] backdrop-blur-md motion-safe:hover:scale-[1.02]"
+              className="card-glow flex flex-col lg:aspect-[11/8] rounded-2xl border border-line bg-surface p-6 lg:p-5 shadow-[var(--card-shadow)] backdrop-blur-md motion-safe:hover:scale-[1.02]"
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-line text-blue-500">
                 <Icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
