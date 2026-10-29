@@ -35,7 +35,7 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      className="hero-on-photo relative mx-3 mt-[10px] flex aspect-square min-h-[352px] w-auto sm:aspect-auto lg:mx-6 min-[1488px]:mx-auto max-w-[1440px] flex-col rounded-xl sm:min-h-[max(336px,calc((100svh_-_290px)_*_0.56))] lg:h-[calc((100svh_-_290px)_*_0.924)] lg:min-h-[443px] overflow-hidden bg-bg text-fg selection:bg-fg selection:text-bg"
+      className="hero-on-photo relative mx-auto mt-[10px] flex aspect-square min-h-[352px] w-[calc(100%-1.5rem)] sm:aspect-auto lg:w-[calc(100%-3rem)] max-w-[1440px] flex-col rounded-xl sm:min-h-[max(336px,calc((100svh_-_290px)_*_0.56))] lg:h-[calc((100svh_-_290px)_*_0.924)] lg:min-h-[443px] overflow-hidden bg-bg text-fg selection:bg-fg selection:text-bg"
     >
       <div className="absolute inset-0 z-0">
         <AnimatePresence initial={false}>
