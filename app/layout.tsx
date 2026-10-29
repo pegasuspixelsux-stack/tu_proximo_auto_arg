@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { CurrencyProvider } from "./components/CurrencyProvider";
+import { getSiteSettings } from "./data/site-store";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,11 +28,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { currency, arsRate } = await getSiteSettings();
   return (
     <html
       lang="es-AR"
@@ -45,7 +48,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <CurrencyProvider currency={currency} arsRate={arsRate}>
+          {children}
+        </CurrencyProvider>
+      </body>
     </html>
   );
 }

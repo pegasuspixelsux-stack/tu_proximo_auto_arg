@@ -7,14 +7,14 @@ import WhatsAppLeadButton from "../../components/WhatsAppLeadButton";
 import VehicleCard from "../../components/VehicleCard";
 import {
   getDealership,
-  getDealerships,
+  getActiveDealerships,
   vehiclesByDealer,
 } from "../../data/vehicle-store";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  return (await getDealerships()).map((d) => ({ slug: d.slug }));
+  return (await getActiveDealerships()).map((d) => ({ slug: d.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

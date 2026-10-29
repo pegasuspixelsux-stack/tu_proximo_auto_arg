@@ -297,6 +297,7 @@ export default function VehiclesSection({
           key={modal.vehicle?.id ?? "new"}
           vehicle={modal.vehicle}
           dealerships={dealerships}
+          vehicles={vehicles}
           onClose={() => setModal(null)}
           onSaved={() => {
             setModal(null);

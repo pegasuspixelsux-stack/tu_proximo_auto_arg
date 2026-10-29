@@ -8,15 +8,28 @@ export interface Dealership {
   name: string;
   slug: string;
   logo?: string;
+  /** Display location; built from address, city and province when edited in the dashboard. */
   location: string;
+  address?: string;
+  city?: string;
+  province?: string;
+  email?: string;
+  /** Inactive dealerships are hidden from the public site. Missing means active. */
+  active?: boolean;
   verified: boolean;
   /** Digits only, with country code, so it can be used in a wa.me link. */
   phone: string;
   rating?: number;
 }
 
+/** Reference number shown on the listing: the saved one, or the padded legacy id. */
+export const vehicleReference = (v: Pick<Vehicle, "id" | "reference">) =>
+  v.reference || v.id.padStart(4, "0");
+
 export interface Vehicle {
   id: string;
+  /** Human-friendly reference number (e.g. "0012"), unique per listing. */
+  reference?: string;
   make: string;
   model: string;
   year: number;

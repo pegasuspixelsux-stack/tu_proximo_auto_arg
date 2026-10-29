@@ -18,16 +18,12 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useId, useMemo, useRef, useState } from "react";
+import { usePrice } from "../components/CurrencyProvider";
 import type { BodyType, FuelType, SellerType, Vehicle } from "../data/vehicles";
 
 const PAGE_SIZE = 12;
 const KM_PER_MILE = 1.60934;
 
-const usd = new Intl.NumberFormat("es-UY", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
 const number = new Intl.NumberFormat("es-UY");
 
 const BODY_TYPES: { value: BodyType; label: string }[] = [
@@ -420,6 +416,7 @@ function FiltersPanel({
 }
 
 function CarCard({ vehicle }: { vehicle: Vehicle }) {
+  const price = usePrice();
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
   const km = number.format(Math.round(vehicle.mileage * KM_PER_MILE));
   return (
@@ -463,7 +460,7 @@ function CarCard({ vehicle }: { vehicle: Vehicle }) {
           </Link>
         </h3>
         <p className="mt-1 text-2xl font-light tabular-nums tracking-tight">
-          {usd.format(vehicle.price)}
+          {price(vehicle.price)}
         </p>
 
         <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted">

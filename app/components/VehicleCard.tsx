@@ -6,12 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import type { Vehicle } from "../data/vehicles";
+import { usePrice } from "./CurrencyProvider";
 
-const usd = new Intl.NumberFormat("es-UY", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
 const km = new Intl.NumberFormat("es-UY");
 const KM_PER_MILE = 1.60934;
 const FUEL_LABELS: Record<Vehicle["fuelType"], string> = {
@@ -42,6 +38,7 @@ export default function VehicleCard({
   compact?: boolean | "mobile";
 }) {
   const reduce = useReducedMotion();
+  const price = usePrice();
   const [imageFailed, setImageFailed] = useState(false);
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
 
@@ -155,7 +152,7 @@ export default function VehicleCard({
           <p
             className={`font-light tabular-nums tracking-tight text-fg ${pick(compact, "text-base", "text-xl", "sm:text-xl")}`}
           >
-            {usd.format(vehicle.price)}
+            {price(vehicle.price)}
           </p>
           <Link
             href={`/autos/${vehicle.id}`}

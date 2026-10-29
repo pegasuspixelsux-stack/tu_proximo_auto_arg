@@ -13,8 +13,9 @@ import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { db } from "@/lib/firebase";
 import { photoError, uploadPhoto } from "@/lib/imagekit-upload";
 import { COMMON_CAR_FEATURES } from "../data/car-features";
-import type {
-  BodyType,
+import {
+  vehicleReference,
+  type BodyType,
   Dealership,
   FuelType,
   SellerType,
@@ -69,12 +70,15 @@ function Labeled({
 export default function VehicleModal({
   vehicle,
   dealerships,
+  vehicles,
   onClose,
   onSaved,
 }: {
   /** Vehicle being edited; omit to create a new one. */
   vehicle?: Vehicle;
   dealerships: Dealership[];
+  /** All listings, used to keep the reference number unique. */
+  vehicles: Vehicle[];
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -133,7 +137,20 @@ export default function VehicleModal({
     if (sellerType === "dealer" && !dealership)
       return setError("Elegí una concesionaria.");
 
+    const reference = str("reference");
+    if (!/^[A-Za-z0-9-]{1,20}$/.test(reference))
+      return setError(
+        "El número de referencia solo puede tener letras, números y guiones (máx. 20).",
+      );
+    if (
+      vehicles.some(
+        (v) => v.id !== vehicle?.id && vehicleReference(v) === reference,
+      )
+    )
+      return setError("Ese número de referencia ya lo usa otro vehículo.");
+
     const fields = {
+      reference,
       make: str("make"),
       model: str("model"),
       year: Number(str("year")),
@@ -288,6 +305,17 @@ export default function VehicleModal({
           </div>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <Labeled label="N.º de referencia" wide>
+              <input
+                name="reference"
+                required
+                maxLength={20}
+                defaultValue={vehicle ? vehicleReference(vehicle) : ""}
+                placeholder="Ej. 0012"
+                data-testid="vehicle-reference"
+                className={FIELD}
+              />
+            </Labeled>
             <Labeled label="Marca">
               <input
                 name="make"

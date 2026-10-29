@@ -2,6 +2,7 @@
 
 import {
   ArrowLeft,
+  Building2,
   Car,
   LayoutDashboard,
   Inbox,
@@ -22,6 +23,7 @@ import { auth } from "@/lib/firebase";
 const LINKS = [
   { label: "Panel de Control", href: "/dashboard", icon: LayoutDashboard },
   { label: "Listado de Vehículos", href: "/dashboard/vehiculos", icon: Car },
+  { label: "Concesionarias", href: "/dashboard/concesionarias", icon: Building2 },
   { label: "Interesados", href: "/dashboard/interesados", icon: Inbox },
   { label: "Usuarios & Equipo", href: "/dashboard/equipo", icon: Users },
   { label: "Configuración", href: "/dashboard/configuracion", icon: Settings },

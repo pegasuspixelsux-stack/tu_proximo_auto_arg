@@ -1,5 +1,6 @@
 import { getHeroSlides } from "../../data/hero-store";
 import { getSiteSettings } from "../../data/site-store";
+import CurrencySetting from "../CurrencySetting";
 import HeroSlidesEditor from "../HeroSlidesEditor";
 import WhatsappSetting from "../WhatsappSetting";
 
@@ -19,10 +20,14 @@ export default async function ConfiguracionPage() {
           Configuración
         </h1>
         <p className="mt-2 text-sm text-muted">
-          Ajustes del sitio público: contacto y portada del inicio
+          Ajustes del sitio público: contacto, moneda y portada del inicio
         </p>
       </header>
       <WhatsappSetting initial={site.whatsappNumber} />
+      <CurrencySetting
+        initialCurrency={site.currency}
+        initialRate={site.arsRate}
+      />
       <HeroSlidesEditor initial={heroSlides} />
     </main>
   );

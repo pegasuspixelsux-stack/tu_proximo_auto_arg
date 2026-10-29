@@ -27,21 +27,11 @@ import VehicleSlideshow from "../../components/VehicleSlideshow";
 import { CAR_FEATURE_LABEL } from "../../data/car-features";
 import { getSiteSettings } from "../../data/site-store";
 import { getVehicle, getVehicles } from "../../data/vehicle-store";
-import type { Vehicle } from "../../data/vehicles";
+import { formatPrice } from "../../data/site";
+import { vehicleReference, type Vehicle } from "../../data/vehicles";
 
 type Props = { params: Promise<{ id: string }> };
 
-const usd = new Intl.NumberFormat("es-UY", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
-const usd2 = new Intl.NumberFormat("es-UY", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
 const number = new Intl.NumberFormat("es-UY");
 
 const DOWN_PAYMENT_RATE = 0.6;
@@ -75,10 +65,11 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const vehicle = await getVehicle((await params).id);
   if (!vehicle) return {};
+  const site = await getSiteSettings();
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
   return {
     title: `${title} | Tu Próximo Auto - Argentina`,
-    description: `${title} en ${vehicle.location}. ${usd.format(vehicle.price)}.`,
+    description: `${title} en ${vehicle.location}. ${formatPrice(vehicle.price, site)}.`,
   };
 }
 
@@ -104,7 +95,8 @@ async function VehicleDetail({ params }: Props) {
   if (!vehicle) notFound();
 
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
-  const { whatsappNumber } = await getSiteSettings();
+  const site = await getSiteSettings();
+  const { whatsappNumber } = site;
   const whatsappMessage = `Hola, me interesa el ${title} publicado en Tu Próximo Auto.`;
   const monthlyPayment = estimateMonthlyPayment(vehicle.price);
   const testDriveMessage = `Hola, quisiera agendar una prueba de manejo del ${title} publicado en Tu Próximo Auto.`;
@@ -204,12 +196,12 @@ async function VehicleDetail({ params }: Props) {
               data-testid="vehicle-price"
               className="mt-4 text-3xl font-light tabular-nums tracking-tight"
             >
-              {usd.format(vehicle.price)}
+              {formatPrice(vehicle.price, site)}
             </p>
             {monthlyPayment !== null && (
               <div data-testid="vehicle-monthly-payment" className="mt-2">
                 <p className="text-sm font-medium tabular-nums">
-                  Estimado: {usd2.format(monthlyPayment)}/mes
+                  Estimado: {formatPrice(monthlyPayment, site, 2)}/mes
                 </p>
                 <p className="mt-0.5 text-xs text-muted">
                   Valor estimado con 60% de anticipo y 12 cuotas al 7% de
@@ -239,7 +231,7 @@ async function VehicleDetail({ params }: Props) {
 
             <p className="mt-4 text-xs text-subtle">
               <span data-testid="vehicle-id">
-                ID del aviso: {vehicle.id.padStart(4, "0")}
+                N.º de referencia: {vehicleReference(vehicle)}
               </span>
               {" · "}
               Publicado el{" "}

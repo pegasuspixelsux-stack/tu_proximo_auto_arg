@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BadgeCheck, MapPin, Star } from "lucide-react";
 import Footer from "../components/Footer";
 import SiteHeader from "../components/SiteHeader";
-import { getDealerships, getVehicles } from "../data/vehicle-store";
+import { getActiveDealerships, getVehicles } from "../data/vehicle-store";
 
 export const metadata: Metadata = {
   title: "Concesionarias | Tu Próximo Auto - Argentina",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default async function ConcesionariasPage() {
   const [dealerships, vehicles] = await Promise.all([
-    getDealerships(),
+    getActiveDealerships(),
     getVehicles(),
   ]);
   return (

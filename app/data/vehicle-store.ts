@@ -30,6 +30,11 @@ export async function getDealerships(): Promise<Dealership[]> {
     .sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
 }
 
+/** Dealerships shown on the public site (the dashboard sees all of them). */
+export async function getActiveDealerships(): Promise<Dealership[]> {
+  return (await getDealerships()).filter((d) => d.active !== false);
+}
+
 export async function getHomepageVehicles(): Promise<Vehicle[]> {
   const vehicles = await getVehicles();
   return vehicles.filter((v) => v.homepage).slice(0, HOMEPAGE_LIMIT);
@@ -43,7 +48,7 @@ export async function getVehicle(id: string): Promise<Vehicle | undefined> {
 export async function getDealership(
   slug: string,
 ): Promise<Dealership | undefined> {
-  const dealerships = await getDealerships();
+  const dealerships = await getActiveDealerships();
   return dealerships.find((d) => d.slug === slug);
 }
 
