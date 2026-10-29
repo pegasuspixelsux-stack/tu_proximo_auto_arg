@@ -60,7 +60,7 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
         <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/30 to-transparent lg:bg-none lg:bg-black/45" />
       </div>
       <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-1 flex-col justify-start px-5 py-10 sm:justify-end sm:px-8 sm:pb-12 sm:pt-10 lg:justify-center lg:px-10 lg:py-6">
-        <div className="w-full text-left sm:w-[65%] lg:mx-auto lg:w-[45%] lg:text-center">
+        <div className="w-full text-left sm:w-[65%] lg:mx-auto lg:w-[45%]">
           <div
             key={slide.id}
             aria-live={paused ? "polite" : "off"}
@@ -69,7 +69,7 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
             {slide.eyebrow && (
               <motion.p
                 {...rise(0.05, 12)}
-                className="mb-2 flex items-center gap-2 lg:justify-center text-[10px] font-semibold uppercase tracking-widest text-fg sm:mb-3 sm:text-xs"
+                className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-fg sm:mb-3 sm:text-xs"
               >
                 <Star
                   aria-hidden
@@ -105,7 +105,7 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
               <motion.div
                 {...rise(0.4)}
                 data-testid="hero-rating"
-                className="mt-3 flex flex-col items-start gap-1 text-[11px] sm:flex-row sm:flex-wrap sm:items-center lg:justify-center sm:gap-x-2 text-muted sm:mt-5 sm:text-sm"
+                className="mt-3 flex flex-col items-start gap-1 text-[11px] sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2 text-muted sm:mt-5 sm:text-sm"
               >
                 <span className="flex items-center gap-2">
                   <span className="font-semibold text-fg">{slide.rating}</span>
