@@ -19,6 +19,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useId, useMemo, useRef, useState } from "react";
 import { useArsRate, usePrice } from "../components/CurrencyProvider";
+import PhotoPlaceholder from "../components/PhotoPlaceholder";
 import {
   priceInUsd,
   type BodyType,
@@ -432,13 +433,17 @@ function CarCard({ vehicle }: { vehicle: Vehicle }) {
       className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-[var(--card-shadow)] transition-[transform,box-shadow,border-color] duration-300 ease-out [:root:not([data-theme=light])_&]:hover:border-brand/50 [:root:not([data-theme=light])_&]:hover:shadow-[0_0_36px_-6px_rgba(255,234,0,0.45)] hover:-translate-y-1 hover:shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] focus-within:ring-2 focus-within:ring-fg/60"
     >
       <div className="relative h-48 w-full overflow-hidden bg-neutral-900">
-        <Image
-          src={vehicle.image}
-          alt={title}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 30vw"
-          className="object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] motion-safe:group-hover:scale-[1.05]"
-        />
+        {vehicle.image ? (
+          <Image
+            src={vehicle.image}
+            alt={title}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 30vw"
+            className="object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] motion-safe:group-hover:scale-[1.05]"
+          />
+        ) : (
+          <PhotoPlaceholder />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
         <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/55 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-md">

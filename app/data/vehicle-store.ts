@@ -22,9 +22,9 @@ export async function getAllVehicles(): Promise<Vehicle[]> {
     });
 }
 
-/** Listings shown on the public site: those with at least one photo. */
+/** Listings shown on the public site; ones without photos get a placeholder. */
 export async function getVehicles(): Promise<Vehicle[]> {
-  return (await getAllVehicles()).filter((v) => v.image);
+  return getAllVehicles();
 }
 
 export async function getDealerships(): Promise<Dealership[]> {

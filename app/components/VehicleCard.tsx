@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { Vehicle } from "../data/vehicles";
 import { usePrice } from "./CurrencyProvider";
+import PhotoPlaceholder from "./PhotoPlaceholder";
 
 const km = new Intl.NumberFormat("es-UY");
 const KM_PER_MILE = 1.60934;
@@ -58,7 +59,9 @@ export default function VehicleCard({
       <div
         className={`relative w-full overflow-hidden bg-neutral-900 ${pick(compact, "h-36", "h-52", "sm:h-52")}`}
       >
-        {imageFailed ? (
+        {!vehicle.image ? (
+          <PhotoPlaceholder />
+        ) : imageFailed ? (
           <div className="absolute inset-0 bg-gradient-to-br from-neutral-800 to-neutral-950" />
         ) : (
           <Image

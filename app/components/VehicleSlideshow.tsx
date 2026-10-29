@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import PhotoPlaceholder from "./PhotoPlaceholder";
 
 const ARROW =
   "absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition-[background-color,transform] duration-150 hover:bg-black/60 active:scale-95";
@@ -28,24 +29,27 @@ export default function VehicleSlideshow({
       data-testid="vehicle-slideshow"
       className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-neutral-900 lg:aspect-auto lg:min-h-[24rem] lg:flex-1"
     >
+      {count === 0 && <PhotoPlaceholder />}
       <AnimatePresence initial={false}>
-        <motion.div
-          key={images[index]}
-          className="absolute inset-0"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: reduce ? 0 : 0.4, ease: "easeInOut" }}
-        >
-          <Image
-            src={images[index]}
-            alt={count > 1 ? `${alt} (foto ${index + 1} de ${count})` : alt}
-            fill
-            priority={index === 0}
-            sizes="(max-width: 1024px) 100vw, 60vw"
-            className="object-cover object-center"
-          />
-        </motion.div>
+        {count > 0 && (
+          <motion.div
+            key={images[index]}
+            className="absolute inset-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: reduce ? 0 : 0.4, ease: "easeInOut" }}
+          >
+            <Image
+              src={images[index]}
+              alt={count > 1 ? `${alt} (foto ${index + 1} de ${count})` : alt}
+              fill
+              priority={index === 0}
+              sizes="(max-width: 1024px) 100vw, 60vw"
+              className="object-cover object-center"
+            />
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {badge && (

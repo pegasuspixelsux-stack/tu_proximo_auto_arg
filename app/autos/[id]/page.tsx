@@ -140,7 +140,7 @@ async function VehicleDetail({ params }: Props) {
   const photos = [
     vehicle.image,
     ...(vehicle.images ?? []).filter((src) => src !== vehicle.image),
-  ];
+  ].filter(Boolean);
 
   const all = await getVehicles();
   const related = all.filter(
