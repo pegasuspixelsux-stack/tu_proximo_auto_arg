@@ -361,31 +361,30 @@ export default function VehicleModal({
                 className={FIELD}
               />
             </Labeled>
-            <Labeled label="Precio">
-              <div className="flex gap-2">
-                <select
-                  value={priceCurrency}
-                  onChange={(e) =>
-                    setPriceCurrency(e.target.value as "USD" | "ARS")
-                  }
-                  aria-label="Moneda del precio"
-                  data-testid="vehicle-price-currency"
-                  className={`${FIELD} w-24 shrink-0`}
-                >
-                  <option value="USD">US$</option>
-                  <option value="ARS">ARS $</option>
-                </select>
-                <input
-                  name="price"
-                  type="number"
-                  required
-                  min={0}
-                  value={priceInput}
-                  onChange={(e) => setPriceInput(e.target.value)}
-                  data-testid="vehicle-price-input"
-                  className={FIELD}
-                />
-              </div>
+            <Labeled label="Moneda">
+              <select
+                value={priceCurrency}
+                onChange={(e) =>
+                  setPriceCurrency(e.target.value as "USD" | "ARS")
+                }
+                data-testid="vehicle-price-currency"
+                className={FIELD}
+              >
+                <option value="USD">Dólares (USD)</option>
+                <option value="ARS">Pesos argentinos (ARS)</option>
+              </select>
+            </Labeled>
+            <Labeled label={`Precio (${priceCurrency === "ARS" ? "ARS" : "USD"})`}>
+              <input
+                name="price"
+                type="number"
+                required
+                min={0}
+                value={priceInput}
+                onChange={(e) => setPriceInput(e.target.value)}
+                data-testid="vehicle-price-input"
+                className={FIELD}
+              />
               {priceCurrency === "ARS" && (
                 <span className="text-xs text-muted">
                   {site.arsRate > 0 && Number(priceInput) > 0
