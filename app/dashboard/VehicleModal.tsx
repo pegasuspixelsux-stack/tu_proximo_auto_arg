@@ -11,7 +11,11 @@ import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { db } from "@/lib/firebase";
-import { photoError, uploadPhoto } from "@/lib/imagekit-upload";
+import {
+  MAX_PHOTO_BYTES,
+  photoError,
+  uploadPhoto,
+} from "@/lib/imagekit-upload";
 import { isHeic, processVehicleImage } from "@/lib/utils/imageProcessor";
 import { COMMON_CAR_FEATURES } from "../data/car-features";
 import {
@@ -159,9 +163,12 @@ export default function VehicleModal({
 
         try {
           let file = original;
-          if (heic) {
+          // HEIC gets converted; any photo over the size limit gets shrunk.
+          if (heic || original.size > MAX_PHOTO_BYTES) {
             setCurrentStepText(
-              `Convirtiendo imagen ${i + 1} de ${total} (${original.name})…`,
+              heic
+                ? `Convirtiendo imagen ${i + 1} de ${total} (${original.name})…`
+                : `Optimizando imagen ${i + 1} de ${total} (${original.name})…`,
             );
             setUploadProgress(slice(0.05));
             try {
@@ -173,7 +180,9 @@ export default function VehicleModal({
             } catch (e) {
               logPhotoError(e, original);
               problems.push(
-                `${original.name}: no se pudo convertir la imagen .HEIC. Intente subir formato JPG o PNG.`,
+                heic
+                  ? `${original.name}: no se pudo convertir la imagen .HEIC. Intente subir formato JPG o PNG.`
+                  : `${original.name}: ${PHOTO_ERROR}`,
               );
               setUploadProgress(slice(1));
               continue;
@@ -191,7 +200,7 @@ export default function VehicleModal({
           setCurrentStepText(
             `Subiendo imagen ${i + 1} de ${total} (${file.name})…`,
           );
-          const base = heic ? 0.5 : 0;
+          const base = file !== original ? 0.5 : 0;
           setUploadProgress(slice(base));
           const url = await withTimeout(
             uploadPhoto(file, "/vehicles", (pct) =>
