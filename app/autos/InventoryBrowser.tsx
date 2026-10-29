@@ -18,6 +18,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useId, useMemo, useRef, useState } from "react";
+import { matchesText } from "@/lib/vehicle-search";
 import { useArsRate, usePrice } from "../components/CurrencyProvider";
 import PhotoPlaceholder from "../components/PhotoPlaceholder";
 import {
@@ -111,9 +112,7 @@ const EMPTY: Filters = {
 
 function matches(v: Vehicle, f: Filters, arsRate: number) {
   const usd = priceInUsd(v, arsRate);
-  const q = f.q.trim().toLowerCase();
-  if (q && !`${v.year} ${v.make} ${v.model}`.toLowerCase().includes(q))
-    return false;
+  if (!matchesText(v, f.q)) return false;
   if (f.types.length && !f.types.includes(v.bodyType)) return false;
   if (f.make && v.make !== f.make) return false;
   if (f.priceMin && usd < Number(f.priceMin)) return false;

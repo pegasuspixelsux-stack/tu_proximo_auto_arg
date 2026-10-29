@@ -8,6 +8,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { readCriteria, type SearchCriteria } from "@/lib/vehicle-search";
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
@@ -29,7 +30,14 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-export default function HeroSearch({ compact = false }: { compact?: boolean }) {
+export default function HeroSearch({
+  compact = false,
+  onSearch,
+}: {
+  compact?: boolean;
+  /** When given, the search filters live on the page instead of reloading it. */
+  onSearch?: (criteria: SearchCriteria) => void;
+}) {
   const reduce = useReducedMotion();
   const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -45,6 +53,22 @@ export default function HeroSearch({ compact = false }: { compact?: boolean }) {
         role="search"
         action="#inventory"
         data-testid="hero-search"
+        onChange={
+          onSearch
+            ? (e) => onSearch(readCriteria(new FormData(e.currentTarget)))
+            : undefined
+        }
+        onSubmit={
+          onSearch
+            ? (e) => {
+                e.preventDefault();
+                onSearch(readCriteria(new FormData(e.currentTarget)));
+                document
+                  .getElementById("inventory")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            : undefined
+        }
         className={compact ? "" : "mt-2.5 sm:mt-4"}
       >
         <div className="flex items-center gap-3 rounded-full border border-line bg-surface [:root:not([data-theme=light])_&]:border-white [:root:not([data-theme=light])_&]:bg-white py-2 pl-5 pr-2 shadow-[0_10px_30px_-6px_rgba(0,0,0,0.45)] transition-[transform,box-shadow] duration-300 ease-out hover:shadow-[0_16px_40px_-8px_rgba(0,0,0,0.55)] focus-within:border-fg/40 motion-reduce:transition-none">
@@ -113,12 +137,30 @@ export default function HeroSearch({ compact = false }: { compact?: boolean }) {
                     className={FIELD}
                   />
                 </Field>
+                <Field label="Tipo">
+                  <select name="bodyType" defaultValue="" className={FIELD}>
+                    <option value="">Todos</option>
+                    <option value="Auto">Auto</option>
+                    <option value="SUV">SUV</option>
+                    <option value="Deportivo">Deportivo</option>
+                    <option value="Clásico">Clásico</option>
+                    <option value="Moto">Moto</option>
+                  </select>
+                </Field>
+                <Field label="Transmisión">
+                  <select name="transmission" defaultValue="" className={FIELD}>
+                    <option value="">Todas</option>
+                    <option value="Automática">Automática</option>
+                    <option value="Manual">Manual</option>
+                  </select>
+                </Field>
                 <Field label="Combustible">
                   <select name="fuel" defaultValue="" className={FIELD}>
                     <option value="">Todos</option>
                     <option value="Electric">Eléctrico</option>
                     <option value="Hybrid">Híbrido</option>
                     <option value="Gasoline">Nafta</option>
+                    <option value="Diesel">Diésel</option>
                   </select>
                 </Field>
                 <Field label="Año desde">
@@ -138,6 +180,16 @@ export default function HeroSearch({ compact = false }: { compact?: boolean }) {
                     inputMode="numeric"
                     min={1990}
                     placeholder="2025"
+                    className={FIELD}
+                  />
+                </Field>
+                <Field label="Precio mín. (US$)">
+                  <input
+                    type="number"
+                    name="priceMin"
+                    inputMode="numeric"
+                    min={0}
+                    placeholder="10000"
                     className={FIELD}
                   />
                 </Field>

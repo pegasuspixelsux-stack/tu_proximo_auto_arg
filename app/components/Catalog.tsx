@@ -9,7 +9,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
+import {
+  EMPTY_CRITERIA,
+  hasCriteria,
+  matchesCriteria,
+  type SearchCriteria,
+} from "@/lib/vehicle-search";
 import type { Vehicle } from "../data/vehicles";
+import { useArsRate } from "./CurrencyProvider";
 import HeroSearch from "./HeroSearch";
 import VehicleCard from "./VehicleCard";
 
@@ -42,6 +49,10 @@ const PAGE_SIZE = 12;
 export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
   const [filter, setFilter] = useState<Filter>("all");
   const [page, setPage] = useState(1);
+  const [criteria, setCriteria] = useState<SearchCriteria>(EMPTY_CRITERIA);
+  // Bumping this remounts the search box, which empties its inputs.
+  const [searchKey, setSearchKey] = useState(0);
+  const arsRate = useArsRate();
   const pillsRef = useRef<HTMLDivElement>(null);
 
   function scrollPills(direction: -1 | 1) {
@@ -52,8 +63,19 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
 
   const visible = useMemo(() => {
     const active = FILTERS.find((f) => f.id === filter) ?? FILTERS[0];
-    return vehicles.filter(active.test);
-  }, [vehicles, filter]);
+    return vehicles.filter(
+      (v) => active.test(v) && matchesCriteria(v, criteria, arsRate),
+    );
+  }, [vehicles, filter, criteria, arsRate]);
+
+  const filtering = filter !== "all" || hasCriteria(criteria);
+
+  function clearFilters() {
+    setFilter("all");
+    setCriteria(EMPTY_CRITERIA);
+    setSearchKey((k) => k + 1);
+    setPage(1);
+  }
 
   const pageCount = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
   const current = Math.min(page, pageCount);
@@ -137,7 +159,14 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
           </div>
         </LayoutGroup>
         <div className="w-full md:w-[32rem] md:max-w-[50%] lg:w-[42rem]">
-          <HeroSearch compact />
+          <HeroSearch
+            key={searchKey}
+            compact
+            onSearch={(next) => {
+              setCriteria(next);
+              setPage(1);
+            }}
+          />
         </div>
       </div>
 
@@ -170,9 +199,24 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
       </div>
 
       {visible.length === 0 && (
-        <p className="py-16 text-center text-sm text-muted">
-          Ningún vehículo coincide con este filtro. Probá con otro.
-        </p>
+        <div
+          data-testid="empty-state"
+          className="flex flex-col items-center gap-4 py-16 text-center"
+        >
+          <p className="text-sm text-muted">
+            No se encontraron vehículos que coincidan con tu búsqueda.
+          </p>
+          {filtering && (
+            <button
+              type="button"
+              onClick={clearFilters}
+              data-testid="clear-search"
+              className="rounded-full border border-line px-6 py-2.5 text-xs font-semibold uppercase tracking-wider text-fg transition-[border-color,transform] duration-150 hover:border-fg/40 active:scale-95"
+            >
+              Limpiar filtros
+            </button>
+          )}
+        </div>
       )}
 
       {pageCount > 1 && (
