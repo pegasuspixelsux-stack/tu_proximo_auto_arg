@@ -252,12 +252,14 @@ async function VehicleDetail({ params }: Props) {
                   strokeWidth={1.75}
                   aria-hidden
                 />
-                Tu Próximo Auto
-                <BadgeCheck
-                  className="h-4 w-4 shrink-0 text-muted"
-                  strokeWidth={1.75}
-                  aria-label="Verificada"
-                />
+                {vehicle.dealership?.name ?? "Vendedor particular"}
+                {vehicle.dealership?.verified && (
+                  <BadgeCheck
+                    className="h-4 w-4 shrink-0 text-muted"
+                    strokeWidth={1.75}
+                    aria-label="Verificada"
+                  />
+                )}
               </p>
               <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-muted">
                 <MapPin
