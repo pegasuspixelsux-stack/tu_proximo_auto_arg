@@ -11,8 +11,6 @@ import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { db } from "@/lib/firebase";
-import { useCurrencySettings } from "../components/CurrencyProvider";
-import { formatPrice } from "../data/site";
 import { photoError, uploadPhoto } from "@/lib/imagekit-upload";
 import { COMMON_CAR_FEATURES } from "../data/car-features";
 import {
@@ -98,8 +96,9 @@ export default function VehicleModal({
   const [sellerType, setSellerType] = useState<SellerType>(
     vehicle?.sellerType ?? "dealer",
   );
-  const site = useCurrencySettings();
-  const [priceCurrency, setPriceCurrency] = useState<"USD" | "ARS">("USD");
+  const [priceCurrency, setPriceCurrency] = useState<"USD" | "ARS">(
+    vehicle?.priceCurrency ?? "USD",
+  );
   const [priceInput, setPriceInput] = useState(
     vehicle ? String(vehicle.price) : "",
   );
@@ -156,14 +155,8 @@ export default function VehicleModal({
     )
       return setError("Ese número de referencia ya lo usa otro vehículo.");
 
-    // Prices are stored in USD; pesos are converted with the rate from Configuración.
-    const typed = Number(priceInput);
-    if (priceCurrency === "ARS" && !(site.arsRate > 0))
-      return setError(
-        "Cargá la cotización del dólar en Configuración para ingresar precios en pesos.",
-      );
-    const price =
-      priceCurrency === "ARS" ? Math.round(typed / site.arsRate) : typed;
+    // The price is stored exactly as entered, with the currency it was listed in.
+    const price = Number(priceInput);
     if (!Number.isFinite(price) || price < 0)
       return setError("Ingresá un precio válido.");
 
@@ -173,6 +166,7 @@ export default function VehicleModal({
       model: str("model"),
       year: Number(str("year")),
       price,
+      priceCurrency,
       mileage: Math.round(Number(str("km")) / KM_PER_MILE),
       transmission: str("transmission"),
       fuelType: str("fuelType") as FuelType,
@@ -385,13 +379,6 @@ export default function VehicleModal({
                 data-testid="vehicle-price-input"
                 className={FIELD}
               />
-              {priceCurrency === "ARS" && (
-                <span className="text-xs text-muted">
-                  {site.arsRate > 0 && Number(priceInput) > 0
-                    ? `Se guarda como ${formatPrice(Math.round(Number(priceInput) / site.arsRate), { currency: "USD", arsRate: site.arsRate })} (cotización ${site.arsRate}).`
-                    : "Se convierte a dólares con la cotización de Configuración."}
-                </span>
-              )}
             </Labeled>
             <Labeled label="Kilometraje (km)">
               <input

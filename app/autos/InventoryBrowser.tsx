@@ -18,8 +18,14 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useId, useMemo, useRef, useState } from "react";
-import { usePrice } from "../components/CurrencyProvider";
-import type { BodyType, FuelType, SellerType, Vehicle } from "../data/vehicles";
+import { useArsRate, usePrice } from "../components/CurrencyProvider";
+import {
+  priceInUsd,
+  type BodyType,
+  type FuelType,
+  type SellerType,
+  type Vehicle,
+} from "../data/vehicles";
 
 const PAGE_SIZE = 12;
 const KM_PER_MILE = 1.60934;
@@ -102,14 +108,15 @@ const EMPTY: Filters = {
   sellers: [],
 };
 
-function matches(v: Vehicle, f: Filters) {
+function matches(v: Vehicle, f: Filters, arsRate: number) {
+  const usd = priceInUsd(v, arsRate);
   const q = f.q.trim().toLowerCase();
   if (q && !`${v.year} ${v.make} ${v.model}`.toLowerCase().includes(q))
     return false;
   if (f.types.length && !f.types.includes(v.bodyType)) return false;
   if (f.make && v.make !== f.make) return false;
-  if (f.priceMin && v.price < Number(f.priceMin)) return false;
-  if (f.priceMax && v.price > Number(f.priceMax)) return false;
+  if (f.priceMin && usd < Number(f.priceMin)) return false;
+  if (f.priceMax && usd > Number(f.priceMax)) return false;
   if (f.yearMin && v.year < Number(f.yearMin)) return false;
   if (f.yearMax && v.year > Number(f.yearMax)) return false;
   if (f.kmMax && v.mileage * KM_PER_MILE >= Number(f.kmMax)) return false;
@@ -460,7 +467,7 @@ function CarCard({ vehicle }: { vehicle: Vehicle }) {
           </Link>
         </h3>
         <p className="mt-1 text-2xl font-light tabular-nums tracking-tight">
-          {price(vehicle.price)}
+          {price(vehicle)}
         </p>
 
         <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted">
@@ -514,6 +521,7 @@ export default function InventoryBrowser({
   const [drawer, setDrawer] = useState(false);
   const topRef = useRef<HTMLDivElement>(null);
   const sortId = useId();
+  const arsRate = useArsRate();
 
   const makes = useMemo(
     () => [...new Set(vehicles.map((v) => v.make))].sort(),
@@ -526,15 +534,15 @@ export default function InventoryBrowser({
 
   const results = useMemo(() => {
     const pillTest = (PILLS.find((p) => p.id === pill) ?? PILLS[0]).test;
-    const list = vehicles.filter((v) => pillTest(v) && matches(v, applied));
+    const list = vehicles.filter((v) => pillTest(v) && matches(v, applied, arsRate));
     const by: Record<Sort, (a: Vehicle, b: Vehicle) => number> = {
       recent: (a, b) => b.createdAt.localeCompare(a.createdAt),
-      "price-asc": (a, b) => a.price - b.price,
-      "price-desc": (a, b) => b.price - a.price,
+      "price-asc": (a, b) => priceInUsd(a, arsRate) - priceInUsd(b, arsRate),
+      "price-desc": (a, b) => priceInUsd(b, arsRate) - priceInUsd(a, arsRate),
       "km-asc": (a, b) => a.mileage - b.mileage,
     };
     return list.sort(by[sort]);
-  }, [vehicles, applied, sort, pill]);
+  }, [vehicles, applied, sort, pill, arsRate]);
 
   const pageCount = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
   const current = Math.min(page, pageCount);

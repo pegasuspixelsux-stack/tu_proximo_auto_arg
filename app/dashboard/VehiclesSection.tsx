@@ -7,16 +7,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId, useMemo, useState } from "react";
 import { db } from "@/lib/firebase";
+import { formatPrice } from "../data/site";
 import type { Dealership, Vehicle } from "../data/vehicles";
 import { revalidateVehicles } from "./actions";
 import type { DashboardListing, ListingStatus } from "./data";
 import VehicleModal from "./VehicleModal";
 
-const usd = new Intl.NumberFormat("es-UY", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
 const dateFmt = new Intl.DateTimeFormat("es-UY", {
   day: "2-digit",
   month: "short",
@@ -78,6 +74,7 @@ export default function VehiclesSection({
           model: v.model,
           year: v.year,
           price: v.price,
+          priceCurrency: v.priceCurrency,
           publishedAt: v.createdAt,
           status: "Publicado",
           image: v.image,
@@ -217,7 +214,7 @@ export default function VehiclesSection({
                     </div>
                   </td>
                   <td className="px-4 py-3 tabular-nums">
-                    {usd.format(l.price)}
+                    {formatPrice(l.price, l.priceCurrency)}
                   </td>
                   <td className="px-4 py-3 tabular-nums text-muted">
                     {dateFmt.format(new Date(l.publishedAt))}

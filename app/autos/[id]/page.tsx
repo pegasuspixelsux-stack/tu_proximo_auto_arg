@@ -65,11 +65,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const vehicle = await getVehicle((await params).id);
   if (!vehicle) return {};
-  const site = await getSiteSettings();
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
   return {
     title: `${title} | Tu Próximo Auto - Argentina`,
-    description: `${title} en ${vehicle.location}. ${formatPrice(vehicle.price, site)}.`,
+    description: `${title} en ${vehicle.location}. ${formatPrice(vehicle.price, vehicle.priceCurrency)}.`,
   };
 }
 
@@ -95,8 +94,7 @@ async function VehicleDetail({ params }: Props) {
   if (!vehicle) notFound();
 
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
-  const site = await getSiteSettings();
-  const { whatsappNumber } = site;
+  const { whatsappNumber } = await getSiteSettings();
   const whatsappMessage = `Hola, me interesa el ${title} publicado en Tu Próximo Auto.`;
   const monthlyPayment = estimateMonthlyPayment(vehicle.price);
   const testDriveMessage = `Hola, quisiera agendar una prueba de manejo del ${title} publicado en Tu Próximo Auto.`;
@@ -196,12 +194,12 @@ async function VehicleDetail({ params }: Props) {
               data-testid="vehicle-price"
               className="mt-4 text-3xl font-light tabular-nums tracking-tight"
             >
-              {formatPrice(vehicle.price, site)}
+              {formatPrice(vehicle.price, vehicle.priceCurrency)}
             </p>
             {monthlyPayment !== null && (
               <div data-testid="vehicle-monthly-payment" className="mt-2">
                 <p className="text-sm font-medium tabular-nums">
-                  Estimado: {formatPrice(monthlyPayment, site, 2)}/mes
+                  Estimado: {formatPrice(monthlyPayment, vehicle.priceCurrency, 2)}/mes
                 </p>
                 <p className="mt-0.5 text-xs text-muted">
                   Valor estimado con 60% de anticipo y 12 cuotas al 7% de

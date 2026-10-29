@@ -1,29 +1,26 @@
 "use client";
 
 import { createContext, useContext, type ReactNode } from "react";
-import {
-  DEFAULT_SITE,
-  formatPrice,
-  type PriceSettings,
-} from "../data/site";
+import { DEFAULT_SITE, formatPrice } from "../data/site";
+import type { Vehicle } from "../data/vehicles";
 
-const CurrencyContext = createContext<PriceSettings>(DEFAULT_SITE);
+const RateContext = createContext<number>(DEFAULT_SITE.arsRate);
 
 export function CurrencyProvider({
-  currency,
   arsRate,
   children,
-}: PriceSettings & { children: ReactNode }) {
-  return (
-    <CurrencyContext value={{ currency, arsRate }}>{children}</CurrencyContext>
-  );
+}: {
+  arsRate: number;
+  children: ReactNode;
+}) {
+  return <RateContext value={arsRate}>{children}</RateContext>;
 }
 
-/** The site currency settings (currency and ARS-per-USD rate). */
-export const useCurrencySettings = () => useContext(CurrencyContext);
+/** Pesos per dollar, for comparing ARS and USD listings. */
+export const useArsRate = () => useContext(RateContext);
 
-/** Formats a USD amount in the currency chosen in the dashboard settings. */
+/** Formats a vehicle's price in the currency it was listed in. */
 export function usePrice() {
-  const settings = useContext(CurrencyContext);
-  return (usd: number, digits: 0 | 2 = 0) => formatPrice(usd, settings, digits);
+  return (v: Pick<Vehicle, "price" | "priceCurrency">) =>
+    formatPrice(v.price, v.priceCurrency);
 }

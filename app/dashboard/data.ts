@@ -6,6 +6,7 @@ export interface DashboardListing {
   model: string;
   year: number;
   price: number;
+  priceCurrency?: "USD" | "ARS";
   /** ISO date the listing was published. */
   publishedAt: string;
   status: ListingStatus;

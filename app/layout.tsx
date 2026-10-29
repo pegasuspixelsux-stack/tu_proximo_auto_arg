@@ -33,7 +33,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { currency, arsRate } = await getSiteSettings();
+  const { arsRate } = await getSiteSettings();
   return (
     <html
       lang="es-AR"
@@ -49,7 +49,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
-        <CurrencyProvider currency={currency} arsRate={arsRate}>
+        <CurrencyProvider arsRate={arsRate}>
           {children}
         </CurrencyProvider>
       </body>

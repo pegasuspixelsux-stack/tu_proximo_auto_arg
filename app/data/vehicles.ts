@@ -22,6 +22,12 @@ export interface Dealership {
   rating?: number;
 }
 
+/** Listing price in USD, converting ARS listings with the given rate (for filters and sorting). */
+export const priceInUsd = (
+  v: Pick<Vehicle, "price" | "priceCurrency">,
+  arsRate: number,
+) => (v.priceCurrency === "ARS" && arsRate > 0 ? v.price / arsRate : v.price);
+
 /** Reference number shown on the listing: the saved one, or the padded legacy id. */
 export const vehicleReference = (v: Pick<Vehicle, "id" | "reference">) =>
   v.reference || v.id.padStart(4, "0");
@@ -34,6 +40,8 @@ export interface Vehicle {
   model: string;
   year: number;
   price: number;
+  /** Currency `price` was listed in; missing means USD. */
+  priceCurrency?: "USD" | "ARS";
   /** In miles; the UI converts to km. */
   mileage: number;
   transmission: string;

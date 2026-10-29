@@ -152,7 +152,7 @@ export default function VehicleCard({
           <p
             className={`font-light tabular-nums tracking-tight text-fg ${pick(compact, "text-base", "text-xl", "sm:text-xl")}`}
           >
-            {price(vehicle.price)}
+            {price(vehicle)}
           </p>
           <Link
             href={`/autos/${vehicle.id}`}

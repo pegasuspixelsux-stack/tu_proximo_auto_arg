@@ -1,9 +1,7 @@
 export interface SiteSettings {
   /** Digits only, with country code, so it can be used in a wa.me link. */
   whatsappNumber: string;
-  /** Currency prices are shown in on the public site. Prices are stored in USD. */
-  currency: Currency;
-  /** Pesos per US dollar, used when `currency` is "ARS". */
+  /** Pesos per US dollar. Only used to compare ARS and USD listings (filters, sorting). */
   arsRate: number;
 }
 
@@ -11,11 +9,8 @@ export type Currency = "USD" | "ARS";
 
 export const DEFAULT_SITE: SiteSettings = {
   whatsappNumber: "59899000000",
-  currency: "USD",
   arsRate: 1000,
 };
-
-export type PriceSettings = Pick<SiteSettings, "currency" | "arsRate">;
 
 const FORMATTERS: Record<Currency, Record<0 | 2, Intl.NumberFormat>> = {
   USD: {
@@ -28,16 +23,13 @@ const FORMATTERS: Record<Currency, Record<0 | 2, Intl.NumberFormat>> = {
   },
 };
 
-/** Formats a USD amount in the site's currency (converting when it is ARS). */
+/** Formats an amount in the currency it was listed in. */
 export function formatPrice(
-  usd: number,
-  { currency, arsRate }: PriceSettings,
+  amount: number,
+  currency: Currency = "USD",
   digits: 0 | 2 = 0,
 ) {
-  const useArs = currency === "ARS" && arsRate > 0;
-  return FORMATTERS[useArs ? "ARS" : "USD"][digits].format(
-    useArs ? usd * arsRate : usd,
-  );
+  return FORMATTERS[currency][digits].format(amount);
 }
 
 /** Strips everything but digits. */
