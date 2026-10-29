@@ -19,6 +19,9 @@ export function CurrencyProvider({
   );
 }
 
+/** The site currency settings (currency and ARS-per-USD rate). */
+export const useCurrencySettings = () => useContext(CurrencyContext);
+
 /** Formats a USD amount in the currency chosen in the dashboard settings. */
 export function usePrice() {
   const settings = useContext(CurrencyContext);

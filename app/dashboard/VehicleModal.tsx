@@ -11,6 +11,8 @@ import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 import { useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { db } from "@/lib/firebase";
+import { useCurrencySettings } from "../components/CurrencyProvider";
+import { formatPrice } from "../data/site";
 import { photoError, uploadPhoto } from "@/lib/imagekit-upload";
 import { COMMON_CAR_FEATURES } from "../data/car-features";
 import {
@@ -96,6 +98,11 @@ export default function VehicleModal({
   const [sellerType, setSellerType] = useState<SellerType>(
     vehicle?.sellerType ?? "dealer",
   );
+  const site = useCurrencySettings();
+  const [priceCurrency, setPriceCurrency] = useState<"USD" | "ARS">("USD");
+  const [priceInput, setPriceInput] = useState(
+    vehicle ? String(vehicle.price) : "",
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -149,12 +156,23 @@ export default function VehicleModal({
     )
       return setError("Ese número de referencia ya lo usa otro vehículo.");
 
+    // Prices are stored in USD; pesos are converted with the rate from Configuración.
+    const typed = Number(priceInput);
+    if (priceCurrency === "ARS" && !(site.arsRate > 0))
+      return setError(
+        "Cargá la cotización del dólar en Configuración para ingresar precios en pesos.",
+      );
+    const price =
+      priceCurrency === "ARS" ? Math.round(typed / site.arsRate) : typed;
+    if (!Number.isFinite(price) || price < 0)
+      return setError("Ingresá un precio válido.");
+
     const fields = {
       reference,
       make: str("make"),
       model: str("model"),
       year: Number(str("year")),
-      price: Number(str("price")),
+      price,
       mileage: Math.round(Number(str("km")) / KM_PER_MILE),
       transmission: str("transmission"),
       fuelType: str("fuelType") as FuelType,
@@ -343,15 +361,38 @@ export default function VehicleModal({
                 className={FIELD}
               />
             </Labeled>
-            <Labeled label="Precio (USD)">
-              <input
-                name="price"
-                type="number"
-                required
-                min={0}
-                defaultValue={vehicle?.price}
-                className={FIELD}
-              />
+            <Labeled label="Precio">
+              <div className="flex gap-2">
+                <select
+                  value={priceCurrency}
+                  onChange={(e) =>
+                    setPriceCurrency(e.target.value as "USD" | "ARS")
+                  }
+                  aria-label="Moneda del precio"
+                  data-testid="vehicle-price-currency"
+                  className={`${FIELD} w-24 shrink-0`}
+                >
+                  <option value="USD">US$</option>
+                  <option value="ARS">ARS $</option>
+                </select>
+                <input
+                  name="price"
+                  type="number"
+                  required
+                  min={0}
+                  value={priceInput}
+                  onChange={(e) => setPriceInput(e.target.value)}
+                  data-testid="vehicle-price-input"
+                  className={FIELD}
+                />
+              </div>
+              {priceCurrency === "ARS" && (
+                <span className="text-xs text-muted">
+                  {site.arsRate > 0 && Number(priceInput) > 0
+                    ? `Se guarda como ${formatPrice(Math.round(Number(priceInput) / site.arsRate), { currency: "USD", arsRate: site.arsRate })} (cotización ${site.arsRate}).`
+                    : "Se convierte a dólares con la cotización de Configuración."}
+                </span>
+              )}
             </Labeled>
             <Labeled label="Kilometraje (km)">
               <input
