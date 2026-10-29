@@ -43,7 +43,8 @@ export async function getActiveDealerships(): Promise<Dealership[]> {
 
 export async function getHomepageVehicles(): Promise<Vehicle[]> {
   const vehicles = await getVehicles();
-  return vehicles.filter((v) => v.homepage).slice(0, HOMEPAGE_LIMIT);
+  // Newest first (see `order`); only an explicit `homepage: false` hides a listing.
+  return vehicles.filter((v) => v.homepage !== false).slice(0, HOMEPAGE_LIMIT);
 }
 
 export async function getVehicle(id: string): Promise<Vehicle | undefined> {

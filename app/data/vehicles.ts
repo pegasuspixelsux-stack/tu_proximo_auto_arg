@@ -67,7 +67,7 @@ export interface Vehicle {
   description?: string;
   /** Equipment ids from COMMON_CAR_FEATURES. */
   features?: string[];
-  /** Show on the homepage catalog (capped at HOMEPAGE_LIMIT). Defaults to true for the first listings. */
+  /** Show on the homepage catalog (capped at HOMEPAGE_LIMIT, newest first). Shown unless set to false. */
   homepage?: boolean;
 }
 
