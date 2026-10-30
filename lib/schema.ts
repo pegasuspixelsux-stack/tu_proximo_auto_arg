@@ -1,5 +1,5 @@
 import { FAQS } from "@/app/data/faqs";
-import type { Dealership, Vehicle } from "@/app/data/vehicles";
+import type { Vehicle } from "@/app/data/vehicles";
 import { absoluteUrl, BUSINESS, SITE_NAME } from "@/lib/seo";
 
 const KM_PER_MILE = 1.60934;
@@ -74,13 +74,7 @@ export function vehicleSchema(vehicle: Vehicle, description: string) {
       priceCurrency: vehicle.priceCurrency ?? "USD",
       availability: "https://schema.org/InStock",
       itemCondition: "https://schema.org/UsedCondition",
-      seller: vehicle.dealership
-        ? dealerRef(vehicle.dealership)
-        : { "@id": absoluteUrl("/#organization") },
+      seller: { "@id": absoluteUrl("/#organization") },
     },
   };
-}
-
-function dealerRef(d: Dealership) {
-  return { "@type": "AutoDealer", name: d.name, url: absoluteUrl(`/concesionarias/${d.slug}`) };
 }

@@ -23,8 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const dealer = await getDealership((await params).slug);
   if (!dealer) return {};
   return {
-    title: `${dealer.name}: autos usados en ${dealer.location}`,
-    description: `Mirá el inventario de autos usados de ${dealer.name} en ${dealer.location}. Consultá precios, financiación y coordiná una visita por WhatsApp.`,
+    title: `Autos usados en ${dealer.location}`,
+    description: `Mirá el inventario de autos usados de Tu Próximo Auto en ${dealer.location}. Consultá precios, financiación y coordiná una visita por WhatsApp.`,
     alternates: { canonical: `/concesionarias/${dealer.slug}` },
   };
 }
@@ -42,7 +42,7 @@ export default async function DealerPage({ params }: Props) {
         data={breadcrumbs([
           { name: "Inicio", url: absoluteUrl("/") },
           { name: "Concesionarias", url: absoluteUrl("/concesionarias") },
-          { name: dealer.name, url: absoluteUrl(`/concesionarias/${dealer.slug}`) },
+          { name: "Nuestra concesionaria", url: absoluteUrl(`/concesionarias/${dealer.slug}`) },
         ])}
       />
       <SiteHeader />
