@@ -8,9 +8,9 @@ import SiteHeader from "../components/SiteHeader";
 import { getActiveDealerships, getVehicles } from "../data/vehicle-store";
 
 export const metadata: Metadata = {
-  title: "Concesionarias de autos en Buenos Aires",
+  title: "Concesionaria de autos usados en Tigre, Buenos Aires",
   description:
-    "Conocé las concesionarias verificadas de Buenos Aires y Zona Norte que publican su stock de autos usados en Tu Próximo Auto. Mirá su inventario y contactalas.",
+    "Conocé la concesionaria detrás de Tu Próximo Auto, en Tigre, Zona Norte. Mirá su stock de autos usados, financiación y coordiná tu visita por WhatsApp.",
   alternates: { canonical: "/concesionarias" },
 };
 
