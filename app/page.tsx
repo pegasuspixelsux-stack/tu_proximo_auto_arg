@@ -3,6 +3,7 @@ import AnnouncementBar from "./components/AnnouncementBar";
 import SiteHeader from "./components/SiteHeader";
 import Catalog from "./components/Catalog";
 import ConversionCTA from "./components/ConversionCTA";
+import SeoIntro from "./components/SeoIntro";
 import FAQSection from "./components/FAQSection";
 import FinanceCalculator from "./components/FinanceCalculator";
 import FinancingCallout from "./components/FinancingCallout";
@@ -41,6 +42,7 @@ export default async function Home() {
         />
         <FinancingSection whatsappNumber={site.whatsappNumber} />
         <FinanceCalculator defaultCurrency={site.calculatorCurrency} />
+        <SeoIntro />
         <FAQSection />
         <ConversionCTA whatsappNumber={site.whatsappNumber} />
         <Footer />
