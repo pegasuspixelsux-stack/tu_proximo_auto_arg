@@ -66,10 +66,11 @@ export default function FinancingCallout({
               className="absolute inset-0 bg-gradient-to-br from-zinc-700 via-zinc-900 to-black"
             />
           )}
-          {/* Fade the image into the black panel (left on desktop, top on mobile). */}
+          {/* Horizontal dark gradient: solid black on the text side, easing off to the right. */}
           <div
             aria-hidden
-            className="absolute inset-0 bg-black/65 md:bg-transparent md:bg-gradient-to-r md:from-black md:via-black/30 md:to-transparent"
+            data-testid="financing-callout-overlay"
+            className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/75 to-black/55 md:from-black md:via-black/45 md:to-black/10"
           />
           <div className="absolute inset-x-0 bottom-0 z-10 flex p-6 md:p-8">
             <WhatsAppLeadButton
