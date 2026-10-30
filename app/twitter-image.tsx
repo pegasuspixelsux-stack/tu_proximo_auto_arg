@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Tu Próximo Auto - Autos usados en Buenos Aires y Zona Norte";
+export const alt = "Tu Próximo Auto - Autos usados en Tigre y Buenos Aires";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -26,7 +26,7 @@ export default function OpenGraphImage() {
           </span>
         </div>
         <div style={{ marginTop: 40, fontSize: 48, color: "#a1a1a6" }}>
-          Autos usados certificados en Buenos Aires y Zona Norte
+          Autos usados en venta en Tigre, Zona Norte y Buenos Aires
         </div>
       </div>
     ),
