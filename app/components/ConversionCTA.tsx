@@ -2,7 +2,6 @@
 
 import { CalendarCheck, ChevronDown, MessageCircle, X } from "lucide-react";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
-import { createLead } from "@/lib/leads";
 import { cleanPhone } from "../data/site";
 import WhatsAppLeadButton from "./WhatsAppLeadButton";
 
@@ -115,12 +114,13 @@ function AppointmentModal({
       `- Código: #AS-${code}`,
     ].join("\n");
     // The form already collects name and phone, so it saves the lead itself.
-    createLead({
+    // Loaded on submit so the Firebase SDK stays out of the initial bundle.
+    import("@/lib/leads").then(({ createLead }) => createLead({
       fullName: get("name"),
       phone: cleanPhone(get("phone")),
       notes: text,
       sourceItem: get("car"),
-    }).catch((err) => console.error("No se pudo guardar el lead", err));
+    })).catch((err) => console.error("No se pudo guardar el lead", err));
     window.open(
       `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`,
       "_blank",

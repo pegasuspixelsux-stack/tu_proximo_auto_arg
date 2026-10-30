@@ -10,7 +10,6 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
-import { createLead } from "@/lib/leads";
 import { cleanPhone, isValidPhone } from "../data/site";
 
 const INPUT =
@@ -66,7 +65,10 @@ function LeadModal({
     const text = [notes || message, `— ${fullName}`].join("\n\n");
     // Start the save, then open WhatsApp in the same click so browsers don't
     // treat the new tab as a blocked pop-up.
-    const saved = createLead({ fullName, phone, notes, sourceItem });
+    // Loaded on submit so the Firebase SDK stays out of the initial bundle.
+    const saved = import("@/lib/leads").then(({ createLead }) =>
+      createLead({ fullName, phone, notes, sourceItem }),
+    );
     window.open(
       `https://wa.me/${targetPhone}?text=${encodeURIComponent(text)}`,
       "_blank",
