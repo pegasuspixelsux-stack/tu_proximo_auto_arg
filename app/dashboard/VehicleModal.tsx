@@ -81,7 +81,7 @@ function parseSpecs(text: string) {
 
 /** Soft warning (never blocks saving) when the location looks like a street address. */
 function locationProblem(value: string) {
-  return /\d|(av|avda|avenida|calle)/i.test(value)
+  return /\d|\b(av|avda|avenida|calle)\b/i.test(value)
     ? "Parece incluir una calle o un número. Usá solo Ciudad, Buenos Aires."
     : "";
 }
