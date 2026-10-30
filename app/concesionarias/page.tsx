@@ -33,11 +33,11 @@ export default async function ConcesionariasPage() {
           Directorio
         </p>
         <h1 className="mt-2 text-balance text-3xl font-light tracking-[-0.02em] lg:text-5xl">
-          Concesionarias
+          Concesionaria en Tigre
         </h1>
         <p className="mt-4 max-w-xl text-muted">
-          Concesionarias verificadas que publican su inventario directamente en
-          Tu Próximo Auto.
+          La concesionaria de Tu Próximo Auto, en Tigre, Zona Norte. Mirá su
+          stock de autos usados y coordiná tu visita.
         </p>
 
         <ul className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

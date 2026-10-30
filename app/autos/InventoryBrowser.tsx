@@ -588,11 +588,11 @@ export default function InventoryBrowser({
     <>
       <header className="pt-10">
         <h1 className="text-balance text-3xl font-semibold tracking-[-0.02em] lg:text-5xl">
-          Salón de Ventas
+          Autos usados en venta
         </h1>
         <p className="mt-3 max-w-2xl text-muted">
-          Explorá nuestro inventario de vehículos verificados y filtrá según tus
-          preferencias.
+          Explorá nuestro inventario de autos usados verificados en Tigre, Zona
+          Norte y Buenos Aires, y filtrá según tus preferencias.
         </p>
       </header>
 

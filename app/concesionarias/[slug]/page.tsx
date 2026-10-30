@@ -56,7 +56,7 @@ export default async function DealerPage({ params }: Props) {
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-3">
             <h1 className="text-balance text-3xl font-light tracking-[-0.02em] lg:text-5xl">
-              {dealer.name}
+              Tu Próximo Auto
             </h1>
             {dealer.verified && (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted">
