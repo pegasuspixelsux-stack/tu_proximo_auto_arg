@@ -86,7 +86,7 @@ const SOCIALS: { label: string; href: string; icon: ReactNode }[] = [
 ];
 
 const LEGAL_LINKS = [
-  { label: "Política de cookies", href: "#" },
+  { label: "Política de cookies", href: "/cookies" },
   { label: "Protección de datos personales", href: "/privacidad" },
   { label: "Admin", href: "/login" },
 ];
