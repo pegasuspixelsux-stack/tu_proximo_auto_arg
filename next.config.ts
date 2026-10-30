@@ -9,6 +9,13 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   async redirects() {
     return [
+      // Canonical host is www; Vercel already forces HTTPS.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "tuproximoauto.online" }],
+        destination: "https://www.tuproximoauto.online/:path*",
+        permanent: true,
+      },
       {
         source: "/dashboard/leads",
         destination: "/dashboard/interesados",

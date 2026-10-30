@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BadgeCheck, MapPin, MessageCircle, Phone, Star } from "lucide-react";
+import JsonLd, { breadcrumbs } from "@/lib/json-ld";
+import { absoluteUrl } from "@/lib/seo";
 import Footer from "../../components/Footer";
 import SiteHeader from "../../components/SiteHeader";
 import WhatsAppLeadButton from "../../components/WhatsAppLeadButton";
@@ -21,8 +23,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const dealer = await getDealership((await params).slug);
   if (!dealer) return {};
   return {
-    title: `${dealer.name} | Tu Próximo Auto - Argentina`,
-    description: `Inventario de ${dealer.name} en ${dealer.location}.`,
+    title: `${dealer.name}: autos usados en ${dealer.location}`,
+    description: `Mirá el inventario de autos usados de ${dealer.name} en ${dealer.location}. Consultá precios, financiación y coordiná una visita por WhatsApp.`,
+    alternates: { canonical: `/concesionarias/${dealer.slug}` },
   };
 }
 
@@ -35,6 +38,13 @@ export default async function DealerPage({ params }: Props) {
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbs([
+          { name: "Inicio", url: absoluteUrl("/") },
+          { name: "Concesionarias", url: absoluteUrl("/concesionarias") },
+          { name: dealer.name, url: absoluteUrl(`/concesionarias/${dealer.slug}`) },
+        ])}
+      />
       <SiteHeader />
       <main className="mx-auto min-h-screen w-full max-w-[1440px] bg-bg px-3 text-fg lg:px-6">
         <section

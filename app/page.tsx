@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import AnnouncementBar from "./components/AnnouncementBar";
 import SiteHeader from "./components/SiteHeader";
 import Catalog from "./components/Catalog";
@@ -7,10 +8,17 @@ import FinanceCalculator from "./components/FinanceCalculator";
 import FinancingCallout from "./components/FinancingCallout";
 import FinancingSection from "./components/FinancingSection";
 import Footer from "./components/Footer";
+import JsonLd from "@/lib/json-ld";
+import { faqSchema, organizationSchema } from "@/lib/schema";
 import Hero from "./components/Hero";
 import { getHeroSlides } from "./data/hero-store";
 import { getSiteSettings } from "./data/site-store";
 import { getHomepageVehicles } from "./data/vehicle-store";
+
+export const metadata: Metadata = {
+  title: { absolute: "Autos usados en Buenos Aires y Zona Norte | Tu Próximo Auto" },
+  alternates: { canonical: "/" },
+};
 
 export default async function Home() {
   const [slides, site, vehicles] = await Promise.all([
@@ -20,6 +28,8 @@ export default async function Home() {
   ]);
   return (
     <>
+      <JsonLd data={organizationSchema(site.whatsappNumber)} />
+      <JsonLd data={faqSchema()} />
       <AnnouncementBar />
       <SiteHeader />
       <Hero slides={slides} />

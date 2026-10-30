@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { CurrencyProvider } from "./components/CurrencyProvider";
 import { getSiteSettings } from "./data/site-store";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,17 +16,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tu Próximo Auto - Argentina | Autos usados certificados",
-  description:
-    "Tu Próximo Auto - Argentina: autos usados certificados, seleccionados, inspeccionados y entregados en nuestro salón de ventas de Zona Norte (Tigre).",
-  applicationName: "Tu Próximo Auto - Argentina",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Autos usados en Buenos Aires y Zona Norte | Tu Próximo Auto",
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: `${SITE_NAME} - Argentina`,
+  alternates: { languages: { "es-AR": "/" } },
   openGraph: {
-    siteName: "Tu Próximo Auto - Argentina",
-    title: "Tu Próximo Auto - Argentina",
-    description: "Autos usados certificados con atención personalizada.",
+    siteName: `${SITE_NAME} - Argentina`,
+    title: "Autos usados en Buenos Aires y Zona Norte | Tu Próximo Auto",
+    description: SITE_DESCRIPTION,
     locale: "es_AR",
     type: "website",
   },
+  twitter: { card: "summary_large_image" },
 };
 
 export default async function RootLayout({

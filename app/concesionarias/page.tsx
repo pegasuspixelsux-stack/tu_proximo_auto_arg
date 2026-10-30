@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BadgeCheck, MapPin, Star } from "lucide-react";
+import JsonLd, { breadcrumbs } from "@/lib/json-ld";
+import { absoluteUrl } from "@/lib/seo";
 import Footer from "../components/Footer";
 import SiteHeader from "../components/SiteHeader";
 import { getActiveDealerships, getVehicles } from "../data/vehicle-store";
 
 export const metadata: Metadata = {
-  title: "Concesionarias | Tu Próximo Auto - Argentina",
+  title: "Concesionarias de autos en Buenos Aires",
   description:
-    "Concesionarias verificadas que publican y gestionan su inventario en Tu Próximo Auto.",
+    "Conocé las concesionarias verificadas de Buenos Aires y Zona Norte que publican su stock de autos usados en Tu Próximo Auto. Mirá su inventario y contactalas.",
+  alternates: { canonical: "/concesionarias" },
 };
 
 export default async function ConcesionariasPage() {
@@ -18,6 +21,12 @@ export default async function ConcesionariasPage() {
   ]);
   return (
     <>
+      <JsonLd
+        data={breadcrumbs([
+          { name: "Inicio", url: absoluteUrl("/") },
+          { name: "Concesionarias", url: absoluteUrl("/concesionarias") },
+        ])}
+      />
       <SiteHeader />
       <main className="mx-auto min-h-screen w-full max-w-[1440px] bg-bg px-3 py-16 text-fg lg:px-6">
         <p className="text-xs font-medium uppercase tracking-widest text-muted">
