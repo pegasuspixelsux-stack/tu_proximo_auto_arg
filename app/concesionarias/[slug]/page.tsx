@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { BadgeCheck, MapPin, MessageCircle, Phone, Star } from "lucide-react";
 import JsonLd, { breadcrumbs } from "@/lib/json-ld";
 import { absoluteUrl } from "@/lib/seo";
+import { placeLabel } from "@/lib/place";
 import Footer from "../../components/Footer";
 import SiteHeader from "../../components/SiteHeader";
 import WhatsAppLeadButton from "../../components/WhatsAppLeadButton";
@@ -22,9 +23,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const dealer = await getDealership((await params).slug);
   if (!dealer) return {};
+  const place = placeLabel(dealer.city ? `${dealer.city}, ${dealer.province ?? ""}` : dealer.location);
   return {
-    title: `Autos usados en ${dealer.location}`,
-    description: `Mirá el inventario de autos usados de Tu Próximo Auto en ${dealer.location}. Consultá precios, financiación y coordiná una visita por WhatsApp.`,
+    title: `Autos usados en ${place}`,
+    description: `Mirá el inventario de autos usados de Tu Próximo Auto en ${place}. Consultá precios, financiación y coordiná una visita por WhatsApp.`,
     alternates: { canonical: `/concesionarias/${dealer.slug}` },
   };
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { placeLabel } from "@/lib/place";
 import { LayoutGroup, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -122,7 +123,7 @@ function matches(v: Vehicle, f: Filters, arsRate: number) {
   if (f.kmMax && v.mileage * KM_PER_MILE >= Number(f.kmMax)) return false;
   if (f.transmission && v.transmission !== f.transmission) return false;
   if (f.fuels.length && !f.fuels.includes(v.fuelType)) return false;
-  if (f.location && v.location !== f.location) return false;
+  if (f.location && placeLabel(v.location) !== f.location) return false;
   if (f.sellers.length && !f.sellers.includes(v.sellerType)) return false;
   return true;
 }
@@ -495,7 +496,7 @@ function CarCard({ vehicle }: { vehicle: Vehicle }) {
             strokeWidth={1.75}
             aria-hidden
           />
-          {vehicle.location.replace(", UY", ", Uruguay")}
+          {placeLabel(vehicle.location)}
         </p>
 
         <div className="mt-auto flex items-center justify-between border-t border-line pt-4 text-xs font-semibold text-muted transition-colors duration-150 group-hover:text-fg">
@@ -532,7 +533,7 @@ export default function InventoryBrowser({
     [vehicles],
   );
   const locations = useMemo(
-    () => [...new Set(vehicles.map((v) => v.location))].sort(),
+    () => [...new Set(vehicles.map((v) => placeLabel(v.location)))].sort(),
     [vehicles],
   );
 

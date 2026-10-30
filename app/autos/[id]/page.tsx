@@ -128,7 +128,7 @@ async function VehicleDetail({ params }: Props) {
   const testDriveMessage = `Hola, quisiera agendar una prueba de manejo del ${title} publicado en Tu Próximo Auto.`;
 
   // Shown when the listing has no description of its own.
-  const fallbackDescription = `${title} ${FUEL_LABELS[vehicle.fuelType].toLowerCase()} con transmisión ${vehicle.transmission.toLowerCase()} y ${number.format(Math.round(vehicle.mileage * KM_PER_MILE))} km, disponible en ${vehicle.location}. Es una unidad lista para conocer en persona: podés verla, hacer una prueba de manejo y revisar toda la documentación antes de decidir. Contamos con opciones de financiamiento para que puedas concretar la compra de forma simple y segura, con un anticipo del 60% y el resto en cuotas. Escribinos por WhatsApp para consultar disponibilidad, pedir más fotos o coordinar una visita; te respondemos a la brevedad y te acompañamos en cada paso del proceso.`;
+  const fallbackDescription = `${title} ${FUEL_LABELS[vehicle.fuelType].toLowerCase()} con transmisión ${vehicle.transmission.toLowerCase()} y ${number.format(Math.round(vehicle.mileage * KM_PER_MILE))} km, disponible en ${placeLabel(vehicle.location)}. Es una unidad lista para conocer en persona: podés verla, hacer una prueba de manejo y revisar toda la documentación antes de decidir. Contamos con opciones de financiamiento para que puedas concretar la compra de forma simple y segura, con un anticipo del 60% y el resto en cuotas. Escribinos por WhatsApp para consultar disponibilidad, pedir más fotos o coordinar una visita; te respondemos a la brevedad y te acompañamos en cada paso del proceso.`;
 
   const highlights = [
     {
@@ -165,7 +165,7 @@ async function VehicleDetail({ params }: Props) {
     ...(vehicle.color
       ? [{ icon: Palette, label: "Color", value: vehicle.color }]
       : []),
-    { icon: MapPin, label: "Ubicación", value: vehicle.location },
+    { icon: MapPin, label: "Ubicación", value: placeLabel(vehicle.location) },
     ...Object.entries(vehicle.specs ?? {}).map(([label, value]) => ({
       icon: Settings2,
       label,
@@ -305,7 +305,7 @@ async function VehicleDetail({ params }: Props) {
                   strokeWidth={1.75}
                   aria-hidden
                 />
-                {vehicle.location}
+                {placeLabel(vehicle.location)}
               </p>
 
               {whatsappNumber && (

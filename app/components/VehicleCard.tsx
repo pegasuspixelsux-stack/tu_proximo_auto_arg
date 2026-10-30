@@ -1,5 +1,6 @@
 "use client";
 
+import { placeLabel } from "@/lib/place";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Building2, MapPin, UserRound } from "lucide-react";
 import Image from "next/image";
@@ -162,7 +163,7 @@ export default function VehicleCard({
               strokeWidth={1.75}
               aria-hidden
             />
-            {vehicle.location}
+            {placeLabel(vehicle.location)}
           </span>
         </p>
 

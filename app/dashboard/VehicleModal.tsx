@@ -79,6 +79,13 @@ function parseSpecs(text: string) {
   return specs;
 }
 
+/** Soft warning (never blocks saving) when the location looks like a street address. */
+function locationProblem(value: string) {
+  return /\d|(av|avda|avenida|calle)/i.test(value)
+    ? "Parece incluir una calle o un número. Usá solo Ciudad, Buenos Aires."
+    : "";
+}
+
 function Labeled({
   label,
   children,
@@ -125,6 +132,9 @@ export default function VehicleModal({
   });
   // Photo batch progress: overall 0-100 plus what is happening right now.
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [locationWarning, setLocationWarning] = useState(() =>
+    locationProblem(vehicle?.location ?? ""),
+  );
   const [currentStepText, setCurrentStepText] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   // Shown right under the photo picker so a failure is never out of sight.
@@ -617,9 +627,19 @@ export default function VehicleModal({
                   <input
                     name="location"
                     required
+                    placeholder="Ciudad, Buenos Aires"
                     defaultValue={vehicle?.location}
+                    onChange={(e) => setLocationWarning(locationProblem(e.target.value))}
                     className={FIELD}
                   />
+                  <span className="text-xs normal-case tracking-normal text-subtle">
+                    Ciudad, Buenos Aires (sin calle)
+                  </span>
+                  {locationWarning && (
+                    <span role="alert" className="text-xs normal-case tracking-normal text-amber-400">
+                      {locationWarning}
+                    </span>
+                  )}
                 </Labeled>
                 <Labeled label="WhatsApp del vendedor" wide>
                   <input
