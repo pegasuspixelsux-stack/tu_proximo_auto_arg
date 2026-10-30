@@ -44,6 +44,7 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
       onBlur={() => setPaused(false)}
       className="hero-on-photo relative mx-auto mt-[10px] flex aspect-square min-h-[352px] w-[calc(100%-1.5rem)] sm:aspect-auto lg:w-[calc(100%-3rem)] max-w-[1440px] flex-col rounded-xl sm:min-h-[max(336px,calc((100svh_-_290px)_*_0.56))] lg:h-[calc((100svh_-_290px)_*_0.924)] lg:min-h-[443px] overflow-hidden bg-bg text-fg selection:bg-fg selection:text-bg"
     >
+      <h1 className="sr-only">Tu Próximo Auto – Autos usados en Buenos Aires</h1>
       <div className="absolute inset-0 z-0">
         {prevIndex !== null && slides[prevIndex] && (
           <Image
@@ -91,7 +92,7 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
                 />
               </p>
             )}
-            <h1
+            <p
                 style={rise(0.15, 24)}
                 className="hero-rise text-balance text-[28px] font-semibold leading-[1.08] tracking-[-0.02em] sm:text-4xl lg:text-6xl"
             >
@@ -99,7 +100,7 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
                 <span className="text-brand">{slide.highlight} </span>
               )}
               {slide.heading}
-            </h1>
+            </p>
             {slide.supportText && (
               <p
                 style={rise(0.28)}
