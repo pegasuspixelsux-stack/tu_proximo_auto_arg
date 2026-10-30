@@ -26,7 +26,7 @@ const COLUMNS: FooterColumn[] = [
     title: "Legales & Ayuda",
     links: [
       { label: "Términos y Condiciones", href: "/terminos" },
-      { label: "Política de Privacidad", href: "#" },
+      { label: "Política de Privacidad", href: "/privacidad" },
       { label: "Preguntas Frecuentes", href: "/#preguntas-frecuentes" },
       { label: "Soporte", href: "#" },
     ],
@@ -87,7 +87,7 @@ const SOCIALS: { label: string; href: string; icon: ReactNode }[] = [
 
 const LEGAL_LINKS = [
   { label: "Política de cookies", href: "#" },
-  { label: "Protección de datos personales", href: "#" },
+  { label: "Protección de datos personales", href: "/privacidad" },
   { label: "Admin", href: "/login" },
 ];
 
