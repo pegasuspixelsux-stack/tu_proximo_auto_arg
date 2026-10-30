@@ -7,9 +7,9 @@ import { getVehicles } from "../data/vehicle-store";
 import InventoryBrowser from "./InventoryBrowser";
 
 export const metadata: Metadata = {
-  title: "Autos usados en venta en Buenos Aires",
+  title: "Autos usados en venta en Zona Norte y CABA",
   description:
-    "Explorá todos los autos usados verificados en venta en Buenos Aires y Zona Norte. Filtrá por marca, precio, año y kilometraje, y financiá con tarjeta.",
+    "Explorá todos los autos usados en venta en Tigre, Zona Norte, Buenos Aires y CABA. Filtrá por marca, precio, año y kilometraje, y financiá con tarjeta.",
   alternates: { canonical: "/autos" },
 };
 

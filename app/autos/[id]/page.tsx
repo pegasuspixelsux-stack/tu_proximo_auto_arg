@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!vehicle) return {};
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
   return {
-    title: `${title} usado en ${vehicle.location}`,
+    title: `${title} usado en venta en ${vehicle.location}`,
     description: `${title} en ${vehicle.location}: ${FUEL_LABELS[vehicle.fuelType].toLowerCase()}, ${number.format(Math.round(vehicle.mileage * KM_PER_MILE))} km, ${formatPrice(vehicle.price, vehicle.priceCurrency)}. Financiación y prueba de manejo.`,
     alternates: { canonical: `/autos/${vehicle.id}` },
     openGraph: { images: [vehicle.image] },

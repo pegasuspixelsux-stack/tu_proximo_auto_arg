@@ -4,7 +4,7 @@ export const SITE_URL = "https://www.tuproximoauto.online";
 export const SITE_NAME = "Tu Próximo Auto";
 
 export const SITE_DESCRIPTION =
-  "Comprá autos usados certificados en Buenos Aires y Zona Norte (Tigre). Financiación con tarjeta, permutas, prueba de manejo y transferencia asistida.";
+  "Comprá tu auto usado en Tigre, Zona Norte, Buenos Aires y CABA. Financiación con tarjeta, permuta, papeles al día y transferencia asistida.";
 
 /** Absolute URL for a site path. */
 export const absoluteUrl = (path = "/") => `${SITE_URL}${path === "/" ? "" : path}`;

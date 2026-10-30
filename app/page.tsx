@@ -16,7 +16,7 @@ import { getSiteSettings } from "./data/site-store";
 import { getHomepageVehicles } from "./data/vehicle-store";
 
 export const metadata: Metadata = {
-  title: { absolute: "Autos usados en Buenos Aires y Zona Norte | Tu Próximo Auto" },
+  title: { absolute: "Autos usados en Tigre y Buenos Aires | Tu Próximo Auto" },
   alternates: { canonical: "/" },
 };
 

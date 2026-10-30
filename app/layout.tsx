@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Autos usados en Buenos Aires y Zona Norte | Tu Próximo Auto",
+    default: "Autos usados en Tigre y Buenos Aires | Tu Próximo Auto",
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   alternates: { languages: { "es-AR": "/" } },
   openGraph: {
     siteName: `${SITE_NAME} - Argentina`,
-    title: "Autos usados en Buenos Aires y Zona Norte | Tu Próximo Auto",
+    title: "Autos usados en Tigre y Buenos Aires | Tu Próximo Auto",
     description: SITE_DESCRIPTION,
     locale: "es_AR",
     type: "website",
