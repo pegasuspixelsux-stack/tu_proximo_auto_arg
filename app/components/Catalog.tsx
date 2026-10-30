@@ -181,23 +181,6 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
         </AnimatePresence>
       </motion.div>
 
-      <div className="mt-6 flex items-baseline justify-center gap-4">
-        <p
-          data-testid="result-count"
-          aria-live="polite"
-          className="text-xs tabular-nums text-subtle"
-        >
-          {visible.length} {visible.length === 1 ? "vehículo" : "vehículos"}
-        </p>
-        <Link
-          href="/autos"
-          data-testid="see-all-inventory"
-          className="text-xs text-muted underline-offset-4 transition-colors duration-150 hover:text-fg hover:underline"
-        >
-          Ver todo el inventario →
-        </Link>
-      </div>
-
       {visible.length === 0 && (
         <div
           data-testid="empty-state"
@@ -262,11 +245,19 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
         </nav>
       )}
 
-      <div className="mt-8 flex justify-center">
+      {/* Count on the left, advanced search in the middle, full inventory on the right. */}
+      <div className="mt-10 grid items-center gap-4 sm:grid-cols-[1fr_auto_1fr]">
+        <p
+          data-testid="result-count"
+          aria-live="polite"
+          className="text-center text-xs tabular-nums text-subtle sm:text-left"
+        >
+          {visible.length} {visible.length === 1 ? "vehículo" : "vehículos"}
+        </p>
         <Link
           href="/autos"
           data-testid="advanced-search-link"
-          className="group inline-flex items-center gap-2 rounded-full border border-line px-6 py-3 text-xs font-semibold uppercase tracking-wider text-fg transition-[border-color,transform] duration-150 hover:border-fg/40 active:scale-95"
+          className="group inline-flex items-center justify-center gap-2 justify-self-center rounded-full border border-line px-6 py-3 text-xs font-semibold uppercase tracking-wider text-fg transition-[border-color,transform] duration-150 hover:border-fg/40 active:scale-95"
         >
           <SlidersHorizontal
             className="h-4 w-4"
@@ -279,6 +270,13 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
             strokeWidth={1.75}
             aria-hidden
           />
+        </Link>
+        <Link
+          href="/autos"
+          data-testid="see-all-inventory"
+          className="text-center text-xs text-muted underline-offset-4 transition-colors duration-150 hover:text-fg hover:underline sm:text-right"
+        >
+          Ver todo el inventario →
         </Link>
       </div>
     </section>
