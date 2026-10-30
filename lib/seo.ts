@@ -1,10 +1,10 @@
-﻿/** Canonical origin: the www host (the bare domain redirects here, see next.config.ts). */
+/** Canonical origin: the www host (the bare domain redirects here, see next.config.ts). */
 export const SITE_URL = "https://www.tuproximoauto.online";
 
-export const SITE_NAME = "Tu PrÃ³ximo Auto";
+export const SITE_NAME = "Tu Próximo Auto";
 
 export const SITE_DESCRIPTION =
-  "ComprÃ¡ autos usados certificados en Buenos Aires y Zona Norte (Tigre). FinanciaciÃ³n con tarjeta, permutas, prueba de manejo y transferencia asistida.";
+  "Comprá autos usados certificados en Buenos Aires y Zona Norte (Tigre). Financiación con tarjeta, permutas, prueba de manejo y transferencia asistida.";
 
 /** Absolute URL for a site path. */
 export const absoluteUrl = (path = "/") => `${SITE_URL}${path === "/" ? "" : path}`;
@@ -19,7 +19,12 @@ export const BUSINESS = {
   locality: "Tigre",
   region: "Buenos Aires",
   country: "AR",
-  areaServed: [\n    "Ciudad Autónoma de Buenos Aires",\n    "Gran Buenos Aires: Zona Norte",\n    "Gran Buenos Aires: Zona Oeste",\n    "Gran Buenos Aires: Zona Sur",\n    "Provincia de Buenos Aires",\n  ],
+  areaServed: [
+    "Ciudad Autónoma de Buenos Aires",
+    "Gran Buenos Aires: Zona Norte",
+    "Gran Buenos Aires: Zona Oeste",
+    "Gran Buenos Aires: Zona Sur",
+    "Provincia de Buenos Aires",
+  ],
   sameAs: [] as string[],
 } as const;
-
