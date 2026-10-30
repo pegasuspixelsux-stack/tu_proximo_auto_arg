@@ -14,6 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl("/terminos"), changeFrequency: "yearly" as const, priority: 0.2 },
     { url: absoluteUrl("/privacidad"), changeFrequency: "yearly" as const, priority: 0.2 },
     { url: absoluteUrl("/cookies"), changeFrequency: "yearly" as const, priority: 0.2 },
+    { url: absoluteUrl("/soporte"), changeFrequency: "yearly" as const, priority: 0.2 },
     ...vehicles.map((v) => ({
       url: absoluteUrl(`/autos/${v.id}`),
       lastModified: v.createdAt,
