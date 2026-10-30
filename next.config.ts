@@ -16,9 +16,10 @@ const nextConfig: NextConfig = {
         destination: "https://www.tuproximoauto.online/:path*",
         permanent: true,
       },
-      // The public dealership directory is hidden (the dashboard still manages
+      // The public dealership directory and dealer pages are hidden (the dashboard still manages
       // dealerships). Remove this redirect to bring /concesionarias back.
       { source: "/concesionarias", destination: "/autos", permanent: false },
+      { source: "/concesionarias/:slug", destination: "/autos", permanent: false },
       {
         source: "/dashboard/leads",
         destination: "/dashboard/interesados",

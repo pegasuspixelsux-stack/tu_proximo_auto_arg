@@ -1,12 +1,9 @@
 import type { MetadataRoute } from "next";
-import { getActiveDealerships, getVehicles } from "./data/vehicle-store";
+import { getVehicles } from "./data/vehicle-store";
 import { absoluteUrl } from "@/lib/seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [vehicles, dealerships] = await Promise.all([
-    getVehicles(),
-    getActiveDealerships(),
-  ]);
+  const vehicles = await getVehicles();
   return [
     { url: absoluteUrl("/"), changeFrequency: "daily", priority: 1 },
     { url: absoluteUrl("/autos"), changeFrequency: "daily", priority: 0.9 },
@@ -19,11 +16,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: v.createdAt,
       changeFrequency: "weekly" as const,
       priority: 0.8,
-    })),
-    ...dealerships.map((d) => ({
-      url: absoluteUrl(`/concesionarias/${d.slug}`),
-      changeFrequency: "weekly" as const,
-      priority: 0.6,
     })),
   ];
 }
