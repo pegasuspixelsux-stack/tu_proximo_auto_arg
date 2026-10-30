@@ -20,7 +20,6 @@ const COLUMNS: FooterColumn[] = [
       ...NAV_LINKS,
       ...NAV_RIGHT_LINKS,
       { label: "Autos usados en venta", href: "/autos" },
-      { label: "Concesionarias de Buenos Aires", href: "/concesionarias" },
     ],
   },
   {

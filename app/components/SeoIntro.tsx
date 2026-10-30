@@ -30,9 +30,6 @@ export default function SeoIntro() {
         <Link href="/autos" className="underline underline-offset-4">
           Ver todos los autos usados en venta
         </Link>
-        <Link href="/concesionarias" className="underline underline-offset-4">
-          Conocé nuestra concesionaria en Tigre
-        </Link>
       </p>
     </section>
   );

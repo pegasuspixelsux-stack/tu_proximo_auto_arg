@@ -43,7 +43,6 @@ export default async function DealerPage({ params }: Props) {
       <JsonLd
         data={breadcrumbs([
           { name: "Inicio", url: absoluteUrl("/") },
-          { name: "Concesionarias", url: absoluteUrl("/concesionarias") },
           { name: "Nuestra concesionaria", url: absoluteUrl(`/concesionarias/${dealer.slug}`) },
         ])}
       />
