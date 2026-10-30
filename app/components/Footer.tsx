@@ -25,7 +25,7 @@ const COLUMNS: FooterColumn[] = [
   {
     title: "Legales & Ayuda",
     links: [
-      { label: "Términos y Condiciones", href: "#" },
+      { label: "Términos y Condiciones", href: "/terminos" },
       { label: "Política de Privacidad", href: "#" },
       { label: "Preguntas Frecuentes", href: "/#preguntas-frecuentes" },
       { label: "Soporte", href: "#" },
