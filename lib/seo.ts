@@ -16,8 +16,6 @@ export const absoluteUrl = (path = "/") => `${SITE_URL}${path === "/" ? "" : pat
  * social profile URLs (sameAs) and a real phone for Argentina.
  */
 export const BUSINESS = {
-  /** Where customers are attended; never used in page titles. */
-  venueName: "Expo Norte",
   locality: "Tigre",
   region: "Buenos Aires",
   country: "AR",

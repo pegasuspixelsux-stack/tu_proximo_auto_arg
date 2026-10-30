@@ -112,7 +112,7 @@ export default async function Footer() {
             <address className="mt-4 text-sm not-italic leading-relaxed text-muted">
               Tu Próximo Auto
               <br />
-              Atención en Expo Norte, Tigre, Zona Norte, Buenos Aires
+              Salón de ventas en Tigre, Zona Norte, Buenos Aires
               <br />
               Atención con cita previa
             </address>
