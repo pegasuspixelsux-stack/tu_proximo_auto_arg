@@ -28,6 +28,16 @@ export function organizationSchema(whatsappNumber: string) {
       addressRegion: BUSINESS.region,
       addressCountry: BUSINESS.country,
     },
+    location: {
+      "@type": "Place",
+      name: BUSINESS.venueName,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: BUSINESS.locality,
+        addressRegion: BUSINESS.region,
+        addressCountry: BUSINESS.country,
+      },
+    },
     areaServed: BUSINESS.areaServed.map((name) => ({ "@type": "Place", name })),
     ...(BUSINESS.sameAs.length > 0 && { sameAs: BUSINESS.sameAs }),
   };
