@@ -30,6 +30,7 @@ import VehicleSlideshow from "../../components/VehicleSlideshow";
 import { CAR_FEATURE_LABEL } from "../../data/car-features";
 import { getSiteSettings } from "../../data/site-store";
 import { getVehicle, getVehicles } from "../../data/vehicle-store";
+import { fitParts, fitText, placeLabel } from "@/lib/place";
 import { calculateFinancing } from "@/lib/finance";
 import { formatPrice } from "../../data/site";
 import { vehicleReference, type Vehicle } from "../../data/vehicles";
@@ -59,9 +60,40 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const vehicle = await getVehicle((await params).id);
   if (!vehicle) return {};
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
+  const place = placeLabel(vehicle.location);
+  const km = number.format(Math.round(vehicle.mileage * KM_PER_MILE));
+  // Page title budget: 60 chars minus the " | Tu Próximo Auto" suffix.
+  const pageTitle = fitText(
+    [
+      `${title} usado en venta en ${place}`,
+      `${title} usado en venta en ${place.split(",")[0]}`,
+      `${title} usado en ${place.split(",")[0]}`,
+      `${title} usado`,
+      title,
+    ],
+    42,
+  );
+  const base = fitParts(
+    [
+      `${title} usado en venta en ${place}.`,
+      `Año ${vehicle.year}, ${km} km,`,
+      `transmisión ${vehicle.transmission.toLowerCase()},`,
+      `${FUEL_LABELS[vehicle.fuelType].toLowerCase()}.`,
+      `${formatPrice(vehicle.price, vehicle.priceCurrency)}.`,
+    ],
+    160,
+  );
+  // Longest closing sentence that still fits in 160 chars.
+  const tail = [
+    "Financiación, permuta y prueba de manejo en Zona Norte.",
+    "Financiación, permuta y prueba de manejo.",
+    "Financiación y prueba de manejo.",
+    "Consultá por WhatsApp.",
+  ].find((t) => base.length + 1 + t.length <= 160);
+  const description = tail ? `${base} ${tail}` : base;
   return {
-    title: `${title} usado en venta en ${vehicle.location}`,
-    description: `${title} en ${vehicle.location}: ${FUEL_LABELS[vehicle.fuelType].toLowerCase()}, ${number.format(Math.round(vehicle.mileage * KM_PER_MILE))} km, ${formatPrice(vehicle.price, vehicle.priceCurrency)}. Financiación y prueba de manejo.`,
+    title: pageTitle,
+    description,
     alternates: { canonical: `/autos/${vehicle.id}` },
     openGraph: { images: [vehicle.image] },
   };
