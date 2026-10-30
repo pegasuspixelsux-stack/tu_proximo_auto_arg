@@ -139,20 +139,29 @@ export default function Hero({ slides }: { slides: HeroSlide[] }) {
       {count > 1 && (
         <div
           role="group"
-          aria-label="Diapositivas"
-          className="absolute inset-x-0 bottom-3 z-20 flex justify-center gap-2 sm:bottom-4"
+          aria-label="Imágenes del carrusel"
+          // The 24px buttons are 9px taller than the dots; bottom offsets
+          // are reduced by the same amount so the dots stay where they were.
+          className="absolute inset-x-0 bottom-[3px] z-20 flex justify-center gap-[9px] sm:bottom-[7px]"
         >
           {slides.map((sl, i) => (
             <button
               key={sl.id}
               type="button"
-              aria-label={`Ir a la diapositiva ${i + 1}`}
+              aria-label={`Ir a la imagen ${i + 1}`}
               aria-current={i === index ? "true" : undefined}
               onClick={() => setIndex(i)}
-              className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ${
-                i === index ? "w-6 bg-white" : "w-1.5 bg-white/50 hover:bg-white/80"
-              }`}
-            />
+              // 24x24 tap target; the negative margins keep the dots' spacing.
+              className={`group flex h-6 w-6 items-center justify-center ${i === index ? "relative z-10" : "-mx-[9px]"}`}
+            >
+              <span
+                className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ${
+                  i === index
+                    ? "w-6 bg-white"
+                    : "w-1.5 bg-white/50 group-hover:bg-white/80"
+                }`}
+              />
+            </button>
           ))}
         </div>
       )}
