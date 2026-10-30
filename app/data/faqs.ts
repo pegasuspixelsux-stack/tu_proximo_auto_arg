@@ -53,4 +53,25 @@ export const FAQS: { question: string; answer: string }[] = [
     answer:
       "Sí. Podés realizar una seña previa o solicitar el bloqueo temporal de la unidad coordinando directamente con un asesor a través de WhatsApp.",
   },
+  {
+    question: "¿Cómo comprar un auto usado en Buenos Aires?",
+    answer:
+      "Elegís la unidad en nuestro catálogo, nos escribís por WhatsApp para coordinar una visita con cita previa en el salón de Tigre, probás el auto, revisás la documentación y, si te convence, cerrás la compra. Atendemos a clientes de Tigre, Zona Norte, Gran Buenos Aires, Provincia de Buenos Aires y CABA.",
+  },
+  {
+    question: "¿Se puede financiar un auto usado?",
+    answer:
+      "Sí. Podés financiar hasta el 40% del valor del vehículo con tarjeta de crédito en cuotas fijas, y calcular tu cuota con el simulador de la web.",
+  },
+  {
+    question: "¿Cómo es la transferencia de un auto usado en Argentina?",
+    answer:
+      "Nosotros coordinamos la gestoría y los trámites de transferencia. Vos solo necesitás tu DNI vigente, y las unidades llegan con la documentación al día y libres de deudas de patentes e infracciones.",
+  },
+  {
+    question:
+      "¿Atienden en Nordelta, Don Torcuato, General Pacheco, San Fernando y Pilar?",
+    answer:
+      "Sí, recibimos a clientes de Tigre y alrededores, como Nordelta, Don Torcuato, General Pacheco, San Fernando y Pilar, además de toda la Zona Norte, CABA y el resto del Gran Buenos Aires.",
+  },
 ];
