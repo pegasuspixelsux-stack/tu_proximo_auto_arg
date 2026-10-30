@@ -1,4 +1,5 @@
 import { MessageCircle, Phone } from "lucide-react";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import Logo from "./Logo";
 import { NAV_LINKS, NAV_RIGHT_LINKS } from "./navLinks";
@@ -124,9 +125,9 @@ export default async function Footer() {
               <ul className="mt-5 space-y-3">
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    <a href={link.href} className={LINK}>
+                    <Link href={link.href} className={LINK}>
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -213,13 +214,13 @@ export default async function Footer() {
             className="flex flex-wrap gap-x-6 gap-y-2 text-xs"
           >
             {LEGAL_LINKS.map((link) => (
-              <a
+              <Link
                 key={link.label}
                 href={link.href}
                 className="text-subtle transition-colors duration-150 hover:text-fg"
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-3 sm:justify-end">
