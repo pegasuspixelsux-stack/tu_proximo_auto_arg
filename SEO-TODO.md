@@ -29,3 +29,13 @@ Agregar Vercel Analytics (`@vercel/analytics`) y/o Google Analytics 4. No se ins
 
 ## Dominio
 En Vercel: agregar `tuproximoauto.online` y `www.tuproximoauto.online`. La redirección del dominio sin www hacia www ya está en `next.config.ts` (HTTPS lo fuerza Vercel).
+
+## Pendientes de la segunda ronda (código)
+- Redirección extra `http → sin www → www`: se cambia en Vercel > Domains (que el dominio sin www redirija directo a `https://www...`). No se puede en el código.
+- Links `#` del footer (redes, Términos, Privacidad, Cookies, Soporte): no existen las páginas; se dejaron igual.
+- WebSite + SearchAction: no se agregó porque el buscador filtra en el navegador y no tiene una URL de búsqueda.
+- JSON-LD AutoDealer en la página de la concesionaria: no se agregó porque el nombre de la entidad es Expo Norte y se decidió no asociarlo. Falta dirección, teléfono AR, horarios, coordenadas.
+- Avisos vendidos o vencidos: hoy un auto borrado devuelve 404; si querés 410 o redirección a `/autos`, hay que definir cómo se marcan.
+- Rendimiento móvil: falta diferir el slider del hero (framer-motion) y bajar el peso del HTML de la home.
+- Páginas nuevas recomendadas (no creadas): "Autos usados en Tigre", "Financiación de autos usados", páginas por marca cuando haya stock real.
+- Afirmaciones que NO se usaron por falta de datos: garantía mecánica, 0km, autos de particulares, "baratos".
