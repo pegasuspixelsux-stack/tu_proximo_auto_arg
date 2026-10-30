@@ -25,6 +25,12 @@ export const BUSINESS = {
     "Gran Buenos Aires: Zona Oeste",
     "Gran Buenos Aires: Zona Sur",
     "Provincia de Buenos Aires",
+    "Tigre",
+    "Nordelta",
+    "Don Torcuato",
+    "General Pacheco",
+    "San Fernando",
+    "Pilar",
   ],
   sameAs: [] as string[],
 } as const;
