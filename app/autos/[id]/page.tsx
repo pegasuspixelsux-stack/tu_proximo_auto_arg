@@ -19,6 +19,9 @@ import {
   Settings2,
   Zap,
 } from "lucide-react";
+import JsonLd, { breadcrumbs } from "@/lib/json-ld";
+import { vehicleSchema } from "@/lib/schema";
+import { absoluteUrl } from "@/lib/seo";
 import Footer from "../../components/Footer";
 import SiteHeader from "../../components/SiteHeader";
 import WhatsAppLeadButton from "../../components/WhatsAppLeadButton";
@@ -57,8 +60,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!vehicle) return {};
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
   return {
-    title: `${title} | Tu Próximo Auto - Argentina`,
-    description: `${title} en ${vehicle.location}. ${formatPrice(vehicle.price, vehicle.priceCurrency)}.`,
+    title: `${title} usado en ${vehicle.location}`,
+    description: `${title} en ${vehicle.location}: ${FUEL_LABELS[vehicle.fuelType].toLowerCase()}, ${number.format(Math.round(vehicle.mileage * KM_PER_MILE))} km, ${formatPrice(vehicle.price, vehicle.priceCurrency)}. Financiación y prueba de manejo.`,
+    alternates: { canonical: `/autos/${vehicle.id}` },
+    openGraph: { images: [vehicle.image] },
   };
 }
 
@@ -152,6 +157,14 @@ async function VehicleDetail({ params }: Props) {
 
   return (
     <>
+      <JsonLd data={vehicleSchema(vehicle, vehicle.description || fallbackDescription)} />
+      <JsonLd
+        data={breadcrumbs([
+          { name: "Inicio", url: absoluteUrl("/") },
+          { name: "Autos usados", url: absoluteUrl("/autos") },
+          { name: title, url: absoluteUrl(`/autos/${vehicle.id}`) },
+        ])}
+      />
       <SiteHeader />
       <main className="mx-auto min-h-screen w-full max-w-[1440px] bg-bg px-3 pb-16 pt-6 text-fg lg:px-6">
         <Link
@@ -159,7 +172,7 @@ async function VehicleDetail({ params }: Props) {
           className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-widest text-muted transition-colors duration-150 hover:text-fg"
         >
           <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
-          Volver al mercado
+          Ver todos los autos usados
         </Link>
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12">

@@ -15,7 +15,12 @@ const COLUMNS: FooterColumn[] = [
   {
     title: "Navegación",
     // Same links as the top nav.
-    links: [...NAV_LINKS, ...NAV_RIGHT_LINKS],
+    links: [
+      ...NAV_LINKS,
+      ...NAV_RIGHT_LINKS,
+      { label: "Autos usados en venta", href: "/autos" },
+      { label: "Concesionarias de Buenos Aires", href: "/concesionarias" },
+    ],
   },
   {
     title: "Legales & Ayuda",
@@ -103,6 +108,14 @@ export default async function Footer() {
               en Tigre, Zona Norte. Visitanos, probá la unidad y llevátela con
               tranquilidad.
             </p>
+            {/* TODO(seo): add the street address once the owner provides it. */}
+            <address className="mt-4 text-sm not-italic leading-relaxed text-muted">
+              Tu Próximo Auto
+              <br />
+              Salón de ventas en Tigre, Zona Norte, Buenos Aires
+              <br />
+              Atención con cita previa
+            </address>
           </div>
 
           {COLUMNS.map((column) => (
