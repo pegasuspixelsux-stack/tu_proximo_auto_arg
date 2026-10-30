@@ -97,6 +97,7 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
       data-testid="catalog"
       className="mx-auto max-w-[1440px] scroll-mt-4 px-3 pb-10 pt-4 md:pb-12 md:pt-12 lg:px-6 lg:pb-16 lg:pt-16"
     >
+      <h2 className="sr-only">Autos usados en venta</h2>
       <div className="mb-5 md:mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-center md:gap-6">
         <LayoutGroup id="inventory-filters">
           <div className="hidden min-w-0 items-center gap-2 md:flex md:max-w-[50%]">

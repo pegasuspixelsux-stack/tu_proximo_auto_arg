@@ -91,6 +91,7 @@ export default function HeroSearch({
             type="button"
             aria-expanded={filtersOpen}
             aria-controls="advanced-search"
+            aria-label="Filtros"
             data-testid="hero-filters-toggle"
             onClick={() => setFiltersOpen((open) => !open)}
             className="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-muted [:root:not([data-theme=light])_&]:text-zinc-600 transition-[color,transform] duration-150 hover:text-fg [:root:not([data-theme=light])_&]:hover:text-black active:scale-95"

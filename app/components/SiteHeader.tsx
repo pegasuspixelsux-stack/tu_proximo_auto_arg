@@ -24,7 +24,7 @@ export default function SiteHeader() {
         </div>
         <Link
           href="/"
-          aria-label="Tu Próximo Auto, inicio"
+          aria-label="Tu Próximo Auto Argentina, inicio"
           className="absolute left-1/2 -translate-x-1/2"
         >
           <Logo countryOnMobile={false} />
