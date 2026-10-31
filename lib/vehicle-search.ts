@@ -76,6 +76,8 @@ export function matchesText(v: Vehicle, query: string) {
       v.model,
       v.year,
       v.specs?.["Versión"],
+      // Every technical-sheet value too, so "gnc" or "sin garantía" are findable.
+      ...Object.values(v.specs ?? {}),
       v.badge,
       v.color,
       FUEL_WORDS[v.fuelType],
@@ -121,4 +123,49 @@ export function matchesCriteria(v: Vehicle, c: SearchCriteria, arsRate: number) 
   const kmMax = num(c.kmMax);
   if (kmMax != null && v.mileage * KM_PER_MILE > kmMax) return false;
   return true;
+}
+
+export type PillId =
+  | "all"
+  | "gasoline"
+  | "diesel"
+  | "hybrid"
+  | "electric"
+  | "private"
+  | "dealer";
+
+export interface FilterPill {
+  id: PillId;
+  label: string;
+  test: (v: Vehicle) => boolean;
+}
+
+/**
+ * Quick-filter pills shared by the home catalog and /autos. The fuel pills
+ * mirror the allowed fuel types (Nafta, Diésel, Híbrido, Eléctrico); cars with
+ * GNC are stored as Nafta, so they fall under "Nafta".
+ */
+export const FILTER_PILLS: FilterPill[] = [
+  { id: "all", label: "Todos", test: () => true },
+  { id: "electric", label: "Eléctricos", test: (v) => v.fuelType === "Electric" },
+  { id: "hybrid", label: "Híbridos", test: (v) => v.fuelType === "Hybrid" },
+  { id: "gasoline", label: "Nafta", test: (v) => v.fuelType === "Gasoline" },
+  { id: "diesel", label: "Diésel", test: (v) => v.fuelType === "Diesel" },
+  { id: "private", label: "Particulares", test: (v) => v.sellerType === "private" },
+  { id: "dealer", label: "Concesionarias", test: (v) => v.sellerType === "dealer" },
+];
+
+export const isPillId = (value: string): value is PillId =>
+  FILTER_PILLS.some((p) => p.id === value);
+
+/** How many listings each pill would show given the current search criteria. */
+export function pillCounts(
+  vehicles: Vehicle[],
+  criteria: SearchCriteria,
+  arsRate: number,
+): Record<PillId, number> {
+  const matching = vehicles.filter((v) => matchesCriteria(v, criteria, arsRate));
+  return Object.fromEntries(
+    FILTER_PILLS.map((p) => [p.id, matching.filter(p.test).length]),
+  ) as Record<PillId, number>;
 }
