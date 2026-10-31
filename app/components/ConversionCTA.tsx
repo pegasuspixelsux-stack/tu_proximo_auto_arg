@@ -131,7 +131,7 @@ function AppointmentModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 px-3 pb-3 pt-6 backdrop-blur-sm sm:items-center sm:p-4"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -141,7 +141,7 @@ function AppointmentModal({
         aria-modal="true"
         aria-labelledby="appointment-title"
         data-testid="appointment-modal"
-        className="max-h-[92svh] w-full max-w-lg overflow-y-auto rounded-t-2xl border border-white/10 bg-zinc-950 p-5 text-white shadow-2xl sm:rounded-2xl sm:p-6"
+        className="max-h-[calc(100svh-2.5rem)] sm:max-h-[92svh] w-full max-w-lg overflow-y-auto rounded-2xl border border-white/10 bg-zinc-950 p-5 text-white shadow-2xl sm:p-6"
       >
         <div className="flex items-start justify-between gap-4">
           <div>

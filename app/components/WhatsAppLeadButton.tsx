@@ -85,7 +85,7 @@ function LeadModal({
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 px-3 pb-3 pt-6 backdrop-blur-sm sm:items-center sm:p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -97,10 +97,10 @@ function LeadModal({
         aria-modal="true"
         aria-labelledby={titleId}
         data-testid="lead-modal"
-        className="max-h-[92svh] w-full max-w-md overflow-y-auto rounded-t-2xl border border-white/10 bg-zinc-950 p-5 text-white shadow-2xl sm:rounded-2xl sm:p-6"
-        initial={{ opacity: 0, y: 32, scale: 0.98 }}
+        className="max-h-[calc(100svh-2.5rem)] sm:max-h-[92svh] w-full max-w-md overflow-y-auto rounded-2xl border border-white/10 bg-zinc-950 p-5 text-white shadow-2xl sm:p-6"
+        initial={{ opacity: 0, y: -16, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 32, scale: 0.98 }}
+        exit={{ opacity: 0, y: -16, scale: 0.98 }}
         transition={{ type: "spring", stiffness: 380, damping: 34 }}
       >
         <div className="flex items-start justify-between gap-4">
