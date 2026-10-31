@@ -20,8 +20,8 @@ export function organizationSchema(whatsappNumber: string) {
     name: `${SITE_NAME} Argentina`,
     alternateName: SITE_NAME,
     url: absoluteUrl("/"),
-    logo: absoluteUrl("/icon"),
-    image: absoluteUrl("/opengraph-image"),
+    logo: absoluteUrl("/logo_folder/logo_tu_proximo.jpg"),
+    image: absoluteUrl("/logo_folder/logo_tu_proximo.jpg"),
     telephone: `+${whatsappNumber}`,
     address: {
       "@type": "PostalAddress",
