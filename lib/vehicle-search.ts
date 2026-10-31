@@ -130,9 +130,7 @@ export type PillId =
   | "gasoline"
   | "diesel"
   | "hybrid"
-  | "electric"
-  | "private"
-  | "dealer";
+  | "electric";
 
 export interface FilterPill {
   id: PillId;
@@ -151,8 +149,6 @@ export const FILTER_PILLS: FilterPill[] = [
   { id: "hybrid", label: "Híbridos", test: (v) => v.fuelType === "Hybrid" },
   { id: "gasoline", label: "Nafta", test: (v) => v.fuelType === "Gasoline" },
   { id: "diesel", label: "Diésel", test: (v) => v.fuelType === "Diesel" },
-  { id: "private", label: "Particulares", test: (v) => v.sellerType === "private" },
-  { id: "dealer", label: "Concesionarias", test: (v) => v.sellerType === "dealer" },
 ];
 
 export const isPillId = (value: string): value is PillId =>
