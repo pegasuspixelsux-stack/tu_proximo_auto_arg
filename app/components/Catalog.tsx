@@ -8,11 +8,15 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   EMPTY_CRITERIA,
+  FILTER_PILLS,
   hasCriteria,
+  isPillId,
   matchesCriteria,
+  pillCounts,
+  type PillId,
   type SearchCriteria,
 } from "@/lib/vehicle-search";
 import type { Vehicle } from "../data/vehicles";
@@ -20,34 +24,10 @@ import { useArsRate } from "./CurrencyProvider";
 import HeroSearch from "./HeroSearch";
 import VehicleCard from "./VehicleCard";
 
-type Filter = "all" | "electric" | "hybrid" | "gasoline" | "private" | "dealer";
-
-const FILTERS: { id: Filter; label: string; test: (v: Vehicle) => boolean }[] =
-  [
-    { id: "all", label: "Todos", test: () => true },
-    {
-      id: "electric",
-      label: "Eléctricos",
-      test: (v) => v.fuelType === "Electric",
-    },
-    { id: "hybrid", label: "Híbridos", test: (v) => v.fuelType === "Hybrid" },
-    { id: "gasoline", label: "Nafta", test: (v) => v.fuelType === "Gasoline" },
-    {
-      id: "private",
-      label: "Particulares",
-      test: (v) => v.sellerType === "private",
-    },
-    {
-      id: "dealer",
-      label: "Concesionarias",
-      test: (v) => v.sellerType === "dealer",
-    },
-  ];
-
 const PAGE_SIZE = 12;
 
 export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<PillId>("all");
   const [page, setPage] = useState(1);
   const [criteria, setCriteria] = useState<SearchCriteria>(EMPTY_CRITERIA);
   // Bumping this remounts the search box, which empties its inputs.
@@ -61,8 +41,29 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
     el.scrollBy({ left: direction * el.clientWidth * 0.7, behavior: "smooth" });
   }
 
+  // The selected pill lives in the URL (?filtro=diesel) so it can be shared.
+  useEffect(() => {
+    const fromUrl = new URLSearchParams(window.location.search).get("filtro");
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reads the URL once after hydration
+    if (fromUrl && isPillId(fromUrl)) setFilter(fromUrl);
+  }, []);
+
+  function selectPill(id: PillId) {
+    setFilter(id);
+    setPage(1);
+    const url = new URL(window.location.href);
+    if (id === "all") url.searchParams.delete("filtro");
+    else url.searchParams.set("filtro", id);
+    window.history.replaceState(null, "", url);
+  }
+
+  const counts = useMemo(
+    () => pillCounts(vehicles, criteria, arsRate),
+    [vehicles, criteria, arsRate],
+  );
+
   const visible = useMemo(() => {
-    const active = FILTERS.find((f) => f.id === filter) ?? FILTERS[0];
+    const active = FILTER_PILLS.find((f) => f.id === filter) ?? FILTER_PILLS[0];
     return vehicles.filter(
       (v) => active.test(v) && matchesCriteria(v, criteria, arsRate),
     );
@@ -71,7 +72,7 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
   const filtering = filter !== "all" || hasCriteria(criteria);
 
   function clearFilters() {
-    setFilter("all");
+    selectPill("all");
     setCriteria(EMPTY_CRITERIA);
     setSearchKey((k) => k + 1);
     setPage(1);
@@ -115,23 +116,21 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
               aria-label="Filtrar vehículos"
               className="flex min-w-0 flex-1 snap-x gap-2 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              {FILTERS.map((f) => {
+              {FILTER_PILLS.map((f) => {
                 const selected = f.id === filter;
+                const count = counts[f.id];
                 return (
                   <button
                     key={f.id}
                     type="button"
                     data-testid={`filter-${f.id}`}
                     aria-pressed={selected}
-                    onClick={() => {
-                      setFilter(f.id);
-                      setPage(1);
-                    }}
+                    onClick={() => selectPill(f.id)}
                     className={`relative shrink-0 snap-start whitespace-nowrap rounded-full border px-4 py-2 text-xs font-medium transition-[color,border-color,transform] duration-150 active:scale-[0.97] ${
                       selected
                         ? "border-transparent text-on-inverse"
                         : "border-line text-muted hover:border-fg/40 hover:text-fg"
-                    }`}
+                    } ${count === 0 && !selected ? "opacity-50" : ""}`}
                   >
                     {selected && (
                       <motion.span
@@ -144,7 +143,10 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
                         className="absolute inset-0 rounded-full bg-inverse"
                       />
                     )}
-                    <span className="relative">{f.label}</span>
+                    <span className="relative">
+                      {f.label}
+                      <span className="ml-1.5 tabular-nums opacity-60">{count}</span>
+                    </span>
                   </button>
                 );
               })}

@@ -19,7 +19,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useId, useMemo, useRef, useState } from "react";
-import { matchesText } from "@/lib/vehicle-search";
+import { FILTER_PILLS, matchesText, type PillId } from "@/lib/vehicle-search";
 import { useArsRate, usePrice } from "../components/CurrencyProvider";
 import PhotoPlaceholder from "../components/PhotoPlaceholder";
 import {
@@ -67,17 +67,6 @@ const SORTS = [
   { value: "km-asc", label: "Menor kilometraje" },
 ] as const;
 type Sort = (typeof SORTS)[number]["value"];
-
-type Pill = "all" | "electric" | "hybrid" | "gasoline" | "private" | "dealer";
-
-const PILLS: { id: Pill; label: string; test: (v: Vehicle) => boolean }[] = [
-  { id: "all", label: "Todos", test: () => true },
-  { id: "electric", label: "Eléctricos", test: (v) => v.fuelType === "Electric" },
-  { id: "hybrid", label: "Híbridos", test: (v) => v.fuelType === "Hybrid" },
-  { id: "gasoline", label: "Nafta", test: (v) => v.fuelType === "Gasoline" },
-  { id: "private", label: "Particulares", test: (v) => v.sellerType === "private" },
-  { id: "dealer", label: "Concesionarias", test: (v) => v.sellerType === "dealer" },
-];
 
 const YEARS = Array.from({ length: 2026 - 1960 + 1 }, (_, i) => 2026 - i);
 
@@ -520,7 +509,7 @@ export default function InventoryBrowser({
   const [draft, setDraft] = useState<Filters>(EMPTY);
   const [applied, setApplied] = useState<Filters>(EMPTY);
   const [sort, setSort] = useState<Sort>("recent");
-  const [pill, setPill] = useState<Pill>("all");
+  const [pill, setPill] = useState<PillId>("all");
   const [page, setPage] = useState(1);
   const pillsRef = useRef<HTMLDivElement>(null);
   const [drawer, setDrawer] = useState(false);
@@ -538,7 +527,7 @@ export default function InventoryBrowser({
   );
 
   const results = useMemo(() => {
-    const pillTest = (PILLS.find((p) => p.id === pill) ?? PILLS[0]).test;
+    const pillTest = (FILTER_PILLS.find((p) => p.id === pill) ?? FILTER_PILLS[0]).test;
     const list = vehicles.filter((v) => pillTest(v) && matches(v, applied, arsRate));
     const by: Record<Sort, (a: Vehicle, b: Vehicle) => number> = {
       recent: (a, b) => b.createdAt.localeCompare(a.createdAt),
@@ -626,7 +615,7 @@ export default function InventoryBrowser({
                 aria-label="Filtrar vehículos"
                 className="flex min-w-0 flex-1 snap-x gap-2 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               >
-                {PILLS.map((f) => {
+                {FILTER_PILLS.map((f) => {
                   const selected = f.id === pill;
                   return (
                     <button
