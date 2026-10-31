@@ -40,9 +40,9 @@ export default async function Home() {
           whatsappNumber={site.whatsappNumber}
           imageSrc="/banner_image/mother_kids.webp"
         />
+        <SeoIntro />
         <FinancingSection whatsappNumber={site.whatsappNumber} />
         <FinanceCalculator defaultCurrency={site.calculatorCurrency} />
-        <SeoIntro />
         <FAQSection />
         <ConversionCTA whatsappNumber={site.whatsappNumber} />
         <Footer />
