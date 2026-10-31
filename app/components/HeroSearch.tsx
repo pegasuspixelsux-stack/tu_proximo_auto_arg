@@ -45,7 +45,7 @@ export default function HeroSearch({
     <div
       className={
         compact
-          ? "relative w-full shrink-0"
+          ? "relative w-full shrink-0 max-sm:static" // on mobile the filter panel anchors to the search row
           : "mx-auto w-full max-w-xl px-3 text-center lg:max-w-3xl lg:px-6"
       }
     >
@@ -225,7 +225,7 @@ export default function HeroSearch({
                   <input
                     type="text"
                     name="location"
-                    placeholder="Ej. Montevideo"
+                    placeholder="Ej. Tigre"
                     className={FIELD}
                   />
                 </Field>

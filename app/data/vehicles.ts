@@ -72,3 +72,12 @@ export interface Vehicle {
 }
 
 export const HOMEPAGE_LIMIT = 12;
+
+const KM_PER_MILE = 1.60934;
+
+/**
+ * Mileage in km for display. It is stored in miles, so a plain conversion turns
+ * 127.000 km into 126.999; rounding to the nearest 10 km hides that artifact.
+ */
+export const mileageKm = (miles: number) =>
+  Math.round((miles * KM_PER_MILE) / 10) * 10;

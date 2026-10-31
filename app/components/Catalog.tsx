@@ -163,19 +163,21 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
             </button>
           </div>
         </LayoutGroup>
-        <div className="w-full md:w-[32rem] md:max-w-[50%] lg:w-[42rem]">
-          <HeroSearch
-            key={searchKey}
-            compact
-            onSearch={(next) => {
-              setCriteria(next);
-              setPage(1);
-            }}
-          />
+        <div className="relative flex w-full items-start gap-2 md:w-[32rem] md:max-w-[50%] lg:w-[42rem]">
+          <div className="min-w-0 flex-1">
+            <HeroSearch
+              key={searchKey}
+              compact
+              onSearch={(next) => {
+                setCriteria(next);
+                setPage(1);
+              }}
+            />
+          </div>
+          <GridToggle cols={gridCols} onChange={setGridCols} />
         </div>
       </div>
 
-      <GridToggle cols={gridCols} onChange={setGridCols} />
       <motion.div
         layout
         className={`grid gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 ${gridCols === 2 ? "grid-cols-2" : "grid-cols-1"}`}

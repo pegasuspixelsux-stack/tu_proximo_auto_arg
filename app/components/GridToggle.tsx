@@ -33,7 +33,7 @@ const OPTIONS = [
   { cols: 2, label: "Dos columnas", Icon: Columns2 },
 ] as const;
 
-/** Segmented 1 / 2 column switch; only shown below the sm breakpoint. */
+/** Segmented 1 / 2 column switch; only shown below the sm breakpoint. Sits in the search row. */
 export default function GridToggle({
   cols,
   onChange,
@@ -46,7 +46,7 @@ export default function GridToggle({
       role="group"
       aria-label="Columnas de la grilla"
       data-testid="grid-toggle"
-      className="mb-3 flex justify-end sm:hidden"
+      className="flex h-12 shrink-0 items-center sm:hidden"
     >
       <div className="inline-flex rounded-full border border-line p-0.5">
         {OPTIONS.map(({ cols: value, label, Icon }) => (

@@ -1,8 +1,6 @@
 import { FAQS } from "@/app/data/faqs";
-import type { Vehicle } from "@/app/data/vehicles";
+import { mileageKm, type Vehicle } from "@/app/data/vehicles";
 import { absoluteUrl, BUSINESS, SITE_NAME } from "@/lib/seo";
-
-const KM_PER_MILE = 1.60934;
 
 const FUEL: Record<Vehicle["fuelType"], string> = {
   Electric: "Eléctrico",
@@ -64,7 +62,7 @@ export function vehicleSchema(vehicle: Vehicle, description: string) {
     ...(vehicle.color && { color: vehicle.color }),
     mileageFromOdometer: {
       "@type": "QuantitativeValue",
-      value: Math.round(vehicle.mileage * KM_PER_MILE),
+      value: mileageKm(vehicle.mileage),
       unitCode: "KMT",
     },
     itemCondition: "https://schema.org/UsedCondition",

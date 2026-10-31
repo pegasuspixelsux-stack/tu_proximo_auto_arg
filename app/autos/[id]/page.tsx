@@ -34,7 +34,7 @@ import { getVehicle, getVehicles } from "../../data/vehicle-store";
 import { fitParts, fitText, placeLabel } from "@/lib/place";
 import { calculateFinancing } from "@/lib/finance";
 import { formatPrice } from "../../data/site";
-import { vehicleReference, type Vehicle } from "../../data/vehicles";
+import { mileageKm, vehicleReference, type Vehicle } from "../../data/vehicles";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -45,7 +45,6 @@ const date = new Intl.DateTimeFormat("es-UY", {
   month: "long",
   year: "numeric",
 });
-const KM_PER_MILE = 1.60934;
 const FUEL_LABELS: Record<Vehicle["fuelType"], string> = {
   Electric: "Eléctrico",
   Gasoline: "Nafta",
@@ -62,7 +61,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!vehicle) return {};
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
   const place = placeLabel(vehicle.location);
-  const km = number.format(Math.round(vehicle.mileage * KM_PER_MILE));
+  const km = number.format(mileageKm(vehicle.mileage));
   // Page title budget: 60 chars minus the " | Tu Próximo Auto" suffix.
   const pageTitle = fitText(
     [
@@ -130,7 +129,7 @@ async function VehicleDetail({ params }: Props) {
   const testDriveMessage = `Hola, quisiera agendar una prueba de manejo del ${title} publicado en Tu Próximo Auto.`;
 
   // Shown when the listing has no description of its own.
-  const fallbackDescription = `${title} ${FUEL_LABELS[vehicle.fuelType].toLowerCase()} con transmisión ${vehicle.transmission.toLowerCase()} y ${number.format(Math.round(vehicle.mileage * KM_PER_MILE))} km, disponible en ${placeLabel(vehicle.location)}. Es una unidad lista para conocer en persona: podés verla, hacer una prueba de manejo y revisar toda la documentación antes de decidir. Contamos con opciones de financiamiento para que puedas concretar la compra de forma simple y segura, con un anticipo del 60% y el resto en cuotas. Escribinos por WhatsApp para consultar disponibilidad, pedir más fotos o coordinar una visita; te respondemos a la brevedad y te acompañamos en cada paso del proceso.`;
+  const fallbackDescription = `${title} ${FUEL_LABELS[vehicle.fuelType].toLowerCase()} con transmisión ${vehicle.transmission.toLowerCase()} y ${number.format(mileageKm(vehicle.mileage))} km, disponible en ${placeLabel(vehicle.location)}. Es una unidad lista para conocer en persona: podés verla, hacer una prueba de manejo y revisar toda la documentación antes de decidir. Contamos con opciones de financiamiento para que puedas concretar la compra de forma simple y segura, con un anticipo del 60% y el resto en cuotas. Escribinos por WhatsApp para consultar disponibilidad, pedir más fotos o coordinar una visita; te respondemos a la brevedad y te acompañamos en cada paso del proceso.`;
 
   const highlights = [
     {
@@ -142,7 +141,7 @@ async function VehicleDetail({ params }: Props) {
       icon: Gauge,
       label: vehicle.color ? "Kilometraje y color" : "Kilometraje",
       value: [
-        `${number.format(Math.round(vehicle.mileage * KM_PER_MILE))} km`,
+        `${number.format(mileageKm(vehicle.mileage))} km`,
         vehicle.color,
       ]
         .filter(Boolean)
@@ -160,7 +159,7 @@ async function VehicleDetail({ params }: Props) {
     {
       icon: Gauge,
       label: "Kilometraje",
-      value: `${number.format(Math.round(vehicle.mileage * KM_PER_MILE))} km`,
+      value: `${number.format(mileageKm(vehicle.mileage))} km`,
     },
     { icon: Fuel, label: "Combustible", value: FUEL_LABELS[vehicle.fuelType] },
     { icon: Settings2, label: "Transmisión", value: vehicle.transmission },

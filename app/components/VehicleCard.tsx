@@ -6,12 +6,11 @@ import { ArrowRight, Building2, MapPin, UserRound } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import type { Vehicle } from "../data/vehicles";
+import { mileageKm, type Vehicle } from "../data/vehicles";
 import { usePrice } from "./CurrencyProvider";
 import PhotoPlaceholder from "./PhotoPlaceholder";
 
 const km = new Intl.NumberFormat("es-UY");
-const KM_PER_MILE = 1.60934;
 const FUEL_LABELS: Record<Vehicle["fuelType"], string> = {
   Electric: "Eléctrico",
   Gasoline: "Nafta",
@@ -34,10 +33,13 @@ function pick(
 export default function VehicleCard({
   vehicle,
   compact = false,
+  animateIn = true,
 }: {
   vehicle: Vehicle;
   /** `true` always compact; `"mobile"` compact below the sm breakpoint only. */
   compact?: boolean | "mobile";
+  /** Fade the card in on mount. Off, it is fully visible in the server HTML. */
+  animateIn?: boolean;
 }) {
   const reduce = useReducedMotion();
   const price = usePrice();
@@ -53,16 +55,16 @@ export default function VehicleCard({
     <motion.article
       layout
       data-testid={`vehicle-card-${vehicle.id}`}
-      initial={{ opacity: 0, y: reduce ? 0 : 20 }}
+      initial={animateIn ? { opacity: 0, y: reduce ? 0 : 20 } : false}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.97, transition: { duration: 0.15 } }}
-      whileHover={reduce ? undefined : { y: -4, scale: 1.03 }}
+      whileHover={reduce ? undefined : { y: -4 }}
       whileTap={{ scale: 0.99 }}
       transition={{ type: "spring", duration: 0.5, bounce: 0.1 }}
       className={`card-glow group relative w-full min-w-0 cursor-pointer overflow-hidden rounded-xl border border-line bg-surface shadow-[var(--card-shadow)] backdrop-blur-xl focus-within:ring-2 focus-within:ring-fg/60 ${compact === true ? "flex h-full flex-col" : compact ? "flex h-full flex-col sm:block sm:h-auto" : ""}`}
     >
       <div
-        className={`relative w-full overflow-hidden bg-neutral-900 ${pick(compact, "h-36", "h-52", "sm:h-52")}`}
+        className={`relative w-full overflow-hidden bg-neutral-900 ${pick(compact, "h-36 max-sm:h-[173px]", "h-52 max-sm:h-[250px]", "h-[173px] sm:h-52")}`}
       >
         {!vehicle.image ? (
           <PhotoPlaceholder />
@@ -135,19 +137,6 @@ export default function VehicleCard({
           "sm:block sm:p-5",
         )}
       >
-        <div className="flex items-baseline justify-between gap-4">
-          <span
-            className={`font-medium uppercase tracking-widest text-muted ${pick(compact, "text-[10px]", "text-xs", "sm:text-xs")}`}
-          >
-            {vehicle.year} · {FUEL_LABELS[vehicle.fuelType]}
-          </span>
-          <span
-            className={`font-mono tabular-nums text-muted ${pick(compact, "text-[10px]", "text-xs", "sm:text-xs")}`}
-          >
-            {km.format(Math.round(vehicle.mileage * KM_PER_MILE))} km
-          </span>
-        </div>
-
         <h3
           className={`mt-1 font-medium tracking-tight text-fg ${pick(compact, "text-base", "text-xl", "sm:text-xl")}`}
         >
@@ -158,6 +147,12 @@ export default function VehicleCard({
             {vehicle.make} {vehicle.model}
           </Link>
         </h3>
+        <p
+          className={`mt-1 font-medium uppercase tracking-widest text-muted ${pick(compact, "text-[10px]", "text-xs", "sm:text-xs")}`}
+        >
+          {vehicle.year} · {FUEL_LABELS[vehicle.fuelType]} ·{" "}
+          {km.format(mileageKm(vehicle.mileage))} km
+        </p>
         <p
           className={`mt-1 text-subtle ${pick(compact, "mb-3 text-[10px]", "text-xs", "sm:mb-0 sm:text-xs")}`}
         >
