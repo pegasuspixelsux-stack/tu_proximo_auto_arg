@@ -128,6 +128,7 @@ export function matchesCriteria(v: Vehicle, c: SearchCriteria, arsRate: number) 
 export type PillId =
   | "all"
   | "gasoline"
+  | "gnc"
   | "diesel"
   | "hybrid"
   | "electric";
@@ -137,6 +138,12 @@ export interface FilterPill {
   label: string;
   test: (v: Vehicle) => boolean;
 }
+
+/** GNC is not a fuel type of its own: those cars are Nafta and mention GNC in their text. */
+const hasGnc = (v: Vehicle) =>
+  /\bgnc\b/i.test(
+    [v.description, v.badge, ...Object.values(v.specs ?? {})].filter(Boolean).join(" "),
+  );
 
 /**
  * Quick-filter pills shared by the home catalog and /autos. The fuel pills
@@ -148,6 +155,7 @@ export const FILTER_PILLS: FilterPill[] = [
   { id: "electric", label: "Eléctricos", test: (v) => v.fuelType === "Electric" },
   { id: "hybrid", label: "Híbridos", test: (v) => v.fuelType === "Hybrid" },
   { id: "gasoline", label: "Nafta", test: (v) => v.fuelType === "Gasoline" },
+  { id: "gnc", label: "GNC", test: hasGnc },
   { id: "diesel", label: "Diésel", test: (v) => v.fuelType === "Diesel" },
 ];
 
