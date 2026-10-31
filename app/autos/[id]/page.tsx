@@ -24,6 +24,7 @@ import { vehicleSchema } from "@/lib/schema";
 import { absoluteUrl } from "@/lib/seo";
 import Footer from "../../components/Footer";
 import SiteHeader from "../../components/SiteHeader";
+import ShareVehicle from "../../components/ShareVehicle";
 import WhatsAppLeadButton from "../../components/WhatsAppLeadButton";
 import VehicleCard from "../../components/VehicleCard";
 import VehicleSlideshow from "../../components/VehicleSlideshow";
@@ -95,7 +96,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: pageTitle,
     description,
     alternates: { canonical: `/autos/${vehicle.id}` },
-    openGraph: { images: [vehicle.image] },
+    // Without a photo, keep the site-wide generated image instead of an empty one.
+    ...(vehicle.image && { openGraph: { images: [vehicle.image] } }),
   };
 }
 
@@ -341,6 +343,13 @@ async function VehicleDetail({ params }: Props) {
                 </a>
               )}
             </section>
+
+            <ShareVehicle
+              title={title}
+              price={formatPrice(vehicle.price, vehicle.priceCurrency)}
+              url={absoluteUrl(`/autos/${vehicle.id}`)}
+              image={vehicle.image || undefined}
+            />
           </div>
 
           <section aria-labelledby="description-heading">
