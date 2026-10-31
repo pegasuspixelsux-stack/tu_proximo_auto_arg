@@ -21,6 +21,7 @@ import {
 } from "@/lib/vehicle-search";
 import type { Vehicle } from "../data/vehicles";
 import { useArsRate } from "./CurrencyProvider";
+import GridToggle, { useGridCols } from "./GridToggle";
 import HeroSearch from "./HeroSearch";
 import VehicleCard from "./VehicleCard";
 
@@ -32,6 +33,7 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
   const [criteria, setCriteria] = useState<SearchCriteria>(EMPTY_CRITERIA);
   // Bumping this remounts the search box, which empties its inputs.
   const [searchKey, setSearchKey] = useState(0);
+  const [gridCols, setGridCols] = useGridCols();
   const arsRate = useArsRate();
   const pillsRef = useRef<HTMLDivElement>(null);
 
@@ -173,13 +175,18 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
         </div>
       </div>
 
+      <GridToggle cols={gridCols} onChange={setGridCols} />
       <motion.div
         layout
-        className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4"
+        className={`grid gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 ${gridCols === 2 ? "grid-cols-2" : "grid-cols-1"}`}
       >
         <AnimatePresence mode="popLayout">
           {pageItems.map((vehicle) => (
-            <VehicleCard key={vehicle.id} vehicle={vehicle} compact="mobile" />
+            <VehicleCard
+              key={vehicle.id}
+              vehicle={vehicle}
+              compact={gridCols === 2 ? "mobile" : false}
+            />
           ))}
         </AnimatePresence>
       </motion.div>
