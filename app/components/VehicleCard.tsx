@@ -43,6 +43,10 @@ export default function VehicleCard({
   const price = usePrice();
   const [imageFailed, setImageFailed] = useState(false);
   const [logoFailed, setLogoFailed] = useState(false);
+  const showLogo =
+    vehicle.sellerType === "dealer" &&
+    !!vehicle.dealership?.logo &&
+    !logoFailed;
   const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
 
   return (
@@ -76,47 +80,47 @@ export default function VehicleCard({
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
         <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2">
-          {vehicle.sellerType === "dealer" && vehicle.dealership?.logo && !logoFailed ? (
+          {showLogo && (
             <span
               data-testid={`seller-badge-${vehicle.id}`}
-              className="relative block h-8 w-24 overflow-hidden rounded-full border border-white/20 bg-white/90 shadow-sm backdrop-blur-md"
+              className="relative block h-8 w-24 max-sm:hidden overflow-hidden rounded-full border border-white/20 bg-white/90 shadow-sm backdrop-blur-md"
             >
               <Image
-                src={vehicle.dealership.logo}
-                alt={vehicle.dealership.name}
+                src={vehicle.dealership!.logo!}
+                alt={vehicle.dealership!.name}
                 fill
                 sizes="96px"
                 onError={() => setLogoFailed(true)}
                 className="object-contain p-1.5"
               />
             </span>
-          ) : (
-            <span
-              data-testid={`seller-badge-${vehicle.id}`}
-              className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-white/15 bg-black/55 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-md"
-            >
-              {vehicle.sellerType === "dealer" ? (
-                <Building2
-                  className="h-3 w-3 shrink-0"
-                  strokeWidth={2}
-                  aria-hidden
-                />
-              ) : (
-                <UserRound
-                  className="h-3 w-3 shrink-0"
-                  strokeWidth={2}
-                  aria-hidden
-                />
-              )}
-              <span className="truncate">
-                {vehicle.sellerType === "dealer" && vehicle.dealership
-                  ? vehicle.dealership.name
-                  : "Particular"}
-              </span>
-            </span>
           )}
+          {/* On mobile the dealership shows as plain name, never the logo. */}
+          <span
+            data-testid={showLogo ? undefined : `seller-badge-${vehicle.id}`}
+            className={`inline-flex max-w-full items-center gap-1.5 rounded-full border border-white/15 bg-black/55 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur-md ${showLogo ? "sm:hidden" : ""}`}
+          >
+            {vehicle.sellerType === "dealer" ? (
+              <Building2
+                className="h-3 w-3 shrink-0"
+                strokeWidth={2}
+                aria-hidden
+              />
+            ) : (
+              <UserRound
+                className="h-3 w-3 shrink-0"
+                strokeWidth={2}
+                aria-hidden
+              />
+            )}
+            <span className="truncate">
+              {vehicle.sellerType === "dealer" && vehicle.dealership
+                ? vehicle.dealership.name
+                : "Particular"}
+            </span>
+          </span>
           {vehicle.badge && (
-            <span className="rounded-full border border-white/10 bg-black/40 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/80 backdrop-blur-md">
+            <span className="max-sm:hidden rounded-full border border-white/10 bg-black/40 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white/80 backdrop-blur-md">
               {vehicle.badge}
             </span>
           )}
