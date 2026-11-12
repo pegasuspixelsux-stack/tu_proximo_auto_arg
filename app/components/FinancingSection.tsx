@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import TrustFeatures from "./TrustFeatures";
-import { centerSection } from "@/lib/center-section";
 import WhatsAppLeadButton from "./WhatsAppLeadButton";
 
 const WHATSAPP_MESSAGE =
@@ -62,7 +61,9 @@ export default function FinancingSection({
       if (window.location.hash !== "#financiacion") return;
       setOpen(true);
       // Scroll once the section has expanded.
-      centerSection("financiacion", "top");
+      requestAnimationFrame(() =>
+        document.getElementById("financiacion")?.scrollIntoView(),
+      );
     };
     expand();
     window.addEventListener("hashchange", expand);

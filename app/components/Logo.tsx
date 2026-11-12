@@ -4,7 +4,7 @@ export function Country({ className = "" }: { className?: string }) {
     <span className={`inline-flex items-center gap-1 align-middle ${className}`}>
       <svg
         viewBox="0 0 18 12"
-        className="h-5 w-[30px] rounded-[2px]"
+        className="h-2.5 w-[15px] rounded-[1px]"
         aria-hidden
       >
         <rect width="18" height="12" fill="#74ACDF" />

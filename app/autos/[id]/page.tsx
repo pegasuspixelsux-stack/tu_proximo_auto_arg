@@ -204,7 +204,7 @@ async function VehicleDetail({ params }: Props) {
       <SiteHeader />
       <main className="mx-auto min-h-screen w-full max-w-[1440px] bg-bg px-3 pb-6 pt-[10px] text-fg md:pb-12 lg:px-6 lg:pt-5">
         <Link
-          href="/#inventario"
+          href="/#inventory"
           className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-widest text-muted transition-colors duration-150 hover:text-fg"
         >
           <ArrowLeft className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />

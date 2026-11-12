@@ -1,8 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useEffect, useId, useState } from "react";
-import { centerSection } from "@/lib/center-section";
+import { useId, useState } from "react";
 import { calculatePlan, DOWN_PAYMENT_RATE } from "@/lib/finance";
 import { formatPrice, type Currency } from "../data/site";
 
@@ -90,18 +89,6 @@ export default function FinanceCalculator({
   const currency = defaultCurrency;
   const defaultPrice = DEFAULT_PRICE[currency];
   const [open, setOpen] = useState(false);
-
-  // Expand when a link or the URL points at this section (collapsed on mobile).
-  useEffect(() => {
-    const expand = () => {
-      if (window.location.hash !== "#calculadora") return;
-      setOpen(true);
-      centerSection("calculadora", "top");
-    };
-    expand();
-    window.addEventListener("hashchange", expand);
-    return () => window.removeEventListener("hashchange", expand);
-  }, []);
   const [price, setPrice] = useState(defaultPrice);
   // Start from a valid plan: 60% in cash, 12 installments.
   const [tradeInRaw, setTradeIn] = useState(0);

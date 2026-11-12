@@ -164,18 +164,3 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hero-rise, .hero-fade { animation: none; }
 }
-
-/* One-page home: smooth scrolling between sections, and a header that is transparent
-   (white text) over the hero and turns solid once the hero has scrolled away. */
-html { scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-html:not([data-past-hero]) header[data-cover] { color: #fff; }
-html:not([data-past-hero]) header[data-cover] :is(a, button, svg) { color: #fff !important; }
-html[data-past-hero] header[data-cover] {
-  background: color-mix(in srgb, var(--bg) 80%, transparent);
-  border-bottom-color: var(--line);
-  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(24px) saturate(1.5);
-}
-html:not([data-past-hero]) .cover-bottom-nav { display: none; }
-

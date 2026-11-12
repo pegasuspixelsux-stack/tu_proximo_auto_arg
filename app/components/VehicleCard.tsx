@@ -64,16 +64,10 @@ export default function VehicleCard({
       whileHover={reduce ? undefined : { y: -4 }}
       whileTap={{ scale: 0.99 }}
       transition={{ type: "spring", duration: 0.5, bounce: 0.1 }}
-      className={`card-glow group relative w-full min-w-0 cursor-pointer overflow-hidden rounded-xl border border-line bg-surface shadow-[var(--card-shadow)] backdrop-blur-xl focus-within:ring-2 focus-within:ring-fg/60 flex flex-col ${compact === true ? "aspect-square" : "max-sm:aspect-auto aspect-[3/4]"}`}
+      className={`card-glow group relative w-full min-w-0 cursor-pointer overflow-hidden rounded-xl border border-line bg-surface shadow-[var(--card-shadow)] backdrop-blur-xl focus-within:ring-2 focus-within:ring-fg/60 flex flex-col ${compact === true ? "aspect-square" : compact === "mobile" ? "max-sm:aspect-square sm:aspect-[4/5]" : "aspect-[4/5]"}`}
     >
       <div
-        className={`relative w-full overflow-hidden bg-neutral-900 ${
-          compact === true
-            ? "min-h-0 flex-[3]"
-            : compact === "mobile"
-              ? "aspect-square shrink-0"
-              : "aspect-square shrink-0 max-sm:aspect-[4/3]"
-        }`}
+        className="relative min-h-0 w-full flex-[3] overflow-hidden bg-neutral-900"
       >
         {!vehicle.image ? (
           <PhotoPlaceholder />
@@ -139,17 +133,15 @@ export default function VehicleCard({
       </div>
 
       <div
-        className={`flex min-h-0 flex-col justify-center overflow-hidden ${
-          compact === true ? "flex-[2]" : "flex-1"
-        } ${pick(
+        className={`flex min-h-0 flex-[2] flex-col justify-center ${pick(
           compact,
           `px-3 ${hideLocation ? "py-1" : "py-1.5"}`,
-          "px-4 py-1.5",
-          "sm:px-4 sm:py-1.5",
+          "p-5",
+          "sm:p-5",
         )}`}
       >
         <h3
-          className={`truncate font-medium tracking-tight text-fg ${hideLocation ? "leading-tight" : ""} ${pick(compact, "text-base", "text-lg", "sm:text-lg")} ${compact === "mobile" ? "max-sm:text-sm" : ""}`}
+          className={`font-medium tracking-tight text-fg ${hideLocation ? "leading-tight" : ""} ${pick(compact, "text-base", "text-xl", "sm:text-xl")}`}
         >
           <Link
             href={`/autos/${vehicle.id}`}
@@ -159,14 +151,14 @@ export default function VehicleCard({
           </Link>
         </h3>
         <p
-          className={`${hideLocation ? "mt-0" : "mt-0"} font-medium uppercase tracking-widest text-muted ${pick(compact, "text-[10px]", "text-xs", "sm:text-xs")} ${compact === "mobile" ? "max-sm:text-[9px]" : ""}`}
+          className={`${hideLocation ? "mt-0" : "mt-1"} font-medium uppercase tracking-widest text-muted ${pick(compact, "text-[10px]", "text-xs", "sm:text-xs")}`}
         >
           {vehicle.year} · {FUEL_LABELS[vehicle.fuelType]} ·{" "}
           {km.format(mileageKm(vehicle.mileage))} km
         </p>
         {!hideLocation && (
           <p
-            className={`mt-0 text-subtle ${pick(compact, "text-[10px]", "text-xs", "sm:mb-0 sm:text-xs")}`}
+            className={`mt-1 text-subtle ${pick(compact, "text-[10px]", "text-xs", "sm:mb-0 sm:text-xs")}`}
           >
             <span className="inline-flex items-center gap-1">
               <MapPin
@@ -180,7 +172,7 @@ export default function VehicleCard({
         )}
 
         <div
-          className={`flex items-center justify-between ${hideLocation ? "" : "border-t border-line"} ${hideLocation ? pick(compact, "mt-0", "mt-1", "sm:mt-1") : pick(compact, "mt-1.5 pt-1", "mt-1.5 pt-1.5", "sm:mt-1.5 sm:pt-1.5")}`}
+          className={`flex items-center justify-between ${hideLocation ? "" : "border-t border-line"} ${hideLocation ? pick(compact, "mt-0", "mt-1", "sm:mt-1") : pick(compact, "mt-2 pt-1.5", "mt-4 pt-4", "sm:mt-4 sm:pt-4")}`}
         >
           <p
             className={`font-light tabular-nums tracking-tight text-fg ${pick(compact, "text-base", "text-xl", "sm:text-xl")}`}
@@ -191,7 +183,7 @@ export default function VehicleCard({
             href={`/autos/${vehicle.id}`}
             aria-label={`Ver la ficha del ${title}`}
             data-testid={`open-${vehicle.id}`}
-            className={`relative z-10 flex shrink-0 ${compact === true ? "h-7 w-7" : compact === "mobile" ? "h-7 w-7 max-sm:h-6 max-sm:w-6" : "h-7 w-7"} items-center justify-center rounded-full border border-line text-muted transition-[color,transform,border-color] duration-150 hover:border-fg/40 hover:text-fg group-hover:translate-x-0.5 active:scale-95`}
+            className={`relative z-10 flex shrink-0 ${compact === true ? "h-7 w-7" : "h-8 w-8"} items-center justify-center rounded-full border border-line text-muted transition-[color,transform,border-color] duration-150 hover:border-fg/40 hover:text-fg group-hover:translate-x-0.5 active:scale-95`}
           >
             <ArrowUpRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />
           </Link>

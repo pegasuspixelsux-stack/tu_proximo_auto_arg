@@ -3,7 +3,6 @@
 import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FAQS } from "../data/faqs";
-import { centerSection } from "@/lib/center-section";
 
 function FaqItem({
   id,
@@ -62,7 +61,6 @@ export default function FAQSection() {
     const expand = () => {
       if (window.location.hash === "#preguntas-frecuentes") {
         setSectionOpen(true);
-        centerSection("preguntas-frecuentes", "top");
       }
     };
     expand();

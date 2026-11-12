@@ -19,7 +19,7 @@ export default function NotFound() {
         <p className="text-muted">
           Puede que el aviso ya no esté disponible o que el enlace haya cambiado.
         </p>
-        <Link href="/#inventario" className="text-sm font-medium underline underline-offset-4">
+        <Link href="/autos" className="text-sm font-medium underline underline-offset-4">
           Ver todos los autos usados en venta
         </Link>
       </main>

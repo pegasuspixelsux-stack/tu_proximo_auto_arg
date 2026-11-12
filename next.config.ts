@@ -24,11 +24,6 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // The cover page used to live at /portada; it is now the home page.
-      { source: "/portada", destination: "/", permanent: false },
-      // The old home page (featured cars) was removed; the inventory replaces it.
-      { source: "/inicio", destination: "/", permanent: false },
-      { source: "/autos", destination: "/", permanent: false },
       // Canonical host is www; Vercel already forces HTTPS.
       {
         source: "/:path*",
@@ -38,8 +33,8 @@ const nextConfig: NextConfig = {
       },
       // The public dealership directory and dealer pages are hidden (the dashboard still manages
       // dealerships). Remove this redirect to bring /concesionarias back.
-      { source: "/concesionarias", destination: "/", permanent: false },
-      { source: "/concesionarias/:slug", destination: "/", permanent: false },
+      { source: "/concesionarias", destination: "/autos", permanent: false },
+      { source: "/concesionarias/:slug", destination: "/autos", permanent: false },
       {
         source: "/dashboard/leads",
         destination: "/dashboard/interesados",

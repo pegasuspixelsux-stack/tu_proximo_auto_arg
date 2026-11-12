@@ -98,7 +98,7 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
               Destacados
             </h2>
             <Link
-              href="/#inventario"
+              href="/autos"
               className="shrink-0 text-xs text-muted underline-offset-4 transition-colors duration-150 hover:text-fg hover:underline"
             >
               Ver todo el inventario →
@@ -122,7 +122,7 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
                 : "vehículos"}
             </p>
             <Link
-              href="/#inventario"
+              href="/autos"
               data-testid="see-all-inventory"
               className="shrink-0 text-xs text-muted underline-offset-4 transition-colors duration-150 hover:text-fg hover:underline"
             >
@@ -220,7 +220,7 @@ export default function Catalog({ vehicles }: { vehicles: Vehicle[] }) {
           <span />
         )}
         <Link
-          href="/#inventario"
+          href="/autos"
           className="justify-self-end text-xs text-muted underline-offset-4 transition-colors duration-150 hover:text-fg hover:underline"
         >
           Ver todo el inventario →

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import BottomNav from "./components/BottomNav";
-import ThemeColor from "./components/ThemeColor";
 import { CurrencyProvider } from "./components/CurrencyProvider";
 import { getSiteSettings } from "./data/site-store";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
@@ -52,12 +51,11 @@ export default async function RootLayout({
         {/* Applies the saved (or system) theme before first paint to avoid a flash. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}document.documentElement.dataset.theme=t;var m=document.createElement("meta");m.name="theme-color";m.content=t==="light"?"#fbfbfd":"#000000";document.head.appendChild(m)}catch(e){}`,
+            __html: `try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}document.documentElement.dataset.theme=t}catch(e){}`,
           }}
         />
       </head>
       <body className="min-h-full flex flex-col max-lg:pb-14">
-        <ThemeColor />
         <CurrencyProvider arsRate={arsRate}>
           {children}
           <BottomNav />

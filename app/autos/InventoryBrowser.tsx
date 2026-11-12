@@ -2,7 +2,7 @@
 
 import { LayoutGroup, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   EMPTY_CRITERIA,
   FILTER_PILLS,
@@ -14,10 +14,19 @@ import {
 } from "@/lib/vehicle-search";
 import { useArsRate } from "../components/CurrencyProvider";
 import CategoryScroller from "../components/CategoryScroller";
+import GridToggle, { useGridCols } from "../components/GridToggle";
 import VehicleCard from "../components/VehicleCard";
-import type { Vehicle } from "../data/vehicles";
+import { priceInUsd, type Vehicle } from "../data/vehicles";
 
 const PAGE_SIZE = 12;
+
+const SORTS = [
+  { value: "recent", label: "Más recientes" },
+  { value: "price-asc", label: "Menor precio" },
+  { value: "price-desc", label: "Mayor precio" },
+  { value: "km-asc", label: "Menor kilometraje" },
+] as const;
+type Sort = (typeof SORTS)[number]["value"];
 
 export default function InventoryBrowser({
   vehicles,
@@ -27,13 +36,16 @@ export default function InventoryBrowser({
   const [criteria, setCriteria] = useState<SearchCriteria>(EMPTY_CRITERIA);
   // Bumping this remounts the search box, which empties its inputs.
   const [searchKey, setSearchKey] = useState(0);
+  const [sort, setSort] = useState<Sort>("recent");
   const [pill, setPill] = useState<PillId>("all");
   const [page, setPage] = useState(1);
   // Mobile category pills ("" = Todos), same as the home page.
   const [category, setCategory] = useState("");
+  const [gridCols, setGridCols] = useGridCols();
   const [initial, setInitial] = useState<Partial<SearchCriteria>>();
   const pillsRef = useRef<HTMLDivElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
+  const sortId = useId();
   const arsRate = useArsRate();
 
   // The mobile search modal sends its query as URL params; apply them once on arrival.
@@ -68,9 +80,14 @@ export default function InventoryBrowser({
         (!category || v.bodyType === category) &&
         matchesCriteria(v, criteria, arsRate),
     );
-    // Newest first.
-    return list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  }, [vehicles, criteria, pill, category, arsRate]);
+    const by: Record<Sort, (a: Vehicle, b: Vehicle) => number> = {
+      recent: (a, b) => b.createdAt.localeCompare(a.createdAt),
+      "price-asc": (a, b) => priceInUsd(a, arsRate) - priceInUsd(b, arsRate),
+      "price-desc": (a, b) => priceInUsd(b, arsRate) - priceInUsd(a, arsRate),
+      "km-asc": (a, b) => a.mileage - b.mileage,
+    };
+    return list.sort(by[sort]);
+  }, [vehicles, criteria, sort, pill, category, arsRate]);
 
   const filtering = pill !== "all" || category !== "" || hasCriteria(criteria);
   const pageCount = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
@@ -180,6 +197,33 @@ export default function InventoryBrowser({
           </div>
         </LayoutGroup>
 
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+          <div className="flex w-full items-center justify-between gap-3 sm:justify-end">
+            <div className="flex items-center gap-2">
+            <label htmlFor={sortId} className="text-xs text-muted">
+              Ordenar por
+            </label>
+            <select
+              id={sortId}
+              value={sort}
+              onChange={(e) => {
+                setSort(e.target.value as Sort);
+                setPage(1);
+              }}
+              data-testid="sort"
+              className="rounded-full border border-line bg-surface px-4 py-2 text-xs font-medium text-fg outline-none focus:border-fg/40"
+            >
+              {SORTS.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+            </div>
+            <GridToggle cols={gridCols} onChange={setGridCols} />
+          </div>
+        </div>
+
         {items.length === 0 ? (
           <div
             data-testid="empty-state"
@@ -202,12 +246,14 @@ export default function InventoryBrowser({
           </div>
         ) : (
           // Same cards and grid as the home page catalog.
-          <ul className={`mt-3 grid sm:mx-0 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 grid-cols-1 gap-3`}>
+          <ul className={`mt-3 grid sm:mx-0 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 ${gridCols === 2 ? "-mx-[10px] grid-cols-2 gap-[2px]" : "grid-cols-1 gap-3"}`}>
             {items.map((v) => (
               <li key={v.id} className="flex">
                 <VehicleCard
                   vehicle={v}
                   animateIn={false}
+                  compact={gridCols === 2 ? "mobile" : false}
+                  hideLocation={gridCols === 2}
                 />
               </li>
             ))}

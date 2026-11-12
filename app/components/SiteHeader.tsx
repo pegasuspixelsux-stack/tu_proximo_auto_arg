@@ -4,9 +4,9 @@ import MobileMenu from "./MobileMenu";
 import MobileSearch from "./MobileSearch";
 import { NAV_LINKS, NAV_RIGHT_LINKS } from "./navLinks";
 
-export default function SiteHeader({ transparent = false }: { transparent?: boolean }) {
+export default function SiteHeader() {
   return (
-    <header data-cover={transparent ? "" : undefined} className={transparent ? "fixed inset-x-0 top-0 z-40 border-b border-transparent bg-transparent transition-[background-color,border-color,box-shadow] duration-200" : "sticky top-0 z-40 border-b border-line shadow-[0_4px_12px_-2px_rgba(0,0,0,0.12)] bg-bg/80 backdrop-blur-xl backdrop-saturate-150"}>
+    <header className="sticky top-0 z-40 border-b border-line shadow-[0_4px_12px_-2px_rgba(0,0,0,0.12)] bg-bg/80 backdrop-blur-xl backdrop-saturate-150">
       <nav
         aria-label="Principal"
         className="relative mx-auto flex max-w-[1440px] items-center justify-between px-3 py-[11px] sm:py-6 lg:px-6"

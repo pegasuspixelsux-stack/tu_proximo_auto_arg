@@ -2,8 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { centerSection } from "@/lib/center-section";
+import { useState } from "react";
 
 /**
  * Plain-text intro for search engines and readers: zones served and how buying
@@ -12,24 +11,11 @@ import { centerSection } from "@/lib/center-section";
 export default function SeoIntro() {
   const [open, setOpen] = useState(false);
 
-  // Expand when a link or the URL points at this section (collapsed on mobile).
-  useEffect(() => {
-    const expand = () => {
-      if (window.location.hash !== "#comprar") return;
-      setOpen(true);
-      centerSection("comprar", "top");
-    };
-    expand();
-    window.addEventListener("hashchange", expand);
-    return () => window.removeEventListener("hashchange", expand);
-  }, []);
-
   return (
     <section
-      id="comprar"
       aria-labelledby="seo-intro-heading"
       data-testid="seo-intro"
-      className="scroll-mt-24 md:px-3 md:py-12 lg:px-6"
+      className="md:px-3 md:py-12 lg:px-6"
     >
       <button
         type="button"
@@ -80,7 +66,7 @@ export default function SeoIntro() {
           </p>
         </div>
         <p className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium">
-          <Link href="/#inventario" className="underline underline-offset-4">
+          <Link href="/autos" className="underline underline-offset-4">
             Ver todos los autos usados en venta
           </Link>
         </p>

@@ -47,20 +47,12 @@ function withTimeout<T>(promise: Promise<T>, ms: number, what: string) {
 
 /** Logs a photo failure with enough detail to debug it (errors can be non-Error objects). */
 function logPhotoError(error: unknown, file?: File) {
-  const e = error as {
-    message?: unknown;
-    stack?: unknown;
-    $ResponseMetadata?: { statusCode?: number; requestId?: string };
-  } | null;
+  const e = error as { message?: unknown; stack?: unknown } | null;
   console.error("Error detallado en carga/conversión de imagen:", {
     message: typeof e?.message === "string" ? e.message : String(error),
-    // Set when ImageKit answered: its HTTP status and request id, for its support team.
-    imagekitStatus: e?.$ResponseMetadata?.statusCode,
-    imagekitRequestId: e?.$ResponseMetadata?.requestId,
     stack: typeof e?.stack === "string" ? e.stack : undefined,
     file: file?.name,
     type: file?.type,
-    size: file?.size,
   });
 }
 

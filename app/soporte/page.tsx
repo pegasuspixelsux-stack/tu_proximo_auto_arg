@@ -17,11 +17,11 @@ const FAQS = [
   },
   {
     q: "¿Cómo coordino una visita o una prueba de manejo?",
-    a: "Atendemos con cita previa. Pedí tu turno por WhatsApp o desde el formulario de contacto de nuestro sitio.",
+    a: "Atendemos con cita previa. Pedí tu turno por WhatsApp o desde el formulario de contacto de la página de inicio.",
   },
   {
     q: "¿Puedo financiar o entregar mi usado?",
-    a: "Sí, trabajamos con financiación con tarjeta de crédito y aceptamos permutas. Los detalles están en las preguntas frecuentes de nuestro sitio.",
+    a: "Sí, trabajamos con financiación con tarjeta de crédito y aceptamos permutas. Los detalles están en las preguntas frecuentes de la página de inicio.",
   },
   {
     q: "¿Cómo pido que borren o corrijan mis datos?",
@@ -67,7 +67,7 @@ export default function SoportePage() {
           Mirá todas las{" "}
           <Link className="underline underline-offset-4" href="/#preguntas-frecuentes">preguntas frecuentes</Link>,
           explorá los{" "}
-          <Link className="underline underline-offset-4" href="/#inventario">autos usados en venta</Link> o leé los{" "}
+          <Link className="underline underline-offset-4" href="/autos">autos usados en venta</Link> o leé los{" "}
           <Link className="underline underline-offset-4" href="/terminos">términos y condiciones</Link>.
         </p>
       </LegalSection>
